@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const RegistrationForm = () => {
@@ -10,10 +10,27 @@ const RegistrationForm = () => {
   ]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(false);
+  const [isEmailExists, setIsEmailExists] = useState(false);
+  const [isUsernameExists, setIsUsernameExists] = useState(false);
 
-  const handleInputChange = (e) => {
+  useEffect(() => {
+    let timer;
+
+    if (isEmailExists || isUsernameExists) {
+      timer = setTimeout(() => {
+        setIsEmailExists(false);
+        setIsUsernameExists(false);
+      }, 2000);
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isEmailExists, isUsernameExists]);
+
+  const handleInputChange = (e, index) => {
     const updatedFields = [...fields];
-    updatedFields[currentStep].value = e.target.value;
+    updatedFields[index].value = e.target.value;
     setFields(updatedFields);
   };
 
@@ -33,11 +50,6 @@ const RegistrationForm = () => {
       isValid = false;
     }
 
-    if (currentStep === 2 && updatedFields[currentStep].value.length < 6) {
-      updatedFields[currentStep].error =
-        "Password must be at least 6 characters long.";
-      isValid = false;
-    }
     setFields(updatedFields);
     return isValid;
   };
@@ -59,7 +71,7 @@ const RegistrationForm = () => {
           {}
         );
 
-        // Check if email and username already exist in the database
+        // Check email and username existence before submitting
         fetch("http://localhost:8000/check", {
           method: "POST",
           headers: {
@@ -70,15 +82,10 @@ const RegistrationForm = () => {
           .then((res) => res.json())
           .then((res) => {
             if (res.emailExists) {
-              const updatedFields = [...fields];
-              updatedFields[1].error = "Email already exists.";
-              setFields(updatedFields);
+              setIsEmailExists(true);
             } else if (res.usernameExists) {
-              const updatedFields = [...fields];
-              updatedFields[3].error = "Username already exists.";
-              setFields(updatedFields);
+              setIsUsernameExists(true);
             } else {
-              // Proceed with the registration process
               fetch("http://localhost:8000/register", {
                 method: "POST",
                 headers: {
@@ -101,14 +108,13 @@ const RegistrationForm = () => {
             console.error("Error checking email and username:", error);
           });
       } else {
-        setCurrentStep(currentStep + 1);
+        setCurrentStep((prevStep) => prevStep + 1);
       }
     }
   };
 
   return (
     <div className="registration-form">
-      <h2>Registration Form</h2>
       {isRegistrationSuccessful ? (
         <div className="success-message">Registration Successful!</div>
       ) : (
@@ -120,7 +126,7 @@ const RegistrationForm = () => {
                 <input
                   type={field.label === "email" ? "email" : "text"}
                   value={field.value}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange(e, index)}
                   className={field.error ? "input-error" : ""}
                 />
                 {field.error && <span className="error">{field.error}</span>}
@@ -134,6 +140,12 @@ const RegistrationForm = () => {
           }
           return null;
         })
+      )}
+      {isEmailExists && (
+        <div className="error-message">Email already exists. Please choose a different email.</div>
+      )}
+      {isUsernameExists && (
+        <div className="error-message">Username already exists. Please choose a different username.</div>
       )}
       <div className="login-link">
         Already registered? Please <Link to="/login">sign in</Link>.
