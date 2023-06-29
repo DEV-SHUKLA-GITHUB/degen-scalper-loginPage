@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
-// import AdminHome from "./adminHome";
-// import UserHome from "./userHome";
 
 export default function UserDetails() {
   const [userData, setUserData] = useState("");
-//   const [admin, setAdmin] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [showForm, setShowForm] = useState(false);
 
+  const handleOptionChange = (e) => {
+    setSelectedOption(e.target.value);
+  };
   useEffect(() => {
+    // Fetch user data from the server
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = () => {
+    const token = window.localStorage.getItem("token");
+
     fetch("http://localhost:8000/userData", {
       method: "POST",
       crossDomain: true,
@@ -16,35 +25,65 @@ export default function UserDetails() {
         "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({
-        token: window.localStorage.getItem("token"),
+        token: token,
       }),
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("success");
-        // if (data.data.userType === "Admin") {
-        //   setAdmin(true);
-        // }
-        setUserData(data.data);
-        console.log(userData)
-        // console.log(userData)
-        
-
-        if (data.data === "token expired") {
-          alert("Token expired. Please login again.");
-          window.localStorage.clear();
-          window.location.href = "./sign-in";
+        if (data.status === "ok") {
+          setUserData(data.data);
+        } else {
+          // Handle error response
         }
+      })
+      .catch((error) => {
+        // Handle fetch error
       });
-  }, []);
+  };
+  const handleContinue = () => {
+    setShowForm(true);
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    // You can access the username using selectedOption state
+    console.log("Username:", selectedOption);
+  };
 
-  // return admin ? <AdminHome /> : <UserHome userData={userData} />;
-return(
-  <div>
-    <h1>{userData.email}</h1>
-    <h1>{userData.FullName}</h1>
-    <h1>{userData.Username}</h1>
-    <h1>{userData.password}</h1>
-  </div>
-)
+  const handleLogout = () => {
+    // Clear token from local storage
+    window.localStorage.removeItem("token");
+    // Redirect to login page
+    window.location.href = "./login";
+  };
+
+  return (
+    <div>
+      <h1>{userData.email}</h1>
+      <h1>{userData.FullName}</h1>
+      <h1>{userData.Username}</h1>
+      <h1>{userData.password}</h1>
+      <div>
+        <label htmlFor="dropdown">Select an option:</label>
+        <select id="dropdown" value={selectedOption} onChange={handleOptionChange}>
+          <option value="">-- Select --</option>
+          <option value="Zerodha">Zerodha</option>
+          <option value="option2">Option 2</option>
+          <option value="option3">Option 3</option>
+        </select>
+      </div>
+      <p>Selected option: {selectedOption}</p>
+      <button onClick={handleContinue}>Continue</button>
+
+      <button onClick={handleLogout}>Logout</button>
+      {showForm && (
+        <form onSubmit={handleSubmit}>
+          <h2>Additional Form</h2>
+          <p>Username: {userData.Username}</p>
+          {/* Add additional form fields and logic here */}
+          <button type="submit">Submit</button>
+        </form>
+      )}
+    </div>
+  );
 }

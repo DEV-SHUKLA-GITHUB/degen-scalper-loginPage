@@ -3,6 +3,7 @@ import React, { useState } from "react";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -15,7 +16,6 @@ const LoginForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(email, password);
     fetch("http://localhost:8000/login-user", {
       method: "POST",
       crossDomain: true,
@@ -31,15 +31,16 @@ const LoginForm = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data, "userRegister");
         if (data.status === "ok") {
           alert("Login successful");
           window.localStorage.setItem("token", data.data);
-          window.location.href = "/userDetails";
+          window.location.href = "./userDetails";
+        } else {
+          setError("Invalid email or password");
         }
       })
       .catch((error) => {
-        console.error("Login failed:", error);
+        setError("An error occurred during login");
       });
   };
 
@@ -55,6 +56,7 @@ const LoginForm = () => {
           <label>Password:</label>
           <input type="password" value={password} onChange={handlePasswordChange} />
         </div>
+        {error && <p className="error-message">{error}</p>}
         <button type="submit">Login</button>
       </form>
     </div>
