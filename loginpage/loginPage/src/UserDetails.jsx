@@ -4,50 +4,73 @@ export default function UserDetails() {
   const [userData, setUserData] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [password, setPassword] = useState("");
+  const [totp, setTotp] = useState("");
+  const [api, setApi] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const [secretKey, setSecretKey] = useState("");
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   useEffect(() => {
-    // Fetch user data from the server
-    fetchUserData();
+    // Check if the user is logged in
+    const token = window.localStorage.getItem("token");
+    if (token) {
+      // User is logged in, fetch user data
+      fetch("http://localhost:8000/userData", {
+        method: "POST",
+        crossDomain: true,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          token: token,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "ok") {
+            // User data fetched successfully
+            setUserData(data.data);
+            setIsLoggedIn(true);
+          } else {
+            // Token expired or invalid, clear localStorage and redirect to login
+            window.localStorage.clear();
+            window.location.href = "./sign-in";
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    } else {
+      // User is not logged in, redirect to login
+      window.location.href = "./login";
+    }
   }, []);
 
-  const fetchUserData = () => {
-    const token = window.localStorage.getItem("token");
+  if (!isLoggedIn) {
+    // Render a loading state or redirect to login
+    return <div>Loading...</div>;
+  }
 
-    fetch("http://localhost:8000/userData", {
-      method: "POST",
-      crossDomain: true,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        token: token,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "ok") {
-          setUserData(data.data);
-        } else {
-          // Handle error response
-        }
-      })
-      .catch((error) => {
-        // Handle fetch error
-      });
-  };
   const handleContinue = () => {
     setShowForm(true);
   };
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
-    // You can access the username using selectedOption state
-    console.log("Username:", selectedOption);
+    // You can access the form field values using the respective state variables
+    console.log("Username:", userData.Username);
+    console.log("Password:", password);
+    console.log("TOTP:", totp);
+    console.log("API:", api);
+    console.log("API Key:", apiKey);
+    console.log("Secret Key:", secretKey);
   };
 
   const handleLogout = () => {
@@ -59,10 +82,10 @@ export default function UserDetails() {
 
   return (
     <div>
-      <h1>{userData.email}</h1>
-      <h1>{userData.FullName}</h1>
-      <h1>{userData.Username}</h1>
-      <h1>{userData.password}</h1>
+      <h2>{userData.email}</h2>
+      <h2>{userData.FullName}</h2>
+      <h2>{userData.Username}</h2>
+      <h2>{userData.password}</h2>
       <div>
         <label htmlFor="dropdown">Select an option:</label>
         <select id="dropdown" value={selectedOption} onChange={handleOptionChange}>
@@ -79,8 +102,38 @@ export default function UserDetails() {
       {showForm && (
         <form onSubmit={handleSubmit}>
           <h2>Additional Form</h2>
-          <p>Username: {userData.Username}</p>
-          {/* Add additional form fields and logic here */}
+         
+
+          <div>
+            <label htmlFor="username">UserName:</label>
+            <input type="text" id="username" value={userData.Username} contentEditable={false} />
+          </div>
+
+          <div>
+            <label htmlFor="password">Password:</label>
+            <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          </div>
+
+          <div>
+            <label htmlFor="totp">TOTP:</label>
+            <input type="text" id="totp" value={totp} onChange={(e) => setTotp(e.target.value)} />
+          </div>
+
+          <div>
+            <label htmlFor="api">API:</label>
+            <input type="text" id="api" value={api} onChange={(e) => setApi(e.target.value)} />
+          </div>
+
+          <div>
+            <label htmlFor="apiKey">API Key:</label>
+            <input type="text" id="apiKey" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
+          </div>
+
+          <div>
+            <label htmlFor="secretKey">Secret Key:</label>
+            <input type="text" id="secretKey" value={secretKey} onChange={(e) => setSecretKey(e.target.value)} />
+          </div>
+
           <button type="submit">Submit</button>
         </form>
       )}
