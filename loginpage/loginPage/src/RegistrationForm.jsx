@@ -126,7 +126,7 @@ const RegistrationForm = () => {
   return (
     <div className="relative h-screen">
       <video
-        className="absolute top-0 left-0 w-full h-100% object-cover z-0"
+        className="absolute top-0 left-0 w-full h-screen object-cover z-0"
         src={bg}
         autoPlay
         loop

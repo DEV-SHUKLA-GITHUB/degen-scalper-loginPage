@@ -4,14 +4,18 @@ export default function UserDetails() {
   const [userData, setUserData] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [show, setShow] = useState(false);
   const [password, setPassword] = useState("");
   const [totp, setTotp] = useState("");
-  const [api, setApi] = useState("");
+  const [userId, setUserId] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
-
+  const [formData, setFormData] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+let value;
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
+    setShowForm(true);
   };
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -64,20 +68,60 @@ export default function UserDetails() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
-    // You can access the form field values using the respective state variables
-    console.log("Username:", userData.Username);
-    console.log("Password:", password);
-    console.log("TOTP:", totp);
-    console.log("API:", api);
-    console.log("API Key:", apiKey);
-    console.log("Secret Key:", secretKey);
-  };
 
+    // Construct the form data object
+    const formDataObj = {
+      username: userData.Username,
+      password,
+      totp,
+      userId,
+      apiKey,
+      secretKey,
+      broker: selectedOption, // Add the selected dropdown value
+    };
+
+    // Create a new array with the existing form data and the new form data object
+    const updatedFormData = [...formData, formDataObj];
+
+    // Create a new array with the existing selected options and the new selected option
+    const updatedSelectedOptions = [...selectedOptions, selectedOption];
+
+    // Update the state with the updated form data and selected options
+    setFormData(updatedFormData);
+    setSelectedOptions(updatedSelectedOptions);
+
+    // Reset the form fields
+    setSelectedOption("");
+    setPassword("");
+    setTotp("");
+    setUserId("");
+    setApiKey("");
+    setSecretKey("");
+
+    // Clear the show form flag
+    setShowForm(false);
+  };
+  
+  
   const handleLogout = () => {
     // Clear token from local storage
     window.localStorage.removeItem("token");
     // Redirect to login page
     window.location.href = "./login";
+  };
+  const handleShowData = () => {
+    // Iterate over the form data array and display each element
+    formData.forEach((data, index) => {
+      
+      console.log(`Data ${index + 1}:`, data);
+      setShow(true)
+      show && (
+        <div>
+          {data}
+        </div>
+      )
+      // You can modify the code here to display the data on the page
+    });
   };
 
   return (
@@ -87,56 +131,58 @@ export default function UserDetails() {
       <h2>{userData.Username}</h2>
       <h2>{userData.password}</h2>
       <div>
-        <label htmlFor="dropdown">Select an option:</label>
+        <label htmlFor="dropdown">Select a broker:</label>
         <select id="dropdown" value={selectedOption} onChange={handleOptionChange}>
           <option value="">-- Select --</option>
           <option value="Zerodha">Zerodha</option>
-          <option value="option2">Option 2</option>
-          <option value="option3">Option 3</option>
+          <option value="fyers">fyers</option>
+          <option value="upstox">upstox</option>
+          <option value="angel one">Angel One</option>
+          <option value="Anand Money">Anand Money</option>
         </select>
       </div>
-      <p>Selected option: {selectedOption}</p>
-      <button onClick={handleContinue}>Continue</button>
+      <p>Selected Broker: {selectedOption}</p>
+      <br />
+      <br />
 
       <button onClick={handleLogout}>Logout</button>
+      <br /><br />
       {showForm && (
-        <form onSubmit={handleSubmit}>
-          <h2>Additional Form</h2>
-         
+      <form onSubmit={handleSubmit}>
+        <h2>Additional Form</h2>
 
-          <div>
-            <label htmlFor="username">UserName:</label>
-            <input type="text" id="username" value={userData.Username} contentEditable={false} />
-          </div>
+        {/* Existing fields */}
 
-          <div>
-            <label htmlFor="password">Password:</label>
-            <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          </div>
+        <div>
+          <label htmlFor="user Id">User Id:</label>
+          <input type="text" id="userId" value={userId} onChange={(e) => setUserId(e.target.value)} />
+        </div>
 
-          <div>
-            <label htmlFor="totp">TOTP:</label>
-            <input type="text" id="totp" value={totp} onChange={(e) => setTotp(e.target.value)} />
-          </div>
+        <div>
+          <label htmlFor="password">Password:</label>
+          <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </div>
 
-          <div>
-            <label htmlFor="api">API:</label>
-            <input type="text" id="api" value={api} onChange={(e) => setApi(e.target.value)} />
-          </div>
+        <div>
+          <label htmlFor="totp">TOTP:</label>
+          <input type="text" id="totp" value={totp} onChange={(e) => setTotp(e.target.value)} />
+        </div>
 
-          <div>
-            <label htmlFor="apiKey">API Key:</label>
-            <input type="text" id="apiKey" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
-          </div>
+        <div>
+          <label htmlFor="apiKey">API Key:</label>
+          <input type="text" id="apiKey" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
+        </div>
 
-          <div>
-            <label htmlFor="secretKey">Secret Key:</label>
-            <input type="text" id="secretKey" value={secretKey} onChange={(e) => setSecretKey(e.target.value)} />
-          </div>
+        <div>
+          <label htmlFor="secretKey">Secret Key:</label>
+          <input type="text" id="secretKey" value={secretKey} onChange={(e) => setSecretKey(e.target.value)} />
+        </div>
 
-          <button type="submit">Submit</button>
-        </form>
-      )}
+        <button type="submit">Submit</button>
+      </form>
+    )}
+        <button onClick={handleShowData}>Show</button>
+
     </div>
   );
 }
