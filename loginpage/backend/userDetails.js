@@ -1,15 +1,17 @@
 const mongoose = require("mongoose");
 
-const userDetailsSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     FullName: String,
     email: { type: String, unique: true },
     password: String,
     Username: { type: String, unique: true },
+    BrokerList: [String], // Array field to store form data
   },
   {
     collection: "userInfo",
   }
 );
 
-module.exports = mongoose.model("User", userDetailsSchema);
+
+module.exports = mongoose.model("User", userSchema);

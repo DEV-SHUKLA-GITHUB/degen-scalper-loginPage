@@ -3,7 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const User = require("./userDetails"); // Import the user schema from userDetails.js
 app.use(express.json());
-
+const shortid = require("shortid"); 
 const cors = require("cors");
 app.use(cors());
 const bcrypt = require("bcryptjs");
@@ -61,8 +61,8 @@ mongoose
     }
   });
 
-  app.post("/userData", (req, res) => {
-    const { token } = req.body;
+  app.post("/userData", async (req, res) => {
+    const { token, BrokerList } = req.body;
   
     try {
       // Verify the token and extract the user's email
@@ -70,7 +70,11 @@ mongoose
       const userEmail = user.email;
   
       // Find the user in the database using the email
-      User.findOne({ email: userEmail })
+      User.findOneAndUpdate(
+        { email: userEmail }, // Find the user by email
+        { $push: { BrokerList } }, // Push the form data to the formData array
+        { new: true } // Return the updated document
+      )
         .then((userData) => {
           res.json({ status: "ok", data: userData });
         })
@@ -81,7 +85,11 @@ mongoose
       res.status(500).json({ status: "error", data: error });
     }
   });
-
+  
+  
+    
+  
+  
 app.post("/register", async (req, res) => {
   const { FullName, email, password, Username } = req.body;
   const encrypted = await bcrypt.hash(password, 10);
