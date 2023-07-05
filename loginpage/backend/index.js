@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const brokerValidator = require("./validateBrokerCreds")
 const User = require("./userDetails"); // Import the user schema from userDetails.js
 app.use(express.json());
 const shortid = require("shortid"); 
@@ -60,9 +61,32 @@ mongoose
       res.status(500).json({ error: "An error occurred during login" });
     }
   });
+  // app.post("/getUserData",(req, res) => {
+  //   try{
+  //     const user = jwt.verify(token, JWT_SECRET);
+  //     const userData=user.findOne({})
+  //   }
+  //   catch(e){
+  //     console.log(e)
+  //   }
+  // }
+  // )
 
   app.post("/userData", async (req, res) => {
     const { token, BrokerList } = req.body;
+    console.log(BrokerList)
+if(BrokerList){
+  const obj={
+    broker_user_id : BrokerList.userId,
+    broker_user_password : BrokerList.password,
+    api_key : BrokerList.apiKey,
+    api_secret : BrokerList.secretKey,
+    totp_token : BrokerList.totp,
+    redirect_url : "http://localhost:8000",
+    broker_name: BrokerList.broker}
+    brokerValidator(obj)
+}
+
   
     try {
       // Verify the token and extract the user's email
@@ -85,6 +109,7 @@ mongoose
       res.status(500).json({ status: "error", data: error });
     }
   });
+  
   
   
   
