@@ -10,7 +10,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
 
-const mongoUrl = "mongodb://0.0.0.0:27017/register";
+const mongoUrl = "mongodb+srv://devshuklaji6:fU6D8Wu5BDaQlgEB@cluster0.mxffi4n.mongodb.net/?retryWrites=true&w=majority";
 mongoose
   .connect(mongoUrl, {
     useNewUrlParser: true,
@@ -87,7 +87,6 @@ mongoose
   });
   
   
-    
   
   
 app.post("/register", async (req, res) => {

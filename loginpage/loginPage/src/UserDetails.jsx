@@ -11,7 +11,6 @@ export default function UserDetails() {
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [formData, setFormData] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState([]);
 let value;
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -68,7 +67,7 @@ let value;
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
-
+  
     // Construct the form data object
     const formDataObj = {
       username: userData.Username,
@@ -79,28 +78,44 @@ let value;
       secretKey,
       broker: selectedOption, // Add the selected dropdown value
     };
-
+  
     // Create a new array with the existing form data and the new form data object
     const updatedFormData = [...formData, formDataObj];
-
-    // Create a new array with the existing selected options and the new selected option
-    const updatedSelectedOptions = [...selectedOptions, selectedOption];
-
-    // Update the state with the updated form data and selected options
-    setFormData(updatedFormData);
-    setSelectedOptions(updatedSelectedOptions);
-
-    // Reset the form fields
-    setSelectedOption("");
-    setPassword("");
-    setTotp("");
-    setUserId("");
-    setApiKey("");
-    setSecretKey("");
-
-    // Clear the show form flag
-    setShowForm(false);
+  
+    // Serialize the form data array as a string
+    const formDataString = JSON.stringify(updatedFormData, null, 2);
+  
+    // Send the updated form data string to the backend
+    fetch("http://localhost:8000/userData", {
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        token: window.localStorage.getItem("token"),
+        BrokerList: formDataObj, // Send the form data string
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          console.log("Form data updated successfully");
+          setFormData(updatedFormData); // Update the local state with the updated form data
+        } else {
+          console.error("Error updating form data:", data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating form data:", error);
+      });
+      setShowForm(false)
+      setShow(true)
   };
+  
+  
   
   
   const handleLogout = () => {
@@ -126,10 +141,10 @@ let value;
 
   return (
     <div>
-      <h2>{userData.email}</h2>
+      {/* <h2>{userData.email}</h2>
       <h2>{userData.FullName}</h2>
       <h2>{userData.Username}</h2>
-      <h2>{userData.password}</h2>
+      <h2>{userData.password}</h2> */}
       <div>
         <label htmlFor="dropdown">Select a broker:</label>
         <select id="dropdown" value={selectedOption} onChange={handleOptionChange}>
@@ -179,10 +194,16 @@ let value;
         </div>
 
         <button type="submit">Submit</button>
+
+
       </form>
     )}
         <button onClick={handleShowData}>Show</button>
-
+            {show && 
+          (
+            <div>{value}</div>
+          )
+        }
     </div>
   );
 }
