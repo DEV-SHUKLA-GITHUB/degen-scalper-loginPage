@@ -23,7 +23,7 @@ let value;
     const token = window.localStorage.getItem("token");
     if (token) {
       // User is logged in, fetch user data
-      fetch("http://localhost:8000/userData", {
+      fetch("http://localhost:8000/checkAuth", {
         method: "POST",
         crossDomain: true,
         headers: {
@@ -61,9 +61,6 @@ let value;
     return <div>Loading...</div>;
   }
 
-  const handleContinue = () => {
-    setShowForm(true);
-  };
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here

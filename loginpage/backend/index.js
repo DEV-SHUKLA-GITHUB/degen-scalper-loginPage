@@ -43,20 +43,25 @@ mongoose
     }
   });
   
-  app.post("/userData", async (req, res) => {
-    const { token, BrokerList } = req.body;
-    console.log(BrokerList)
-if(BrokerList){
-  const obj={
-    broker_user_id : BrokerList.userId,
-    broker_user_password : BrokerList.password,
-    api_key : BrokerList.apiKey,
-    api_secret : BrokerList.secretKey,
-    totp_token : BrokerList.totp,
-    redirect_url : "http://localhost:8000",
-    broker_name: BrokerList.broker}
-    brokerValidator(obj)
-}
+      // Send the token as a response
+      res.json({ status: "ok", data: token });
+    } catch (error) {
+      console.error("Login failed:", error);
+      res.status(500).json({ error: "An error occurred during login" });
+    }
+  });
+  // app.post("/getUserData",(req, res) => {
+  //   try{
+  //     const user = jwt.verify(token, JWT_SECRET);
+  //     const userData=user.findOne({})
+  //   }
+  //   catch(e){
+  //     console.log(e)
+  //   }
+  // }
+  // )
+  app.post("/checkAuth", async (req, res) => {
+    const { token} = req.body;
 
   
     try {
@@ -65,10 +70,8 @@ if(BrokerList){
       const userEmail = user.email;
   
       // Find the user in the database using the email
-      User.findOneAndUpdate(
-        { email: userEmail }, // Find the user by email
-        { $push: { BrokerList } }, // Push the form data to the formData array
-        { new: true } // Return the updated document
+      User.findOne(
+        { email: userEmail }
       )
         .then((userData) => {
           res.json({ status: "ok", data: userData });
@@ -76,6 +79,49 @@ if(BrokerList){
         .catch((error) => {
           res.status(500).json({ status: "error", data: error });
         });
+    } catch (error) {
+      res.status(500).json({ status: "error", data: error });
+    }
+  });
+  
+  app.post("/userData", async (req, res) => {
+    
+    var isValidated=false;
+    const { token, BrokerList } = req.body;
+    
+  const obj={
+    broker_user_id : BrokerList.userId,
+    broker_user_password : BrokerList.password,
+    api_key : BrokerList.apiKey,
+    api_secret : BrokerList.secretKey,
+    totp_token : BrokerList.totp,
+    redirect_url : "http://localhost:8000",
+    broker_name: BrokerList.broker}
+    const response=await brokerValidator(obj)
+    if(response){isValidated=true}
+
+
+
+  
+    try {
+      // Verify the token and extract the user's email
+      const user = jwt.verify(token, JWT_SECRET);
+      const userEmail = user.email;
+      // Find the user in the database using the email
+      if(isValidated){
+        User.findOneAndUpdate(
+          { email: userEmail }, // Find the user by email
+          { $push: { BrokerList } }, // Push the form data to the formData array
+          { new: true } // Return the updated document
+        )
+          .then((userData) => {
+            console.log("updated")
+            res.json({ status: "ok", data: userData });
+          })
+          .catch((error) => {
+            res.status(500).json({ status: "error", data: error });
+          });
+      }
     } catch (error) {
       res.status(500).json({ status: "error", data: error });
     }
