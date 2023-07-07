@@ -5,6 +5,7 @@ import LoginForm from "./LoginForm";
 import UserDetails from "./UserDetails.jsx";
 import UserHome from "./UserHome";
 import HomePage from "./HomePage";
+import "./App.css"
 
 const App = () => {
   return (
