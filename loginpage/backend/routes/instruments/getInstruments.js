@@ -8,7 +8,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
 
-router.post("/getInstruments",(res,req)=>{
+router.post("/getInstruments",async (req,res)=>{
+
     
 // Read the file contents
 fs.readFile('./auth/zerodha_access_token.json', 'utf8', (err, data) => {
@@ -58,7 +59,7 @@ fs.readFile('./auth/zerodha_access_token.json', 'utf8', (err, data) => {
       // console.log(await kite.getLTP(["NSE:RELIANCE", "NSE:NIFTY 50"]))
       console.log("test",await kite.getInstruments(["NSE"]))
       const instruments=await kite.getInstruments(["NSE"])
-      res.json(instruments)
+      res.send(instruments)
   
   
   
@@ -69,6 +70,7 @@ fs.readFile('./auth/zerodha_access_token.json', 'utf8', (err, data) => {
     console.error('Error parsing JSON:', error);
   }
   });
+// res.send(instruments)
   
 })
 
