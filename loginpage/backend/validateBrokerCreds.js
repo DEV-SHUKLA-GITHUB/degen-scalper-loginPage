@@ -4,7 +4,7 @@ const fyers = require("fyers-api-v2")
 const KiteConnect = require("kiteconnect").KiteConnect;
 const crypto = require('crypto');
 const fs = require('fs');
-const zerodhaAccessTokenFilePath = './\\auth\\zerodha_access_token.txt';
+const zerodhaAccessTokenFilePath = './\\auth\\zerodha_access_token.json';
 const fyersAccessTokenFilePath = './\\backend\\auth\\fyers_access_token.txt';
 
 
@@ -76,7 +76,7 @@ const zerodhaLoginValidator = (brokerDetails) => {
 
                 fs.writeFile(zerodhaAccessTokenFilePath, JSON.stringify(credentials), (err) => {
                     if (err){ throw err;}
-                    console.log('Zerodha Access Token written to the file');
+                    console.log(credentials,'Zerodha Access Token written to the file');
                     
                 });            
                 console.log("Kite Instance Created Successfully");
