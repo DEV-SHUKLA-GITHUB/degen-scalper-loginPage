@@ -45,29 +45,30 @@ fs.readFile('./auth/zerodha_access_token.json', 'utf8', (err, data) => {
 
             //write http requests methods here
 
-          //   var ticker = new KiteTicker({api_key, access_token});
-          //   function onTicks(ticks) {
-          //     console.log("Ticks", ticks);
-          // }
+            var ticker = new KiteTicker({api_key, access_token});
+            function onTicks(ticks) {
+              console.log("Ticks", ticks);
+          }
           
-          // function subscribe() {
-          //     var items = [738561];
-          //     ticker.subscribe(items);
-          //     ticker.setMode(ticker.modeQuote, items);
-          // }
+          function subscribe() {
+              var items = [256265];
+              ticker.subscribe(items);
+              ticker.setMode(ticker.modeQuote, items);
+          }
         
-          //   ticker.connect();
-          //   ticker.on("connect", subscribe);
-          //   ticker.on("ticks", onTicks);
-          //   ticker.connect();
+            ticker.connect();
+            ticker.on("connect", subscribe);
+            ticker.on("ticks", onTicks);
+            ticker.connect();
             
-          //   ticker.on("connect", subscribe);
-          //   ticker.on("ticks", onTicks);
+            ticker.on("connect", subscribe);
+            ticker.on("ticks", onTicks);
             
-    // var ws = new WebSocket(`wss://ws.kite.trade?api_key=${api_key}&access_token=${access_token}`);
+    var ws = new WebSocket(`wss://ws.kite.trade?api_key=${api_key}&access_token=${access_token}`);
         // console.log(ws)
-    // console.log("test",await kite.getLTP(["NSE:RELIANCE", "NSE:SBIN"]))
-    console.log("test",await kite.getProfile())
+    console.log("test",await kite.getLTP(["NSE:RELIANCE", "NSE:NIFTY 50"]))
+    // console.log("test",await kite.getInstruments(["NSE"]))
+
 
 
     //here perform any kite operations
