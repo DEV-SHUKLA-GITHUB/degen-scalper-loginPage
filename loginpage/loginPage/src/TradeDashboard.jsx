@@ -7,7 +7,7 @@ const TradeDashboard = () => {
   const option = ['option1', 'option2', 'option3', 'option4'];
   const optionList = option.map((value) => ({ value, text: value }));
 
-  const [selectedOption1, setSelectedOption1] = useState(optionList[0]);
+  const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState(optionList[0]);
   const [selectedOption3, setSelectedOption3] = useState(optionList[0]);
   const [selectedOption4, setSelectedOption4] = useState(optionList[0]);
@@ -18,6 +18,57 @@ const TradeDashboard = () => {
   const [positions,setPositions] = useState(false)
   const [orderBook,setOrderBook] = useState(false)
   const [TradeBook,setTradeBook] = useState(false)
+  
+  const handleClick = () =>{
+    fetch("http://localhost:8000/instruments/getInstruments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: window.localStorage.getItem("token"),
+        email: window.localStorage.getItem("email"),
+        username: window.localStorage.getItem("username"),
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+    
+        data.forEach((instrument) => {
+          if (selectedOption1 === instrument.name) {
+            fetch("http://localhost:8000/instruments/getData", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({instrumentName:{selectedOption1},
+              token: window.localStorage.getItem("token"),
+              email: window.localStorage.getItem("email"),
+              username: window.localStorage.getItem("username"),
+            }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                // console.log(data[`NSE:${selectedOption1}`].last_price);
+                console.log(data);
+              });
+          }
+          else{
+            console.log("failed")
+          }
+        });
+    
+        return Promise.all(fetchPromises);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    
+  }
+  const handleChange = (e) =>{
+    setSelectedOption1(e.target.value)
+    console.log(selectedOption1)
+  }
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -32,20 +83,29 @@ const TradeDashboard = () => {
   const handleTradeBook = () =>{
     setTradeBook(true);
   }
-
+  
   return (
     <div>
       <h2>
         Broker: <span className="font-semibold">Zerodha(User: YTNN30)</span>
       </h2>
       <div className="flex p-2 m-2 justify-between">
-        <Dropdown
+        {/* <Dropdown
           label="select a option"
           heading="Select options"
           itemList={optionList}
           value={selectedOption1.value}
           onSelect={setSelectedOption1}
-        />
+        /> */}
+        <div className='flex-col'>
+        <label htmlFor="input">enter name</label><br />
+<div>
+<input onChange={handleChange} className=' w-auto border-2 border-black' type="text" />
+<button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
+        add
+      </button>
+  </div>        
+        </div>
         <div className="relative inline-block text-right">
           <label className="block text-sm text-start font-medium text-gray-700">
             start Date

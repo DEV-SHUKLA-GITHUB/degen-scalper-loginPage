@@ -23,6 +23,8 @@ let value;
   useEffect(() => {
     // Check if the user is logged in
     const token = window.localStorage.getItem("token");
+    const email =window.localStorage.getItem("email")
+    const username =window.localStorage.getItem("username")
     if (token) {
       // User is logged in, fetch user data
       fetch("http://localhost:8000/checkAuth", {
@@ -35,6 +37,8 @@ let value;
         },
         body: JSON.stringify({
           token: token,
+          email:email,
+          username:username
         }),
       })
         .then((res) => res.json())
@@ -95,6 +99,8 @@ let value;
       },
       body: JSON.stringify({
         token: window.localStorage.getItem("token"),
+        email: window.localStorage.getItem("email"),
+        username: window.localStorage.getItem("username"),
         BrokerList: formDataObj, // Send the form data string
       }),
     })
