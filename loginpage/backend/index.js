@@ -8,7 +8,7 @@ const userDataRouter=require("./routes/userData")
 const checkAuthRouter=require("./routes/checkAuth")
 const checkRouter=require("./routes/check")
 const generateTokenRouter=require("./routes/generateToken")
-const instruments=require("./routes/instruments/getInstruments")
+const instruments=require("./routes/instruments")
 
 const User = require("./models/userDetails"); // Import the user schema from userDetails.js
 app.use(express.json());
