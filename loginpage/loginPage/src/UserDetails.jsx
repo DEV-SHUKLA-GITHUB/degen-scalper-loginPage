@@ -11,6 +11,8 @@ export default function UserDetails() {
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [formData, setFormData] = useState([]);
+  const [showValue, setShowValue] = useState([]);
+
 let value;
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -21,6 +23,8 @@ let value;
   useEffect(() => {
     // Check if the user is logged in
     const token = window.localStorage.getItem("token");
+    const email =window.localStorage.getItem("email")
+    const username =window.localStorage.getItem("username")
     if (token) {
       // User is logged in, fetch user data
       fetch("http://localhost:8000/checkAuth", {
@@ -33,6 +37,8 @@ let value;
         },
         body: JSON.stringify({
           token: token,
+          email:email,
+          username:username
         }),
       })
         .then((res) => res.json())
@@ -93,6 +99,8 @@ let value;
       },
       body: JSON.stringify({
         token: window.localStorage.getItem("token"),
+        email: window.localStorage.getItem("email"),
+        username: window.localStorage.getItem("username"),
         BrokerList: formDataObj, // Send the form data string
       }),
     })
@@ -122,18 +130,27 @@ let value;
     window.location.href = "./login";
   };
   const handleShowData = () => {
+    // console.log(formData.data)
     // Iterate over the form data array and display each element
+    const formDisplayData = []
     formData.forEach((data, index) => {
-      
-      console.log(`Data ${index + 1}:`, data);
-      setShow(true)
-      show && (
-        <div>
-          {data}
+      console.log(data)
+      formDisplayData.push(
+        <div key={index}>
+          <p>{`Data ${index + 1}:`}</p>
+          <p>{`Username: ${data.username}`}</p>
+          <p>{`Password: ${data.password}`}</p>
+          <p>{`TOTP: ${data.totp}`}</p>
+          <p>{`User Id: ${data.userId}`}</p>
+          <p>{`API Key: ${data.apiKey}`}</p>
+          <p>{`Secret Key: ${data.secretKey}`}</p>
+          <p>{`Broker: ${data.broker}`}</p>
         </div>
-      )
-      // You can modify the code here to display the data on the page
+      );
     });
+  
+    // Update the showValue state with the display array
+    setShowValue(formDisplayData);
   };
 
   return (
@@ -196,11 +213,7 @@ let value;
       </form>
     )}
         <button onClick={handleShowData}>Show</button>
-            {show && 
-          (
-            <div>{value}</div>
-          )
-        }
+        {showValue}
     </div>
   );
 }

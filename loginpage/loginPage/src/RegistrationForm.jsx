@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import bg from "./assets/mainBg.mp4";
 
@@ -10,18 +10,22 @@ const RegistrationForm = () => {
     { label: "Username", value: "", error: "" },
   ]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(false);
+  const [isRegistrationSuccessful, setIsRegistrationSuccessful] =
+    useState(false);
   const [isEmailExists, setIsEmailExists] = useState(false);
   const [isUsernameExists, setIsUsernameExists] = useState(false);
   const [welcomeText, setWelcomeText] = useState("");
+  
+  // Ref for input fields
+  const inputRefs = useRef([]);
 
   useEffect(() => {
-    const text = "Weelcome to Degen Money";
+    const text = "Welcome to Degen Money";
     let index = 0;
     let timer;
 
     const animateText = () => {
-      if (index < text.length-1) {
+      if (index < text.length - 1) {
         setWelcomeText((prevText) => prevText + text[index]);
         index++;
       } else {
@@ -36,10 +40,20 @@ const RegistrationForm = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (currentStep < inputRefs.current.length) {
+      inputRefs.current[currentStep].focus();
+    }
+  }, [currentStep]);
+
   const handleInputChange = (e, index) => {
     const updatedFields = [...fields];
     updatedFields[index].value = e.target.value;
     setFields(updatedFields);
+
+    if (e.key === "Enter") {
+      handleContinue(e);
+    }
   };
 
   const validateForm = () => {
@@ -126,7 +140,7 @@ const RegistrationForm = () => {
   return (
     <div className="relative h-screen">
       <video
-        className="absolute top-0 left-0 w-full h-100% object-cover z-0"
+        className="absolute top-0 left-0 w-full h-screen object-cover z-0"
         src={bg}
         autoPlay
         loop
@@ -146,10 +160,10 @@ const RegistrationForm = () => {
                 style={{
                   textShadow: "0px 3px 4px rgba(36, 219, 16, 1)",
                   color: "white",
-                  fontFamily: 'Montserrat, sans-serif',
+                  fontFamily: "Montserrat, sans-serif",
                   fontWeight: "lighter",
                   width: "100%",
-                  fontSize: "18px"
+                  fontSize: "18px",
                 }}
               >
                 {welcomeText}
@@ -159,12 +173,17 @@ const RegistrationForm = () => {
                   return (
                     <div className="mb-6" key={index}>
                       <label className="block mb-2">{field.label}:</label>
+
                       <input
                         type={field.label === "email" ? "email" : "text"}
                         value={field.value}
                         onChange={(e) => handleInputChange(e, index)}
+                        onKeyDown={(e) => handleInputChange(e, index)}
+                        ref={(el) => (inputRefs.current[index] = el)}
                         className={`w-full h-8 p-2 bg-transparent border rounded-md text-white ${
-                          field.error ? "border-red-500 rounded" : "border-gray-400 rounded"
+                          field.error
+                            ? "border-red-500 rounded"
+                            : "border-gray-400 rounded"
                         }`}
                       />
                       {field.error && (
@@ -177,7 +196,9 @@ const RegistrationForm = () => {
                           onClick={handleContinue}
                           className="bg-transparent border text-white px-4 py-2 mt-4 rounded"
                         >
-                          {currentStep === fields.length - 1 ? "Submit" : "Continue"}
+                          {currentStep === fields.length - 1
+                            ? "Submit"
+                            : "Continue"}
                         </button>
                       )}
                     </div>
