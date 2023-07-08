@@ -8,6 +8,8 @@ const userDataRouter=require("./routes/userData")
 const checkAuthRouter=require("./routes/checkAuth")
 const checkRouter=require("./routes/check")
 const generateTokenRouter=require("./routes/generateToken")
+const instruments=require("./routes/instruments/getInstruments")
+
 const User = require("./models/userDetails"); // Import the user schema from userDetails.js
 app.use(express.json());
 const shortid = require("shortid"); 
@@ -40,6 +42,8 @@ mongoose
   app.use("/userData",userDataRouter)
   app.use("/check",checkRouter)
   app.use("/generateToken",generateTokenRouter)
+  app.use("/instruments",instruments)
+
   
 
 app.listen(8000, () => {
