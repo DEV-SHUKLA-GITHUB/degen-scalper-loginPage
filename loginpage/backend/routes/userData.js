@@ -20,27 +20,16 @@ router.post("/", async (req, res) => {
     totp_token : BrokerList.totp,
     redirect_url : "http://localhost:8000",
     broker_name: BrokerList.broker}
-    const response=await brokerValidator(obj)
-    isValidated=response.validCreds
-
+    
     try {
-      // Verify the token and extract the user's email
-      const user = jwt.verify(token, JWT_SECRET);
-      const userEmail = user.email;
+        // Verify the token and extract the user's email
+        const user = jwt.verify(token, JWT_SECRET);
+        const {email} = user;   
+        const response=await brokerValidator(BrokerList,obj,email)
+        isValidated=response.validCreds
       // Find the user in the database using the email
       if(isValidated){
-        User.findOneAndUpdate(
-          { email: userEmail }, // Find the user by email
-          { $push: { BrokerList } }, // Push the form data to the formData array
-          { new: true } // Return the updated document
-        )
-          .then((userData) => {
-            console.log("updated")
-            res.json({ status: "ok", data: userData });
-          })
-          .catch((error) => {
-            res.status(500).json({ status: "error", data: error });
-          });
+      res.json({ status: true}); 
       }
     } catch (error) {
       res.status(500).json({ status: "error", data: error });

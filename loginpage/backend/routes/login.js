@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
   
       // Send the token as a response
       console.log("loged in")
-      res.json({ status: "ok", data: token });
+      res.json({ status: "ok", token: token, data:user});
     } catch (error) {
       console.error("Login failed:", error);
       res.status(500).json({ error: "An error occurred during login" });

@@ -13,7 +13,7 @@ router.post("/",async (req,res)=>{
     if(!checkAuthResponse.status){
         res.status(500).json({ status: "error", msg: "jwt authintication failed" });
     }
-    const {BrokerList}=checkAuthResponsres.data[0]
+    const {BrokerList,email}=checkAuthResponsres.data[0]
 
     const obj={
         broker_user_id : BrokerList.userId,
@@ -31,7 +31,7 @@ router.post("/",async (req,res)=>{
     //     totp_token : "3AB43VM2VKOFAD6ZP5YJOBPU5PU5HYPV",
     //     redirect_url : "http://localhost:8000",
     //     broker_name: "Zerodha"}
-        const response=await brokerValidator(obj)
+        const response=await brokerValidator(BrokerList,obj,email)
         if(response.validCreds){
             res.send({status:true})
         }else{

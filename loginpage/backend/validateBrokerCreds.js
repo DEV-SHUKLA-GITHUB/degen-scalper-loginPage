@@ -4,6 +4,8 @@ const fyers = require("fyers-api-v2")
 const KiteConnect = require("kiteconnect").KiteConnect;
 const crypto = require('crypto');
 const fs = require('fs');
+const User = require("./models/userDetails"); // Import the user schema from userDetails.js
+
 const zerodhaAccessTokenFilePath = './\\auth\\zerodha_access_token.json';
 const fyersAccessTokenFilePath = './\\backend\\auth\\fyers_access_token.txt';
 
@@ -29,7 +31,7 @@ function withTimeout(func, timeout) {
 }
   
   
-const zerodhaLoginValidator = (brokerDetails) => {
+const zerodhaLoginValidator = (BrokerList,brokerDetails,email) => {
     return new Promise(async(resolve, reject) => {
         const user_id = brokerDetails.broker_user_id;
         const user_password = brokerDetails.broker_user_password;
@@ -74,11 +76,50 @@ const zerodhaLoginValidator = (brokerDetails) => {
                     access_token: accessToken.replace(/"/g, '')
                 };
 
-                fs.writeFile(zerodhaAccessTokenFilePath, JSON.stringify(credentials), (err) => {
-                    if (err){ throw err;}
-                    console.log(credentials,'Zerodha Access Token written to the file');
+                // saving in database
+        User.findOne({ email }).then((userData) => {
+         if(userData.BrokerList&&userData.BrokerList.userId==BrokerList.userId){
+            // update existing
+            User.findOneAndUpdate(
+                { email: userEmail, "BrokerList.broker": BrokerList.broker },
+                {
+                  $setOnInsert: {
+                    "BrokerList.$": { ...BrokerList, accessToken: credentials.access_token }
+                  }
+                },
+                { new: true, upsert: true }
+              )
+                .then((userData) => {
+                  console.log("Updated");
+                })
+                .catch((error) => {
+                  console.error(error);
+                  res.status(500).json({ status: "error", data: error });
+                });
+         }
+         else{
+            User.findOneAndUpdate(
+                { email: userEmail }, // Find the user by email
+                { $push: { BrokerList:{ ...BrokerList, accessToken: credentials.access_token } } }, // Push the form data to the formData array
+                { new: true } // Return the updated document
+              )
+                .then((userData) => {
+                  console.log("updated")
+                })
+                .catch((error) => {
+                  res.status(500).json({ status: "error", data: error });
+                });
+         }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+                // fs.writeFile(zerodhaAccessTokenFilePath, JSON.stringify(credentials), (err) => {
+                //     if (err){ throw err;}
+                //     console.log(credentials,'Zerodha Access Token written to the file');
                     
-                });            
+                // });            
                 console.log("Kite Instance Created Successfully");
                 if(accessToken)
                     resolve({"validCreds": true, "broker": kite});
