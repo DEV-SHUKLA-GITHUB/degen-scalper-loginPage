@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
 import bgVideo from "./assets/bgvideo.mp4";
 import bg from "./assets/logo.png";
 import "./login.css";
@@ -37,7 +36,8 @@ const Login = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "ok") {
-          window.localStorage.setItem("token", data.data);
+          window.localStorage.setItem("token", data.token);
+          window.localStorage.setItem("userdata", data.data);
           window.location.href = "./userDetails";
         } else {
           setError("Invalid email or password");
