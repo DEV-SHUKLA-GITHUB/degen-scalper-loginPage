@@ -110,7 +110,12 @@ mongoose
     redirect_url : "http://localhost:8000",
     broker_name: BrokerList.broker}
     const response=await brokerValidator(obj)
-    if(response){isValidated=true}
+
+    if(response.validCreds){isValidated=true}
+    else{
+      console.log("test")
+      res.send("invalid creds")
+    }
 
 
 
