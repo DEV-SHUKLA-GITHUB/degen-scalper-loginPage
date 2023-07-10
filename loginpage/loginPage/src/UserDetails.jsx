@@ -12,7 +12,7 @@ export default function UserDetails() {
   const [secretKey, setSecretKey] = useState("");
   const [formData, setFormData] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
-let value;
+
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
     setShowForm(true);
@@ -66,7 +66,7 @@ let value;
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
-  
+
     // Construct the form data object
     const formDataObj = {
       username: userData.Username,
@@ -77,7 +77,7 @@ let value;
       secretKey,
       broker: selectedOption, // Add the selected dropdown value
     };
-  
+
     // Create a new array with the existing form data and the new form data object
     const updatedFormData = [...formData, formDataObj];
 
@@ -99,8 +99,7 @@ let value;
     // Clear the show form flag
     setShowForm(false);
   };
-  
-  
+
   const handleLogout = () => {
     // Clear token from local storage
     window.localStorage.removeItem("token");
@@ -119,64 +118,164 @@ let value;
   };
 
   return (
-    <div>
-      <h2>{userData.email}</h2>
-      <h2>{userData.FullName}</h2>
-      <h2>{userData.Username}</h2>
-      <h2>{userData.password}</h2>
-      <div>
-        <label htmlFor="dropdown">Select a broker:</label>
-        <select id="dropdown" value={selectedOption} onChange={handleOptionChange}>
-          <option value="">-- Select --</option>
-          <option value="Zerodha">Zerodha</option>
-          <option value="fyers">fyers</option>
-          <option value="upstox">upstox</option>
-          <option value="angel one">Angel One</option>
-          <option value="Anand Money">Anand Money</option>
-        </select>
+    <div className="flex flex-col h-screen bg-black">
+      <div className="bg-black text-white py-4 px-6">
+        <h2 className="text-5xl">Hello, {userData.Username}</h2>
       </div>
-      <p>Selected Broker: {selectedOption}</p>
-      <br />
-      <br />
+      <div className="flex-1 flex items-center justify-center">
+        <div className="max-w-md mx-auto p-6">
+          <div className="mb-4">
+            <label
+              htmlFor="dropdown"
+              className="block mb-2 font-bold text-gray-400"
+            >
+              Select a broker:
+            </label>
+            <select
+              id="dropdown"
+              value={selectedOption}
+              onChange={handleOptionChange}
+              className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">-- Select --</option>
+              <option value="Zerodha">Zerodha</option>
+              <option value="fyers">fyers</option>
+              <option value="upstox">upstox</option>
+              <option value="angel one">Angel One</option>
+              <option value="Anand Money">Anand Money</option>
+            </select>
+          </div>
+          <p>Selected Broker: {selectedOption}</p>
 
-      <button onClick={handleLogout}>Logout</button>
-      <br /><br />
-      {showForm && (
-      <form onSubmit={handleSubmit}>
-        <h2>Additional Form</h2>
+          <div className="mt-8">
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 absolute top-0 right-0 mt-4 mr-4"
+            >
+              Logout
+            </button>
+          </div>
 
-        {/* Existing fields */}
+          {showForm && (
+            <form onSubmit={handleSubmit} className="mt-8">
+              <h2 className="mb-4 text-lg font-bold">Additional Form</h2>
 
-        <div>
-          <label htmlFor="user Id">User Id:</label>
-          <input type="text" id="userId" value={userId} onChange={(e) => setUserId(e.target.value)} />
+              {/* Existing fields */}
+
+              <div className="mb-4">
+                <label
+                  htmlFor="userId"
+                  className="block mb-2 font-bold text-gray-400"
+                >
+                  User Id:
+                </label>
+                <input
+                  type="text"
+                  id="userId"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="password"
+                  className="block mb-2 font-bold text-gray-400"
+                >
+                  Password:
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="totp"
+                  className="block mb-2 font-bold text-gray-400"
+                >
+                  TOTP:
+                </label>
+                <input
+                  type="text"
+                  id="totp"
+                  value={totp}
+                  onChange={(e) => setTotp(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="apiKey"
+                  className="```jsx
+                block mb-2 font-bold text-gray-400"
+                >
+                  API Key:
+                </label>
+                <input
+                  type="text"
+                  id="apiKey"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="secretKey"
+                  className="block mb-2 font-bold text-gray-400"
+                >
+                  Secret Key:
+                </label>
+                <input
+                  type="text"
+                  id="secretKey"
+                  value={secretKey}
+                  onChange={(e) => setSecretKey(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="bg-black text-white py-2 px-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                Submit
+              </button>
+            </form>
+          )}
+          {/* <button
+            onClick={handleShowData}
+            className="mt-8 bg-black text-white py-2 px-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Show
+          </button> */}
         </div>
-
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </div>
-
-        <div>
-          <label htmlFor="totp">TOTP:</label>
-          <input type="text" id="totp" value={totp} onChange={(e) => setTotp(e.target.value)} />
-        </div>
-
-        <div>
-          <label htmlFor="apiKey">API Key:</label>
-          <input type="text" id="apiKey" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
-        </div>
-
-        <div>
-          <label htmlFor="secretKey">Secret Key:</label>
-          <input type="text" id="secretKey" value={secretKey} onChange={(e) => setSecretKey(e.target.value)} />
-        </div>
-
-        <button type="submit">Submit</button>
-      </form>
-    )}
-        <button onClick={handleShowData}>Show</button>
-
+        {show && (
+          <div className="mt-8">
+            {/* Display the form data here */}
+            {formData.map((data, index) => (
+              <div key={index} className="mb-4 t">
+                <h2>Data {index + 1}:</h2>
+                <p>Username: {data.username}</p>
+                <p>Password: {data.password}</p>
+                <p>TOTP: {data.totp}</p>
+                <p>User Id: {data.userId}</p>
+                <p>API Key: {data.apiKey}</p>
+                <p>Secret Key: {data.secretKey}</p>
+                <p>Broker: {data.broker}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
