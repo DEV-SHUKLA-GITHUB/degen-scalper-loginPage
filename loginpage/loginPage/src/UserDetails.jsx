@@ -11,8 +11,7 @@ export default function UserDetails() {
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [formData, setFormData] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-
+let value;
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
     setShowForm(true);
@@ -23,6 +22,8 @@ export default function UserDetails() {
   useEffect(() => {
     // Check if the user is logged in
     const token = window.localStorage.getItem("token");
+    const email =window.localStorage.getItem("email")
+    const username =window.localStorage.getItem("username")
     if (token) {
       // User is logged in, fetch user data
       fetch("http://localhost:8000/checkAuth", {
@@ -35,6 +36,8 @@ export default function UserDetails() {
         },
         body: JSON.stringify({
           token: token,
+          email:email,
+          username:username
         }),
       })
         .then((res) => res.json())
@@ -80,24 +83,38 @@ export default function UserDetails() {
 
     // Create a new array with the existing form data and the new form data object
     const updatedFormData = [...formData, formDataObj];
-
-    // Create a new array with the existing selected options and the new selected option
-    const updatedSelectedOptions = [...selectedOptions, selectedOption];
-
-    // Update the state with the updated form data and selected options
-    setFormData(updatedFormData);
-    setSelectedOptions(updatedSelectedOptions);
-
-    // Reset the form fields
-    setSelectedOption("");
-    setPassword("");
-    setTotp("");
-    setUserId("");
-    setApiKey("");
-    setSecretKey("");
-
-    // Clear the show form flag
-    setShowForm(false);
+  
+    // Serialize the form data array as a string
+    const formDataString = JSON.stringify(updatedFormData, null, 2);
+  
+    // Send the updated form data string to the backend
+    fetch("http://localhost:8000/userData", {
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        token: window.localStorage.getItem("token"),
+        BrokerList: formDataObj, // Send the form data string
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          console.log("Form data updated successfully");
+          setFormData(updatedFormData); // Update the local state with the updated form data
+        } else {
+          console.error("Error updating form data:", data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating form data:", error);
+      });
+      setShowForm(false)
+      setShow(true)
   };
 
   const handleLogout = () => {
@@ -108,13 +125,23 @@ export default function UserDetails() {
   };
 
   const handleShowData = () => {
+    // console.log(formData.data)
     // Iterate over the form data array and display each element
+    const formDisplayData = []
     formData.forEach((data, index) => {
+      
       console.log(`Data ${index + 1}:`, data);
-      setShow(true);
-      show && <div>{data}</div>;
+      setShow(true)
+      show && (
+        <div>
+          {data}
+        </div>
+      )
       // You can modify the code here to display the data on the page
     });
+  
+    // Update the showValue state with the display array
+    setShowValue(formDisplayData);
   };
 
   return (
@@ -243,39 +270,17 @@ export default function UserDetails() {
                 />
               </div>
 
-              <button
-                type="submit"
-                className="bg-black text-white py-2 px-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                Submit
-              </button>
-            </form>
-          )}
-          {/* <button
-            onClick={handleShowData}
-            className="mt-8 bg-black text-white py-2 px-4 rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Show
-          </button> */}
-        </div>
-        {show && (
-          <div className="mt-8">
-            {/* Display the form data here */}
-            {formData.map((data, index) => (
-              <div key={index} className="mb-4 t">
-                <h2>Data {index + 1}:</h2>
-                <p>Username: {data.username}</p>
-                <p>Password: {data.password}</p>
-                <p>TOTP: {data.totp}</p>
-                <p>User Id: {data.userId}</p>
-                <p>API Key: {data.apiKey}</p>
-                <p>Secret Key: {data.secretKey}</p>
-                <p>Broker: {data.broker}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+        <button type="submit">Submit</button>
+
+
+      </form>
+    )}
+        <button onClick={handleShowData}>Show</button>
+            {show && 
+          (
+            <div>{value}</div>
+          )
+        }
     </div>
   );
 }

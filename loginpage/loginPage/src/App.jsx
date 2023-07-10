@@ -6,6 +6,7 @@ import UserDetails from "./UserDetails.jsx";
 import UserHome from "./UserHome";
 import HomePage from "./HomePage";
 import "./App.css"
+import TradeDashboard from "./TradeDashboard";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
           <Route path="/login" element={<LoginForm/>} />
           <Route path="/userDetails" element={<UserDetails/>} />
           <Route path="/userHome" element={<UserHome/>} />
+          <Route path="/tradeDashboard" element={<TradeDashboard/>} />
           <Route path="/" element={<HomePage/>} />
         </Routes>
       </div>
