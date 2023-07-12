@@ -8,22 +8,25 @@ const User = require("../models/userDetails"); // Import the user schema from us
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
-
+ 
 router.post("/getInstruments",async (req,res)=>{
+  const {email, username, token}=req.body
+  console.log("email",email)
   
   // Read the file contents
-  fs.readFile('./auth/zerodha_access_token.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading file:', err);
-      return;
-    }
+  // fs.readFile('./auth/zerodha_access_token.json', 'utf8', (err, data) => {
+  //   if (err) {
+  //     console.error('Error reading file:', err);
+  //     return;
+  //   }
     
    try {
      // Parse the JSON data
-     const jsonData = JSON.parse(data);
+    //  const jsonData = JSON.parse(data);
+    const jsonData=await User.findOne({email})
      
      // Extract the access token
-     const {access_token, api_key} = jsonData;
+    //  const {access_token, api_key} = jsonData.BrokerList.filter(broker=>broker.broker=="Zerodha");
      
      const a=async ()=>{
        // console.log("test",await kite.())
@@ -69,7 +72,7 @@ router.post("/getInstruments",async (req,res)=>{
   } catch (error) {
     console.error('Error parsing JSON:', error);
   }
-});
+// });
 // res.send(instruments)
 
 })
@@ -81,7 +84,8 @@ router.post("/getInstruments",async (req,res)=>{
 
 
 router.post("/getData",async (req,res)=>{
-  const {token, instrumentName}=req.body
+  const {token, instrumentName,email}=req.body
+  console.log(instrumentName)
   
   
   // Read the file contents
@@ -130,7 +134,7 @@ router.post("/getData",async (req,res)=>{
         // var ws = new WebSocket(`wss://ws.kite.trade?api_key=${api_key}&access_token=${access_token}`);
             // console.log(ws)
         console.log(await kite.getLTP(["NSE:NIFTY 50"]))
-        const quote=await kite.getLTP([`NSE:${instrumentName}`])
+        const quote=await kite.getLTP([`NSE:NIFTY 50`])
         console.log(`NSE:${instrumentName}`)
 
         res.send(quote)

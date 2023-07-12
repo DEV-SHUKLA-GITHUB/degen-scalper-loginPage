@@ -11,6 +11,7 @@ router.post("/", async (req, res) => {
     
     var isValidated=false;
     const { token, BrokerList } = req.body;
+    console.log(BrokerList)
     
   const obj={
     broker_user_id : BrokerList.userId,
@@ -32,6 +33,7 @@ router.post("/", async (req, res) => {
       res.json({ status: true}); 
       }
     } catch (error) {
+      // console.log("first")
       res.status(500).json({ status: "error", data: error });
     }
   });
