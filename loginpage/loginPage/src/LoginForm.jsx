@@ -36,7 +36,7 @@ const Login = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "ok") {
-          window.localStorage.setItem("token", data.token);
+          window.localStorage.setItem("token", data.data);
           window.localStorage.setItem("userdata", data.data);
           window.location.href = "./userDetails";
         } else {

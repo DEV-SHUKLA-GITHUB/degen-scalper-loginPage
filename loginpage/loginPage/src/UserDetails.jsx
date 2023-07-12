@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import DropdownButton from "./basic components/userDetailsDropDown";
 
 export default function UserDetails() {
   const [userData, setUserData] = useState("");
@@ -11,7 +12,9 @@ export default function UserDetails() {
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [formData, setFormData] = useState([]);
-let value;
+  const [welcomeText, setWelcomeText] = useState("");
+
+  let value;
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
     setShowForm(true);
@@ -22,8 +25,8 @@ let value;
   useEffect(() => {
     // Check if the user is logged in
     const token = window.localStorage.getItem("token");
-    const email =window.localStorage.getItem("email")
-    const username =window.localStorage.getItem("username")
+    const email = window.localStorage.getItem("email");
+    const username = window.localStorage.getItem("username");
     if (token) {
       // User is logged in, fetch user data
       fetch("http://localhost:8000/checkAuth", {
@@ -36,8 +39,8 @@ let value;
         },
         body: JSON.stringify({
           token: token,
-          email:email,
-          username:username
+          email: email,
+          username: username,
         }),
       })
         .then((res) => res.json())
@@ -59,6 +62,27 @@ let value;
       // User is not logged in, redirect to login
       window.location.href = "./login";
     }
+  }, []);
+
+  useEffect(() => {
+    const text = "Weelcome Deepak pandey";
+    let index = 0;
+    let timer;
+
+    const animateText = () => {
+      if (index < text.length - 1) {
+        setWelcomeText((prevText) => prevText + text[index]);
+        index++;
+      } else {
+        clearInterval(timer);
+      }
+    };
+
+    timer = setInterval(animateText, 50);
+
+    return () => {
+      clearInterval(timer);
+    };
   }, []);
 
   if (!isLoggedIn) {
@@ -83,10 +107,10 @@ let value;
 
     // Create a new array with the existing form data and the new form data object
     const updatedFormData = [...formData, formDataObj];
-  
+
     // Serialize the form data array as a string
     const formDataString = JSON.stringify(updatedFormData, null, 2);
-  
+
     // Send the updated form data string to the backend
     fetch("http://localhost:8000/userData", {
       method: "POST",
@@ -113,8 +137,8 @@ let value;
       .catch((error) => {
         console.error("Error updating form data:", error);
       });
-      setShowForm(false)
-      setShow(true)
+    setShowForm(false);
+    setShow(true);
   };
 
   const handleLogout = () => {
@@ -127,160 +151,231 @@ let value;
   const handleShowData = () => {
     // console.log(formData.data)
     // Iterate over the form data array and display each element
-    const formDisplayData = []
+    const formDisplayData = [];
     formData.forEach((data, index) => {
-      
       console.log(`Data ${index + 1}:`, data);
-      setShow(true)
-      show && (
-        <div>
-          {data}
-        </div>
-      )
+      setShow(true);
+      show && <div>{data}</div>;
       // You can modify the code here to display the data on the page
     });
-  
+
     // Update the showValue state with the display array
-    setShowValue(formDisplayData);
+    // setShowValue(formDisplayData);
   };
 
   return (
-    <div className="flex flex-col h-screen bg-black">
-      <div className="bg-black text-white py-4 px-6">
-        <h2 className="text-5xl">Hello, {userData.Username}</h2>
+    <div className="h-screen w-full bg-opacity-70 text-white m-0 ok">
+      <div className="w-full border-b-2 border-cyan-800  p-3 flex justify-between">
+        <h1 className="text-2xl text-cyan-300"> Degen Money</h1>
+        <button className="text-2xl text-cyan-300  p-2 " onClick={handleLogout}>Logout</button>
       </div>
-      <div className="flex-1 flex items-center justify-center">
-        <div className="max-w-md mx-auto p-6">
-          <div className="mb-4">
-            <label
-              htmlFor="dropdown"
-              className="block mb-2 font-bold text-gray-400"
-            >
-              Select a broker:
-            </label>
-            <select
-              id="dropdown"
-              value={selectedOption}
-              onChange={handleOptionChange}
-              className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">-- Select --</option>
-              <option value="Zerodha">Zerodha</option>
-              <option value="fyers">fyers</option>
-              <option value="upstox">upstox</option>
-              <option value="angel one">Angel One</option>
-              <option value="Anand Money">Anand Money</option>
-            </select>
-          </div>
-          <p>Selected Broker: {selectedOption}</p>
+      <div className=" flex w-full h-4/6">
+        <div className="border-r-2 border-cyan-800 w-1/4 flex items-center justify-center text-4xl text-cyan-300 capitalize">
+         {welcomeText}
+        </div>
 
-          <div className="mt-8">
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 absolute top-0 right-0 mt-4 mr-4"
-            >
-              Logout
-            </button>
-          </div>
+        <div className="m-3 w-3/4 flex flex-col items-center justify-center ">
+        <select
+  id="dropdown"
+  value={selectedOption}
+  onChange={handleOptionChange}
+disabled={showForm?true:false}
+  
+  className="text-white p-3 mb-8 bg-black border h-16 w-48 relative rounded-lg appearance-none focus:outline-none focus:border-cyan-300 transition-opacity duration-300"
+>
+  <option value="">Select Broker</option>
+  <option value="Zerodha" className="">Zerodha</option>
+  <option value="fyers" className="">fyers</option>
+  <option value="upstox" className="">upstox</option>
+  <option value="angel one" className="">Angel One</option>
+  <option value="Anand Money" className="">Anand Money</option>
+</select>
 
+
+          {/* <DropdownButton /> */}
           {showForm && (
-            <form onSubmit={handleSubmit} className="mt-8">
-              <h2 className="mb-4 text-lg font-bold">Additional Form</h2>
-
-              {/* Existing fields */}
-
-              <div className="mb-4">
-                <label
-                  htmlFor="userId"
-                  className="block mb-2 font-bold text-gray-400"
-                >
-                  User Id:
-                </label>
+            <form className="border-2 border-cyan-300  flex flex-col p-5 w-5/12  " onSubmit={handleSubmit}>
+              <div className="relative z-0 w-full mb-6 group">
                 <input
                   type="text"
-                  id="userId"
+                  name="floating_email"
+                  id="floating_email"
+                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-cyan-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <label
+                  for="floating_email"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-cyan-300 peer-focus:dark:text-cyan-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                 User Id
+                </label>
               </div>
 
-              <div className="mb-4">
-                <label
-                  htmlFor="password"
-                  className="block mb-2 font-bold text-gray-400"
-                >
-                  Password:
-                </label>
+              <div class="relative z-0 w-full mb-6 group">
                 <input
                   type="password"
-                  id="password"
+                  name="floating_password"
+                  id="floating_password"
+                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-cyan-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <label
+                  for="floating_password"
+                  class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-cyan-300 peer-focus:dark:text-cyan-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Password
+                </label>
               </div>
 
-              <div className="mb-4">
-                <label
-                  htmlFor="totp"
-                  className="block mb-2 font-bold text-gray-400"
-                >
-                  TOTP:
-                </label>
-                <input
-                  type="text"
-                  id="totp"
-                  value={totp}
-                  onChange={(e) => setTotp(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="apiKey"
-                  className="```jsx
-                block mb-2 font-bold text-gray-400"
-                >
-                  API Key:
-                </label>
+              <div class="relative z-0 w-full mb-6 group">
                 <input
                   type="text"
                   id="apiKey"
+                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-cyan-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  required
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <label
+                  for="apiKey"
+                  class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-cyan-300 peer-focus:dark:text-cyan-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  API Key :
+                </label>
               </div>
 
-              <div className="mb-4">
-                <label
-                  htmlFor="secretKey"
-                  className="block mb-2 font-bold text-gray-400"
-                >
-                  Secret Key:
-                </label>
+              <div class="relative z-0 w-full mb-6 group">
                 <input
                   type="text"
                   id="secretKey"
+                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-cyan-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  required
                   value={secretKey}
                   onChange={(e) => setSecretKey(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <label
+                  for="apiKey"
+                  class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-cyan-300 peer-focus:dark:text-cyan-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Secret Key :
+                </label>
+              </div>
+              <div class="relative z-0 w-full mb-6 group">
+                <input
+                  type="text"
+                  id="totp"
+                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-cyan-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  required
+                  value={totp}
+                  onChange={(e) => setTotp(e.target.value)}
+                />
+                <label
+                  for="totp"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-cyan-300 peer-focus:dark:text-cyan-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  totp :
+                </label>
               </div>
 
-        <button type="submit">Submit</button>
+              <button
+                type="submit"
+                onClick={handleShowData}
+                className="   text-black bg-cyan-300 hover:bg-cyan-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-cyan-300 dark:hover:bg-cyan-700 dark:focus:ring-cyan-600"
+              >
+                Submit
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+      <div className="h-content w-full h-">
+        
+<div className="relative overflow-x-auto shadow-md sm:rounded-lg m-auto x">
+    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 h-60">
+        <thead className="border-t border-cyan-800 bg-gray-800">
+            <tr>
+                <th scope="col" className="px-6 py-3">
+                   Broker name
+                </th>
+                <th scope="col" className="px-6 py-3">
+                    Date and Time
+                </th>
+                <th scope="col" className="px-6 py-3">
+                    Secret key
+                </th>
+                <th scope="col" className="px-6 py-3">
+                    totp
+                </th>
+                <th scope="col" className="px-6 py-3">
+                    <span class="sr-only"></span>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    Zerodha
+                </th>
+                <td class="px-6 py-4">
+                  22-07-23 18:23 IST
+                </td>
+                <td class="px-6 py-4">
+                 23456788***
+                </td>
+                <td class="px-6 py-4">
+                    2345
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <a href="#" class="text-red-600">Delete</a>
+                </td>
+            </tr>
+            <tr class=" hover:bg-gray-700">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    Fyres
+                </th>
+                <td class="px-6 py-4">
+                22-07-23 18:23 IST
+                </td>
+                <td class="px-6 py-4">
+                23456788***
+                </td>
+                <td class="px-6 py-4">
+                   3456
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <a href="#" class="font-medium text-red-600">Delete</a>
+                </td>
+            </tr>
+            <tr className="" >
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                   Upstox
+                </th>
+                <td class="px-6 py-4">
+                22-07-23 18:23 IST
+                </td>
+                <td class="px-6 py-4">
+                  32323233***
+                </td>
+                <td class="px-6 py-4">
+                  2345
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <a href="#" class="font-medium text-red-600">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-
-      </form>
-    )}
-        <button onClick={handleShowData}>Show</button>
-            {show && 
-          (
-            <div>{value}</div>
-          )
-        }
+      </div>
     </div>
   );
 }

@@ -17,7 +17,7 @@ export default function Dropdown(props) {
   };
 
   return (
-    <div className="relative max-w-sm">
+    <div className=" max-w-sm">
       <label className="block text-sm font-medium text-gray-700">{props.label}</label>
       <div className="relative inline-block text-right">
         <div>
