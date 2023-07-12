@@ -1,32 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const User = require("../models/userDetails"); // Import the user schema from userDetails.js
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
+const User = require("../models/userDetails");
+const { checkAuth } = require("../modules/auth");
 
 router.post("/", async (req, res) => {
-    const { token} = req.body;
+  const { token, username } = req.body;
+  console.log(checkAuth);
 
-  
-    try {
-      // Verify the token and extract the user's email
-      const user = jwt.verify(token, JWT_SECRET);
-      const userEmail = user.email;
-  
-      // Find the user in the database using the email
-      User.findOne(
-        { email: userEmail }
-      )
-        .then((userData) => {
-          res.json({ status: "ok", data: userData });
-        })
-        .catch((error) => {
-          res.status(500).json({ status: "error", data: error });
-        });
-    } catch (error) {
-      res.status(500).json({ status: "error", data: error });
-    }
-  });
-  
-  module.exports=router;
+  const checkAuthResponse = await checkAuth(token);
+  if (!checkAuthResponse.status) {
+    res.status(500).json({ status: "error", msg: "JWT authentication failed" });
+  }
+
+  const data = checkAuthResponse.data;
+  res.json({ status: "ok", data });
+});
+
+module.exports = router;
