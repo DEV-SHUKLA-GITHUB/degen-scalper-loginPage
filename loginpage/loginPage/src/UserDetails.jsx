@@ -20,45 +20,47 @@ let value;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check if the user is logged in
-    const token = window.localStorage.getItem("token");
-    const email =window.localStorage.getItem("email")
-    const username =window.localStorage.getItem("username")
-    if (token) {
-      // User is logged in, fetch user data
-      fetch("http://localhost:8000/checkAuth", {
-        method: "POST",
-        crossDomain: true,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({
-          token: token,
-          email:email,
-          username:username
-        }),
+  // Check if the user is logged in
+  const token = window.localStorage.getItem("token");
+  const email =window.localStorage.getItem("email")
+  const username =window.localStorage.getItem("username")
+  if (token) {
+    // User is logged in, fetch user data
+    fetch("http://localhost:8000/checkAuth", {
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        token: token,
+        email:email,
+        username:username
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          // User data fetched successfully
+          setUserData(data.data);
+          setIsLoggedIn(true);
+        } else {
+          // Token expired or invalid, clear localStorage and redirect to login
+          window.localStorage.clear();
+          window.location.href = "./sign-in";
+          window.location.href = "./sign-in";
+        }
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === "ok") {
-            // User data fetched successfully
-            setUserData(data.data);
-            setIsLoggedIn(true);
-          } else {
-            // Token expired or invalid, clear localStorage and redirect to login
-            window.localStorage.clear();
-            window.location.href = "./sign-in";
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
-    } else {
-      // User is not logged in, redirect to login
-      window.location.href = "./login";
-    }
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  } else {
+    // User is not logged in, redirect to login
+    window.location.href = "./login";
+    window.location.href = "./login";
+  }
   }, []);
 
   if (!isLoggedIn) {
