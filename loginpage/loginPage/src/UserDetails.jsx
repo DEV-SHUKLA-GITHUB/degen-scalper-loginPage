@@ -282,5 +282,7 @@ let value;
           )
         }
     </div>
+    </div>
+    </div>
   );
 }
