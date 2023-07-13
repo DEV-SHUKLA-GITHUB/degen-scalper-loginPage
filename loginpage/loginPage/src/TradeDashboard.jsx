@@ -20,6 +20,7 @@ const TradeDashboard = () => {
   const [TradeBook,setTradeBook] = useState(false)
   
   const handleClick = () =>{
+    console.log(window.localStorage.getItem("email"))
     fetch("http://localhost:8000/instruments/getInstruments", {
       method: "POST",
       headers: {
@@ -41,7 +42,7 @@ const TradeDashboard = () => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({instrumentName:{selectedOption1},
+              body: JSON.stringify({instrumentName:"NSE:NIFTY 50",
               token: window.localStorage.getItem("token"),
               email: window.localStorage.getItem("email"),
               username: window.localStorage.getItem("username"),

@@ -147,10 +147,10 @@ a()
       console.error('Error parsing JSON:', error);
     }
     // Example: Send tick data to the connected client
-    setInterval(() => {
-      const ticks = generateTickData(); // Replace this with your own method to fetch or generate tick data
-      ws.send(JSON.stringify(ticks));
-    }, 1000);
+    // setInterval(() => {
+    //   const ticks = generateTickData(); // Replace this with your own method to fetch or generate tick data
+    //   ws.send(JSON.stringify(ticks));
+    // }, 1000);
   });
 
   ws.on('close', () => {
