@@ -9,11 +9,11 @@ const {checkAuth}=require("../modules/auth")
 
 router.post("/",async (req,res)=>{
     const {token, username}=req.body
-    const checkAuthResponsres=checkAuth(token)
+    const checkAuthResponse=checkAuth(token)
     if(!checkAuthResponse.status){
         res.status(500).json({ status: "error", msg: "jwt authintication failed" });
     }
-    const userData=checkAuthResponsres.data
+    const userData=checkAuthResponse.data
     var BrokerList={}
     for (const broker of userData.BrokerList) {
         if (broker.broker === BrokerList.broker) {
