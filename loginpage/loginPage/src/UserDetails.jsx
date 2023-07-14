@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DropdownButton from "./basic components/userDetailsDropDown";
+import Typewriter from "typewriter-effect";
 
 export default function UserDetails() {
   const [userData, setUserData] = useState("");
@@ -12,7 +13,7 @@ export default function UserDetails() {
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [formData, setFormData] = useState([]);
-  const [welcomeText, setWelcomeText] = useState("");
+
 
   let value;
   const handleOptionChange = (e) => {
@@ -63,27 +64,8 @@ export default function UserDetails() {
       window.location.href = "./login";
     }
   }, []);
+  console.log(userData)
 
-  useEffect(() => {
-    const text = "Weelcome Deepak pandey";
-    let index = 0;
-    let timer;
-
-    const animateText = () => {
-      if (index < text.length - 1) {
-        setWelcomeText((prevText) => prevText + text[index]);
-        index++;
-      } else {
-        clearInterval(timer);
-      }
-    };
-
-    timer = setInterval(animateText, 50);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
 
   if (!isLoggedIn) {
     // Render a loading state or redirect to login
@@ -167,34 +149,61 @@ export default function UserDetails() {
     <div className="h-screen w-full bg-opacity-70 text-white m-0 ok">
       <div className="w-full border-b-2 border-cyan-800  p-3 flex justify-between">
         <h1 className="text-2xl text-cyan-300"> Degen Money</h1>
-        <button className="text-2xl text-cyan-300  p-2 " onClick={handleLogout}>Logout</button>
+        <button className="text-2xl text-cyan-300  p-2 " onClick={handleLogout}>
+          Logout
+        </button>
       </div>
       <div className=" flex w-full h-4/6">
-        <div className="border-r-2 border-cyan-800 w-1/4 flex items-center justify-center text-4xl text-cyan-300 capitalize">
-         {welcomeText}
+        <div   className="border-r-2 font-thin  border-cyan-800 w-1/4 flex items-center justify-center text-4xl text-cyan-300 capitalize">
+          <Typewriter
+            onInit={(typewriter) => {
+              typewriter
+            
+                .typeString( ` Welcome ${userData.FullName}`)
+                .callFunction(() => {
+                  console.log("String typed out!");
+                }) 
+                
+                
+                
+                .start();
+                
+            }}
+           />
         </div>
 
         <div className="m-3 w-3/4 flex flex-col items-center justify-center ">
-        <select
-  id="dropdown"
-  value={selectedOption}
-  onChange={handleOptionChange}
-disabled={showForm?true:false}
-  
-  className="text-white p-3 mb-8 bg-black border h-16 w-48 relative rounded-lg appearance-none focus:outline-none focus:border-cyan-300 transition-opacity duration-300"
->
-  <option value="">Select Broker</option>
-  <option value="Zerodha" className="">Zerodha</option>
-  <option value="fyers" className="">fyers</option>
-  <option value="upstox" className="">upstox</option>
-  <option value="angel one" className="">Angel One</option>
-  <option value="Anand Money" className="">Anand Money</option>
-</select>
-
+          <select
+            id="dropdown"
+            value={selectedOption}
+            onChange={handleOptionChange}
+            disabled={showForm ? true : false}
+            className="text-white p-3 mb-8 bg-black border h-16 w-48 relative rounded-lg appearance-none focus:outline-none focus:border-cyan-300 transition-opacity duration-300"
+          >
+            <option value="">Select Broker</option>
+            <option value="Zerodha" className="">
+              Zerodha
+            </option>
+            <option value="fyers" className="">
+              fyers
+            </option>
+            <option value="upstox" className="">
+              upstox
+            </option>
+            <option value="angel one" className="">
+              Angel One
+            </option>
+            <option value="Anand Money" className="">
+              Anand Money
+            </option>
+          </select>
 
           {/* <DropdownButton /> */}
           {showForm && (
-            <form className="border-2 border-cyan-300  flex flex-col p-5 w-5/12  " onSubmit={handleSubmit}>
+            <form
+              className="border-2 border-cyan-300  flex flex-col p-5 w-5/12  "
+              onSubmit={handleSubmit}
+            >
               <div className="relative z-0 w-full mb-6 group">
                 <input
                   type="text"
@@ -209,7 +218,7 @@ disabled={showForm?true:false}
                   for="floating_email"
                   className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-cyan-300 peer-focus:dark:text-cyan-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                 >
-                 User Id
+                  User Id
                 </label>
               </div>
 
@@ -297,84 +306,79 @@ disabled={showForm?true:false}
         </div>
       </div>
       <div className="h-content w-full h-">
-        
-<div className="relative overflow-x-auto shadow-md sm:rounded-lg m-auto x">
-    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 h-60">
-        <thead className="border-t border-cyan-800 bg-gray-800">
-            <tr>
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg m-auto x">
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 h-60">
+            <thead className="border-t border-cyan-800 bg-gray-800">
+              <tr>
                 <th scope="col" className="px-6 py-3">
-                   Broker name
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    Date and Time
+                  Broker name
                 </th>
                 <th scope="col" className="px-6 py-3">
-                    Secret key
+                  Date and Time
                 </th>
                 <th scope="col" className="px-6 py-3">
-                    totp
+                  Secret key
                 </th>
                 <th scope="col" className="px-6 py-3">
-                    <span class="sr-only"></span>
+                  totp
                 </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="">
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    Zerodha
+                <th scope="col" className="px-6 py-3">
+                  <span class="sr-only"></span>
                 </th>
-                <td class="px-6 py-4">
-                  22-07-23 18:23 IST
-                </td>
-                <td class="px-6 py-4">
-                 23456788***
-                </td>
-                <td class="px-6 py-4">
-                    2345
-                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="">
+                <th
+                  scope="row"
+                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Zerodha
+                </th>
+                <td class="px-6 py-4">22-07-23 18:23 IST</td>
+                <td class="px-6 py-4">23456788***</td>
+                <td class="px-6 py-4">2345</td>
                 <td class="px-6 py-4 text-right">
-                    <a href="#" class="text-red-600">Delete</a>
+                  <a href="#" class="text-red-600">
+                    Delete
+                  </a>
                 </td>
-            </tr>
-            <tr class=" hover:bg-gray-700">
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    Fyres
+              </tr>
+              <tr class=" hover:bg-gray-700">
+                <th
+                  scope="row"
+                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Fyres
                 </th>
-                <td class="px-6 py-4">
-                22-07-23 18:23 IST
-                </td>
-                <td class="px-6 py-4">
-                23456788***
-                </td>
-                <td class="px-6 py-4">
-                   3456
-                </td>
+                <td class="px-6 py-4">22-07-23 18:23 IST</td>
+                <td class="px-6 py-4">23456788***</td>
+                <td class="px-6 py-4">3456</td>
                 <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-red-600">Delete</a>
+                  <a href="#" class="font-medium text-red-600">
+                    Delete
+                  </a>
                 </td>
-            </tr>
-            <tr className="" >
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                   Upstox
+              </tr>
+              <tr className="">
+                <th
+                  scope="row"
+                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Upstox
                 </th>
-                <td class="px-6 py-4">
-                22-07-23 18:23 IST
-                </td>
-                <td class="px-6 py-4">
-                  32323233***
-                </td>
-                <td class="px-6 py-4">
-                  2345
-                </td>
+                <td class="px-6 py-4">22-07-23 18:23 IST</td>
+                <td class="px-6 py-4">32323233***</td>
+                <td class="px-6 py-4">2345</td>
                 <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-red-600">Delete</a>
+                  <a href="#" class="font-medium text-red-600">
+                    Delete
+                  </a>
                 </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
