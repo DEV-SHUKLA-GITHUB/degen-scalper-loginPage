@@ -1,16 +1,36 @@
 import React, { useState,useEffect } from 'react';
-import Dropdown from './basic components/dropdown';
+import Dropdown from './basic components/Dropdown';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomCombobox from './basic components/AutoCompleteInput';
 
 const TradeDashboard = () => {
+
+  const socket = new WebSocket('ws://localhost:7000/instruments');
+  
+  socket.onopen = () => {
+    console.log('WebSocket connected');
+
+
+  };
+
+  socket.onmessage = (event) => {
+    const ticks = JSON.parse(event.data);
+    console.log('Received ticks:', ticks[0].last_price);
+    setSelectedOption2(ticks[0].last_price)
+
+    // Handle the received tick data in the frontend as per your requirements
+  };
+
+  socket.onclose = () => {
+    console.log('WebSocket disconnected');
+  };
   
 
   const option = ['option1', 'option2', 'option3', 'option4'];
   const optionList = option.map((value) => ({ value, text: value }));
   const [selectedOption1, setSelectedOption1] = useState();
-  const [selectedOption2, setSelectedOption2] = useState(optionList[0]);
+  const [selectedOption2, setSelectedOption2] = useState();
   const [selectedOption3, setSelectedOption3] = useState(optionList[0]);
   const [selectedOption4, setSelectedOption4] = useState(optionList[0]);
   const [selectedOption5, setSelectedOption5] = useState(optionList[0]);
@@ -39,6 +59,20 @@ const TradeDashboard = () => {
     // You can now access the selected option and perform any necessary actions
     console.log("Selected Option:", selected);
   };
+
+  useEffect(() => {
+  const socket = new WebSocket('ws://localhost:7000/instruments');
+
+    
+
+    return () => {
+      // Clean up the WebSocket connection when the component unmounts
+      socket.close();
+    };
+  }, []);
+
+
+
   
   const handleClick = () =>{
     console.log(window.localStorage.getItem("email"))
@@ -49,7 +83,7 @@ const TradeDashboard = () => {
       },
       body: JSON.stringify({
         token: window.localStorage.getItem("token"),
-        email: window.localStorage.getItem("email"),
+        email: "b@gmail.com",
         username: window.localStorage.getItem("username"),
       }),
     })
@@ -57,25 +91,36 @@ const TradeDashboard = () => {
       .then((data) => {
         data.forEach((instrument) => {
           if (selectedOption1 === instrument.name) {
-            fetch("http://localhost:8000/instruments/getData", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({instrumentName:"NSE:NIFTY 50",
+            // fetch("http://localhost:8000/instruments/getData", {
+            //   method: "POST",
+            //   headers: {
+            //     "Content-Type": "application/json",
+            //   },
+            //   body: JSON.stringify({instrumentName:"NSE:NIFTY 50",
+            //   token: window.localStorage.getItem("token"),
+            //   email: window.localStorage.getItem("email"),
+            //   username: window.localStorage.getItem("username"),
+            // }),
+            // })
+            //   .then((res) => res.json())
+            //   .then((data) => {
+            //     console.log(data);
+            //     console.log(window.localStorage.getItem("email"))
+            //   })
+            //   .catch((error) => {
+            //     console.error("Error:", error);
+            //   });
+
+
+            const initialData = {
               token: window.localStorage.getItem("token"),
-              email: window.localStorage.getItem("email"),
-              username: window.localStorage.getItem("username"),
-            }),
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                console.log(data);
-                console.log(window.localStorage.getItem("email"))
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-              });
+              instrumentToken: '256265',
+              email: "b@gmail.com",
+            };
+      
+            socket.send(JSON.stringify(initialData));
+
+
           } else {
             console.log("failed");
           }
@@ -298,7 +343,7 @@ const TradeDashboard = () => {
       </div>
       <div className='mt-2 ml-4 mr-4 flex justify-between'>
         <h3>LTP: 279.3</h3>
-        <h3>LTP: 327982.87 <span className='text-red-500'>(-484983/0,49%)</span></h3>
+        <h3>LTP: {selectedOption2}</h3>
         <h3>279.3 :LTP</h3>
       </div>
       <div className='mt-4 mr-4 flex justify-between'>
