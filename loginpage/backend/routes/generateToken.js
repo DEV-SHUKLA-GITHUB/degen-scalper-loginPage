@@ -8,7 +8,7 @@ const brokerValidator = require("../validateBrokerCreds")
 const {checkAuth}=require("../modules/auth")
 
 router.post("/",async (req,res)=>{
-    const {token, username}=req.body
+    const {token}=req.body
     const checkAuthResponsres=checkAuth(token)
     if(!checkAuthResponse.status){
         res.status(500).json({ status: "error", msg: "jwt authintication failed" });
