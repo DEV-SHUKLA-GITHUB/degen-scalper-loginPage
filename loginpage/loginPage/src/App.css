@@ -3,5 +3,8 @@
 
 .ok{
     background-image: url("./assets/dashbg.png");
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover
    
 }

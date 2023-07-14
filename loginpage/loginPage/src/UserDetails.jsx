@@ -201,7 +201,7 @@ export default function UserDetails() {
           {/* <DropdownButton /> */}
           {showForm && (
             <form
-              className="border-2 border-cyan-300  flex flex-col p-5 w-5/12  "
+              className="border-2 border-cyan-300  flex flex-col p-5 w-1/2"
               onSubmit={handleSubmit}
             >
               <div className="relative z-0 w-full mb-6 group">
@@ -305,10 +305,10 @@ export default function UserDetails() {
           )}
         </div>
       </div>
-      <div className="h-content w-full h-">
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg m-auto x">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 h-60">
-            <thead className="border-t border-cyan-800 bg-gray-800">
+      <div className="h-content w-full ">
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg m-auto ">
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400  ">
+            <thead className="border-t border-cyan-800 bg-gray-800 ">
               <tr>
                 <th scope="col" className="px-6 py-3">
                   Broker name
