@@ -8,15 +8,20 @@ const brokerValidator = require("../validateBrokerCreds")
 const {checkAuth}=require("../modules/auth")
 
 router.post("/",async (req,res)=>{
-    const {token}=req.body
-    const checkAuthResponsres=checkAuth(token)
+    const {token, brokerName }=req.body
+    // console.log(token)
+    const checkAuthResponse=await checkAuth(token)
+    // console.log(checkAuthResponse)
     if(!checkAuthResponse.status){
         res.status(500).json({ status: "error", msg: "jwt authintication failed" });
     }
-    const userData=checkAuthResponsres.data
+    const userData=checkAuthResponse.data
+    console.log(userData)
     var BrokerList={}
     for (const broker of userData.BrokerList) {
-        if (broker.broker === BrokerList.broker) {
+        // console.log(broker, userData.BrokerList.broker)
+        if (broker.broker === brokerName) {
+            console.log("broker",broker)
             BrokerList=broker
         }}
     const obj={

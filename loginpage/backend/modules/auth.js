@@ -11,13 +11,13 @@ function checkAuth(token) {
 
       User.findOne({ email: userEmail })
         .then((userData) => {
-          resolve({ status: "ok", data: userData });
+          resolve({ status: true, data: userData });
         })
         .catch((error) => {
-          reject({ status: "error", data: error });
+          reject({ status: false, data: error });
         });
     } catch (error) {
-      reject({ status: "error", data: error });
+      reject({ status: false, data: error });
     }
   });
 }
