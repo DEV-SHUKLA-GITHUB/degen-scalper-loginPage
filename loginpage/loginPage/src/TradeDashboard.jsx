@@ -47,7 +47,7 @@ const TradeDashboard = () => {
   const [query, setQuery] = useState("");
   const options = [
     { id: 1, name: "NIFTY 50" },
-    { id: 2, name: "Reliance" },
+    { id: 2, name: "option 2" },
     { id: 3, name: "option 3" },
     // Add more options as needed
   ];
@@ -277,36 +277,13 @@ const TradeDashboard = () => {
       </button>
 </div>
         </div>
-        <div className="relative inline-block text-right">
-          <label className="block text-sm text-start font-medium text-gray-700">
-            start Date
-          </label>
-          <div>
-            <div className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                className="text-gray-900 text-sm font-semibold bg-white focus:outline-none"
-                placeholderText="Select date"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="relative inline-block text-right">
-          <label className="block text-sm text-start font-medium text-gray-700">
-            Expiry Date
-          </label>
-          <div>
-            <div className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                className="text-gray-900 text-sm font-semibold bg-white focus:outline-none"
-                placeholderText="Select date"
-              />
-            </div>
-          </div>
-        </div>
+        <Dropdown
+          label="Expiry date"
+          heading="Select options"
+          itemList={optionList}
+          value={selectedOption3.value}
+          onSelect={setSelectedOption3}
+        />
         <Dropdown
           label="call strike price"
           heading="Select options"

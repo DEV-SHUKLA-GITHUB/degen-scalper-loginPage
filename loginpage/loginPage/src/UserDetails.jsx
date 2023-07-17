@@ -4,6 +4,16 @@ import Typewriter from "typewriter-effect";
 
 export default function UserDetails() {
   const [userData, setUserData] = useState("");
+  const [mainData,setMainData] = useState( {
+    username: "",
+    password:"",
+    totp:"",
+    userId:"",
+    apiKey:"",
+    secretKey:"",
+    broker: "" // Add the selected dropdown value
+  });
+  const [updatedMainData,setUpdatedMainData] = useState(JSON.parse(window.localStorage.getItem("userdata")).BrokerList);
   const [selectedOption, setSelectedOption] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [show, setShow] = useState(false);
@@ -14,8 +24,8 @@ export default function UserDetails() {
   const [secretKey, setSecretKey] = useState("");
   const [formData, setFormData] = useState([]);
 
- const data = JSON.parse(window.localStorage.getItem("userdata")).BrokerList
- console.log(data)
+ 
+//  console.log(data)
   let value;
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -28,6 +38,7 @@ export default function UserDetails() {
     // Check if the user is logged in
     const token = window.localStorage.getItem("token");
     const email = window.localStorage.getItem("email");
+    console.log(email,"email")
     const username = window.localStorage.getItem("username");
     if (token) {
       // User is logged in, fetch user data
@@ -87,34 +98,44 @@ export default function UserDetails() {
       secretKey,
       broker: selectedOption, // Add the selected dropdown value
     };
-
+    // setMainData(formDataObj)
     // Create a new array with the existing form data and the new form data object
-    const updatedFormData = [...formData, formDataObj];
 
-    // Serialize the form data array as a string
-    const formDataString = JSON.stringify(updatedFormData, null, 2);
-
-    // Send the updated form data string to the backend
-    fetch("http://localhost:8000/userData", {
-      method: "POST",
-      crossDomain: true,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        token: window.localStorage.getItem("token"),
-        BrokerList: formDataObj, // Send the form data string
-      }),
-    })
+      
+      // Serialize the form data array as a string
+      // const formDataString = JSON.stringify(updatedMainData, null, 2);
+      
+      // Send the updated form data string to the backend
+      fetch("http://localhost:8000/userData", {
+        method: "POST",
+        crossDomain: true,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          token: window.localStorage.getItem("token"),
+          BrokerList: formDataObj, // Send the form data string
+        }),
+      })
       .then((res) => res.json())
       .then((data) => {
-        if (data.status === "ok") {
+        if (data.status) {
+          
+          // setUpdatedMainData(prev=>[...prev, formDataObj])
+          setUpdatedMainData(prev => {
+            if (!Array.isArray(prev)) {
+              return [formDataObj]; // Set prev to an empty array if it's not already an array
+            }
+          
+            return [...prev, formDataObj];
+          });
           console.log("Form data updated successfully");
-          setFormData(updatedFormData); // Update the local state with the updated form data
+          // console.log(mainData)
+          // setFormData(updatedMainData); // Update the local state with the updated form data
         } else {
-          console.error("Error updating form data:", data.data);
+          console.error("Error updating form data inside:", data.data);
         }
       })
       .catch((error) => {
@@ -156,20 +177,21 @@ export default function UserDetails() {
     
   }
 
-  const handleShowData = () => {
-    // console.log(formData.data)
-    // Iterate over the form data array and display each element
-    const formDisplayData = [];
-    formData.forEach((data, index) => {
-      console.log(`Data ${index + 1}:`, data);
-      setShow(true);
-      show && <div>{data}</div>;
-      // You can modify the code here to display the data on the page
-    });
+  // const handleShowData = () => {
+  //   // console.log(formData.data)
+  //   // Iterate over the form data array and display each element
+  //   const formDisplayData = [];
+  //   updatedMainData.forEach((data, index) => {
+  //     console.log(data,"handleShowData")
+  //     console.log(`Data ${index + 1}:`, data);
+  //     setShow(true);
+  //     show && <div>{data}</div>;
+  //     // You can modify the code here to display the data on the page
+  //   });
 
-    // Update the showValue state with the display array
-    // setShowValue(formDisplayData);
-  };
+  //   // Update the showValue state with the display array
+  //   // setShowValue(formDisplayData);
+  // };
 
   return (
     <div className="h-screen w-full bg-opacity-70 text-white m-0 ok">
@@ -187,7 +209,7 @@ export default function UserDetails() {
             
                 .typeString( ` Welcome ${userData.FullName}`)
                 .callFunction(() => {
-                  console.log("String typed out!");
+                  // console.log("String typed out!");
                 }) 
                 
                 
@@ -322,7 +344,7 @@ export default function UserDetails() {
 
               <button
                 type="submit"
-                onClick={handleShowData}
+                // onClick={handleShowData}
                 className="   text-black bg-cyan-300 hover:bg-cyan-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-cyan-300 dark:hover:bg-cyan-700 dark:focus:ring-cyan-600"
               >
                 Submit
@@ -355,23 +377,33 @@ export default function UserDetails() {
             </thead>
             <tbody>
 {
-  data && data.map((item)=>(
-    <tr class="">
-    <th
-      scope="row"
-      class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-    >
-      {item.broker}
-    </th>
-    <td class="px-6 py-4">{item.totp}</td>
-    <td class="px-6 py-4">{item.secretKey}</td>
-    <td class="px-6 py-4 text-right">
-      <button className="text-red-600" onClick={()=>{handleButtonClick(item.broker)}}>
-        Generate Token
-      </button>
-    </td>
-  </tr>
-  ))
+  updatedMainData && updatedMainData.map((item)=>{
+  console.log(updatedMainData,"updatedMainData");
+  console.log(mainData,"maindata")
+    console.log(item,"item")
+    return(
+      <tr class="">
+      <th
+        scope="row"
+        class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+      >
+        {item.broker}
+      </th>
+      <td class="px-6 py-4">{item.totp}</td>
+      <td class="px-6 py-4">{item.secretKey}</td>
+      <td class="px-6 py-4 text-right">
+        <button className="text-red-600" onClick={()=>{handleButtonClick(item.broker)}}>
+          Generate Token
+        </button>
+      </td>
+      <td class="px-6 py-4 text-right">
+        <button className="text-red-600" onClick={()=>{window.location.href = "./tradeDashboard";}}>
+          Trade Now
+        </button>
+      </td>
+    </tr>
+    )
+  })
 }
               {/* <tr class="">
                 <th

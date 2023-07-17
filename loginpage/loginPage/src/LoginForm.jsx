@@ -38,6 +38,7 @@ const Login = () => {
         console.log(data.data)
         if (data.status === "ok") {
           window.localStorage.setItem("token", data.token);
+          window.localStorage.setItem("email", data.email);
           window.localStorage.setItem("userdata", JSON.stringify(data.data));
           window.location.href = "./userDetails";
         } else {
