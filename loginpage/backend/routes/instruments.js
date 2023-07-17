@@ -12,7 +12,8 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
  
 router.post("/getInstruments",async (req,res)=>{
-  const {email, username, token}=req.body
+  const {selected, token}=req.body
+  // console.log(selected)
     
     try {
       const user = jwt.verify(token, JWT_SECRET);
@@ -36,7 +37,7 @@ router.post("/getInstruments",async (req,res)=>{
     //here perform any kite operations
     const instruments = await kite.getInstruments(["NFO"]);
     const filteredInstruments = instruments.filter(
-      (instrument) => instrument.name === 'FINNIFTY' && instrument.segment === 'NFO-OPT'
+      (instrument) => instrument.name === selected.name && instrument.segment === 'NFO-OPT'
     );
     
     const uniqueExpiryDates = Array.from(
@@ -48,7 +49,7 @@ router.post("/getInstruments",async (req,res)=>{
     
     
     // res.send(instruments)
-    res.send(uniqueExpiryDates)
+    res.send({uniqueExpiryDates,instruments})
     }
     a()
   } catch (error) {
@@ -68,10 +69,12 @@ wss.on('connection', (ws) => {
     const initialData = JSON.parse(message);
     // console.log("recived",initialData)
     const { token, instrumentToken, email } = initialData;
+    console.log("token",instrumentToken)                                    
     // Use the received data (token, instrumentToken, email) for further processing or to retrieve the required tick data
     try {
       const user = jwt.verify(token, JWT_SECRET);
       const {email} = user; 
+      console.log(email)
       const jsonData=await User.findOne({email})
     // Extract the access token
     const { accessToken, apiKey } = jsonData.BrokerList.find(broker => broker.broker === "Zerodha");
@@ -80,8 +83,8 @@ wss.on('connection', (ws) => {
       const a=async ()=>{
         var ticker = new KiteTicker({api_key, access_token});
         function onTicks(ticks) {
+          console.log("Ticks", ticks);
         ws.send(JSON.stringify(ticks));
-        console.log("Ticks", ticks);
       }
       function subscribe() {
           var items = [Number(instrumentToken)];

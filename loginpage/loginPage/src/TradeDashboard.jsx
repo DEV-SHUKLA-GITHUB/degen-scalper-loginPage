@@ -16,8 +16,12 @@ const TradeDashboard = () => {
 
   socket.onmessage = (event) => {
     const ticks = JSON.parse(event.data);
+
+    //if this is not working, comment line 21 & 22 and uncomment line 23 & 24
     console.log('Received ticks:', ticks[0].last_price);
     setSelectedOption2(ticks[0].last_price)
+    // console.log('Received ticks:', ticks.last_price);
+    // setSelectedOption2(ticks.last_price)
 
     // Handle the received tick data in the frontend as per your requirements
   };
@@ -72,53 +76,56 @@ const TradeDashboard = () => {
 
     
   }, []);
-  useEffect((selected) => {
-    console.log(window.localStorage.getItem("email"))
-    fetch("http://localhost:8000/instruments/getInstruments", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        token: window.localStorage.getItem("token") 
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        data.forEach((instrument) => {
-          if (selectedOption1 === instrument.name) {
-            const initialData = {
-              token: window.localStorage.getItem("token"),
-              instrumentToken: '256265'
-            };
+  // useEffect((selected) => {
+  //   console.log(window.localStorage.getItem("email"))
+  //   fetch("http://localhost:8000/instruments/getInstruments", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json"
+  //     },
+  //     body: JSON.stringify({
+  //       token: window.localStorage.getItem("token") 
+  //     }),
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       data.forEach((instrument) => {
+  //         if (selectedOption1 === instrument.name) {
+  //           const initialData = {
+  //             token: window.localStorage.getItem("token"),
+  //             instrumentToken: '256265'
+  //           };
       
-            socket.send(JSON.stringify(initialData));
+  //           socket.send(JSON.stringify(initialData));
 
 
-          } else {
-            console.log("failed");
-          }
-        });
-        console.log(data)
-        if (data && data.length > 0) {
-          setExpiryList(data.map((value) => ({ value, text: value })));
-          setSelectedOption3(expiryList);
-        } else {
-          setExpiryList([]) 
-        }
-        // expirylist = data.map((value) => ({ value, text: value }));
-        // setSelectedOption3(expirylist[0])
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+  //         } else {
+  //           console.log("failed");
+  //         }
+  //       });
+  //       console.log(data)
+  //       if (data && data.length > 0) {
+  //         setExpiryList(data.map((value) => ({ value, text: value })));
+  //         setSelectedOption3(expiryList);
+  //       } else {
+  //         setExpiryList([]) 
+  //       }
+  //       // expirylist = data.map((value) => ({ value, text: value }));
+  //       // setSelectedOption3(expirylist[0])
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error:", error);
+  //     });
     
-  }, []);
+  // }, []);
 
 
 
   
   const handleClick = (selected) =>{
+    // setSelectedOption1(selected)
+    // console.log(selected.name)
+    
     // setSelectedOption(selected)
     console.log(window.localStorage.getItem("email"))
     fetch("http://localhost:8000/instruments/getInstruments", {
@@ -131,25 +138,27 @@ const TradeDashboard = () => {
         selected
       }),
     })
-      .then((res) => res.json())
+    .then((res) => res.json())
       .then((data) => {
-        data.forEach((instrument) => {
-          if (selectedOption1 === instrument.name) {
+        // console.log(data.instruments[0].name)
+        // console.log(selectedOption1)
+        for (const instrument of data.instruments) {
+          if (selected.name === instrument.name) {
+            console.log(instrument);  
             const initialData = {
               token: window.localStorage.getItem("token"),
-              instrumentToken: '256265'
+              instrumentToken: instrument.instrument_token
             };
-      
+        
             socket.send(JSON.stringify(initialData));
-
-
+            break;
           } else {
             console.log("failed");
           }
-        });
+        }
         console.log(data)
-        if (data && data.length > 0) {
-          setExpiryList(data.map((value) => ({ value, text: value })));
+        if (data.uniqueExpiryDates && data.uniqueExpiryDates.length > 0) {
+          setExpiryList(data.uniqueExpiryDates.map((value) => ({ value, text: value })));
           setSelectedOption3(expiryList);
         } else {
           setExpiryList([]) 
