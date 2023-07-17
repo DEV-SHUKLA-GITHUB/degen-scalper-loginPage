@@ -7,7 +7,9 @@ function classNames(...classes) {
 }
 
 export default function Dropdown(props) {
-  const [selectedOption, setSelectedOption] = useState(props.value);
+  const [selectedOption, setSelectedOption] = useState(
+    props.itemList && props.itemList.length > 0 ? props.itemList[0].value : null
+  );
 
   const handleOptionSelect = (value) => {
     setSelectedOption(value);
@@ -16,8 +18,11 @@ export default function Dropdown(props) {
     }
   };
 
+  // Ensure itemList is defined and has values before rendering
+  const itemList = props.itemList || [];
+
   return (
-    <div className=" max-w-sm">
+    <div className="max-w-sm">
       <label className="block text-sm font-medium text-gray-700">{props.label}</label>
       <div className="relative inline-block text-right">
         <div>
@@ -25,7 +30,7 @@ export default function Dropdown(props) {
             {({ open }) => (
               <>
                 <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                  {selectedOption}
+                  {selectedOption === null ? props.heading : selectedOption}
                   <FaChevronDown className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
                 </Menu.Button>
 
@@ -44,7 +49,7 @@ export default function Dropdown(props) {
                     className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >
                     <div className="py-1">
-                      {props.itemList.map((item) => (
+                      {itemList.map((item) => (
                         <Menu.Item key={item.value}>
                           {({ active }) => (
                             <a

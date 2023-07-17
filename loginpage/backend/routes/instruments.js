@@ -1,4 +1,4 @@
-var KiteTicker = require("kiteconnect").KiteTicker;
+const KiteTicker = require("kiteconnect").KiteTicker;
 const KiteConnect = require("kiteconnect").KiteConnect;
 const fs = require('fs');
 const express = require('express');
@@ -15,6 +15,9 @@ router.post("/getInstruments",async (req,res)=>{
   const {email, username, token}=req.body
     
     try {
+      const user = jwt.verify(token, JWT_SECRET);
+        const {email} = user;                 
+
     const jsonData=await User.findOne({email})
     // console.log(jsonData)
      
@@ -31,8 +34,21 @@ router.post("/getInstruments",async (req,res)=>{
     kite.setAccessToken(access_token);
     
     //here perform any kite operations
-    const instruments=await kite.getInstruments(["NSE"])
-    res.send(instruments)
+    const instruments = await kite.getInstruments(["NFO"]);
+    const filteredInstruments = instruments.filter(
+      (instrument) => instrument.name === 'FINNIFTY' && instrument.segment === 'NFO-OPT'
+    );
+    
+    const uniqueExpiryDates = Array.from(
+      new Set(
+        filteredInstruments.map((instrument) => instrument.expiry.getTime())
+      )
+    ).map((timestamp) => new Date(timestamp));
+    
+    
+    
+    // res.send(instruments)
+    res.send(uniqueExpiryDates)
     }
     a()
   } catch (error) {
@@ -40,74 +56,6 @@ router.post("/getInstruments",async (req,res)=>{
   }
 
 })
-
-
-
-
-
-//setting up websocket for data stream
-
-// const wss = new WebSocket.Server({ port: 8000 }); // Replace port number as per your requirement
-
-// wss.on('connection', (ws) => {
-//   console.log('Client connected');
-
-//   ws.on('message', async (message) => {
-//     const initialData = JSON.parse(message);
-//     const { token, instrumentToken, email } = initialData;
-//     // Use the received data (token, instrumentToken, email) for further processing or to retrieve the required tick data
-//     try {
-//       const jsonData=await User.findOne({email})
-//     // Extract the access token
-//     const { accessToken, apiKey } = jsonData.BrokerList.find(broker => broker.broker === "Zerodha");
-//     const access_token=accessToken
-//     const api_key=apiKey
-//       const a=async ()=>{
-//         var ticker = new KiteTicker({api_key, access_token});
-//         function onTicks(ticks) {
-//         ws.send(JSON.stringify(ticks));
-//         console.log("Ticks", ticks);
-//       }
-//       function subscribe() {
-//           var items = [Number(instrumentToken)];
-//           ticker.subscribe(items);
-//           ticker.setMode(ticker.modeQuote, items);
-//       }
-    
-//         ticker.connect();
-//         ticker.on("connect", subscribe);
-//         ticker.on("ticks", onTicks);     
-// }
-// a()
-//     } catch (error) {
-//       console.error('Error parsing JSON:', error);
-//     }
-//     // Example: Send tick data to the connected client
-//     setInterval(() => {
-//       const ticks = generateTickData(); // Replace this with your own method to fetch or generate tick data
-//       ws.send(JSON.stringify(ticks));
-//     }, 1000);
-//   });
-
-//   ws.on('close', () => {
-//     console.log('Client disconnected');
-//   });
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //...................................................................................................
 
@@ -118,9 +66,12 @@ wss.on('connection', (ws) => {
 
   ws.on('message', async (message) => {
     const initialData = JSON.parse(message);
+    // console.log("recived",initialData)
     const { token, instrumentToken, email } = initialData;
     // Use the received data (token, instrumentToken, email) for further processing or to retrieve the required tick data
     try {
+      const user = jwt.verify(token, JWT_SECRET);
+      const {email} = user; 
       const jsonData=await User.findOne({email})
     // Extract the access token
     const { accessToken, apiKey } = jsonData.BrokerList.find(broker => broker.broker === "Zerodha");
@@ -146,11 +97,6 @@ a()
     } catch (error) {
       console.error('Error parsing JSON:', error);
     }
-    // Example: Send tick data to the connected client
-    // setInterval(() => {
-    //   const ticks = generateTickData(); // Replace this with your own method to fetch or generate tick data
-    //   ws.send(JSON.stringify(ticks));
-    // }, 1000);
   });
 
   ws.on('close', () => {
@@ -159,41 +105,5 @@ a()
 });
 
 //....................................................................................................
-
-
-
-// router.post("/getData",async (req,res)=>{
-//   const { }=req.body
-      
-//      try {
-//       const jsonData=await User.findOne({email})
-//     // Extract the access token
-//     const { accessToken, apiKey } = jsonData.BrokerList.find(broker => broker.broker === "Zerodha");
-//     const access_token=accessToken
-//     const api_key=apiKey
-//       const a=async ()=>{
-//         var ticker = new KiteTicker({api_key, access_token});
-//         function onTicks(ticks) {
-//         console.log("Ticks", ticks);
-//       }
-//       function subscribe() {
-//           var items = [Number(instrumentToken)];
-//           ticker.subscribe(items);
-//           ticker.setMode(ticker.modeQuote, items);
-//       }
-    
-//         ticker.connect();
-//         ticker.on("connect", subscribe);
-//         ticker.on("ticks", onTicks);
-        
-// }
-// a()
-//     } catch (error) {
-//       console.error('Error parsing JSON:', error);
-//     }
-//     });
-    
-  
-  
 
 module.exports=router;

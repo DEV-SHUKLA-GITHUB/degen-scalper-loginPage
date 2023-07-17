@@ -25,13 +25,13 @@ const TradeDashboard = () => {
   socket.onclose = () => {
     console.log('WebSocket disconnected');
   };
-  
 
   const option = ['option1', 'option2', 'option3', 'option4'];
   const optionList = option.map((value) => ({ value, text: value }));
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
-  const [selectedOption3, setSelectedOption3] = useState(optionList[0]);
+  const [expiryList ,setExpiryList] = useState();
+  const [selectedOption3, setSelectedOption3] = useState();
   const [selectedOption4, setSelectedOption4] = useState(optionList[0]);
   const [selectedOption5, setSelectedOption5] = useState(optionList[0]);
   const [selectedOption6, setSelectedOption6] = useState(optionList[0]);
@@ -44,11 +44,11 @@ const TradeDashboard = () => {
   const [orderBookButtonClicked, setOrderBookButtonClicked] = useState(false);
   const [tradeBookButtonClicked, setTradeBookButtonClicked] = useState(false);
   // const [selected, setSelected] = useState(people[0]);
-  const [query, setQuery] = useState("");
+  // const [query, setQuery] = useState("");
   const options = [
-    { id: 1, name: "NIFTY 50" },
-    { id: 2, name: "option 2" },
-    { id: 3, name: "option 3" },
+    { id: 1, name: "NIFTY" },
+    { id: 2, name: "BANKNIFTY" },
+    { id: 3, name: "FINNIFTY" },
     // Add more options as needed
   ];
 
@@ -69,53 +69,27 @@ const TradeDashboard = () => {
       // Clean up the WebSocket connection when the component unmounts
       socket.close();
     };
+
+    
   }, []);
-
-
-
-  
-  const handleClick = () =>{
+  useEffect((selected) => {
     console.log(window.localStorage.getItem("email"))
     fetch("http://localhost:8000/instruments/getInstruments", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        token: window.localStorage.getItem("token"),
-        email: "b@gmail.com",
-        username: window.localStorage.getItem("username"),
+        token: window.localStorage.getItem("token") 
       }),
     })
       .then((res) => res.json())
       .then((data) => {
         data.forEach((instrument) => {
           if (selectedOption1 === instrument.name) {
-            // fetch("http://localhost:8000/instruments/getData", {
-            //   method: "POST",
-            //   headers: {
-            //     "Content-Type": "application/json",
-            //   },
-            //   body: JSON.stringify({instrumentName:"NSE:NIFTY 50",
-            //   token: window.localStorage.getItem("token"),
-            //   email: window.localStorage.getItem("email"),
-            //   username: window.localStorage.getItem("username"),
-            // }),
-            // })
-            //   .then((res) => res.json())
-            //   .then((data) => {
-            //     console.log(data);
-            //     console.log(window.localStorage.getItem("email"))
-            //   })
-            //   .catch((error) => {
-            //     console.error("Error:", error);
-            //   });
-
-
             const initialData = {
               token: window.localStorage.getItem("token"),
-              instrumentToken: '256265',
-              email: "b@gmail.com",
+              instrumentToken: '256265'
             };
       
             socket.send(JSON.stringify(initialData));
@@ -126,83 +100,67 @@ const TradeDashboard = () => {
           }
         });
         console.log(data)
+        if (data && data.length > 0) {
+          setExpiryList(data.map((value) => ({ value, text: value })));
+          setSelectedOption3(expiryList);
+        } else {
+          setExpiryList([]) 
+        }
+        // expirylist = data.map((value) => ({ value, text: value }));
+        // setSelectedOption3(expirylist[0])
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-      // const server=require("http").createServer(app)
-        // const WebSocket = require('ws');
-
-        // const socket = new WebSocket('ws://localhost:7000/instruments'); // Replace 'ws://localhost:3000' with your backend WebSocket URL
-
-        // socket.onopen = () => {
-        //   console.log('WebSocket connected');
-
-        //   const initialData = {
-        //     token: 'your_token',
-        //     instrumentToken: '256265',
-        //     email: 'b@gmail.com',
-        //   };
-
-        //   socket.send(JSON.stringify(initialData));
-        // };
-
-        // socket.onmessage = (event) => {
-        //   const ticks = JSON.parse(event.data);
-        //   console.log('Received ticks:', ticks);
-        //   // Handle the received tick data in the frontend as per your requirements
-        // };
-
-        // socket.onclose = () => {
-        //   console.log('WebSocket disconnected');
-        // };
-
-        // import React, { useEffect } from 'react';
-
-// const MyComponent = () => {
-  //................................................................
+    
+  }, []);
 
 
 
-  // useEffect(() => {
-  //   const socket = new WebSocket('ws://localhost:7000/instruments');
-
-  //   socket.onopen = () => {
-  //     console.log('WebSocket connected');
-
-  //     const initialData = {
-  //       token: 'your_token',
-  //       instrumentToken: '256265',
-  //       email: 'b@gmail.com',
-  //     };
-
-  //     socket.send(JSON.stringify(initialData));
-  //   };
-
-  //   socket.onmessage = (event) => {
-  //     const ticks = JSON.parse(event.data);
-  //     console.log('Received ticks:', ticks);
-  //     // Handle the received tick data in the frontend as per your requirements
-  //   };
-
-  //   socket.onclose = () => {
-  //     console.log('WebSocket disconnected');
-  //   };
-
-    // return () => {
-    //   // Clean up the WebSocket connection when the component unmounts
-    //   socket.close();
-    // };
-  // }, []);
+  
+  const handleClick = (selected) =>{
+    // setSelectedOption(selected)
+    console.log(window.localStorage.getItem("email"))
+    fetch("http://localhost:8000/instruments/getInstruments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: window.localStorage.getItem("token"),
+        selected
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        data.forEach((instrument) => {
+          if (selectedOption1 === instrument.name) {
+            const initialData = {
+              token: window.localStorage.getItem("token"),
+              instrumentToken: '256265'
+            };
+      
+            socket.send(JSON.stringify(initialData));
 
 
+          } else {
+            console.log("failed");
+          }
+        });
+        console.log(data)
+        if (data && data.length > 0) {
+          setExpiryList(data.map((value) => ({ value, text: value })));
+          setSelectedOption3(expiryList);
+        } else {
+          setExpiryList([]) 
+        }
+        // expirylist = data.map((value) => ({ value, text: value }));
+        // setSelectedOption3(expirylist[0])
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
 
-//................................................................
-  // return <div>WebSocket Example</div>;
-// };
-// MyComponent();
-
-// export default MyComponent;
 
   };
   const handlePositionClick = () => {
@@ -271,17 +229,17 @@ const TradeDashboard = () => {
   setQuery={setQuery}
 /> */}
 <div className='flex'>
-<CustomCombobox options={options} onChange={handleOptionChange} />
-    <button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
+<CustomCombobox options={options} onChange={handleClick} />
+    {/* <button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
         add
-      </button>
+      </button> */}
 </div>
         </div>
         <Dropdown
           label="Expiry date"
-          heading="Select options"
-          itemList={optionList}
-          value={selectedOption3.value}
+          heading="select expiry"
+          itemList={expiryList}
+          value={selectedOption3}
           onSelect={setSelectedOption3}
         />
         <Dropdown

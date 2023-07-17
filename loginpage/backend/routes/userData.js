@@ -26,6 +26,7 @@ router.post("/", async (req, res) => {
         // Verify the token and extract the user's email
         const user = jwt.verify(token, JWT_SECRET);
         const {email} = user;   
+        console.log(user)
         const response=await brokerValidator(BrokerList,obj,email)
         isValidated=response.validCreds
       // Find the user in the database using the email
