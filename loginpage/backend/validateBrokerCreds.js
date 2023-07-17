@@ -4,6 +4,8 @@ const fyers = require("fyers-api-v2")
 const KiteConnect = require("kiteconnect").KiteConnect;
 const crypto = require('crypto');
 const fs = require('fs');
+const User = require("./models/userDetails"); // Import the user schema from userDetails.js
+
 const zerodhaAccessTokenFilePath = './\\auth\\zerodha_access_token.json';
 const fyersAccessTokenFilePath = './\\backend\\auth\\fyers_access_token.txt';
 
@@ -29,7 +31,8 @@ function withTimeout(func, timeout) {
 }
   
   
-const zerodhaLoginValidator = (brokerDetails) => {
+const zerodhaLoginValidator = (BrokerList,brokerDetails,email) => {
+    console.log("first")
     return new Promise(async(resolve, reject) => {
         const user_id = brokerDetails.broker_user_id;
         const user_password = brokerDetails.broker_user_password;
@@ -46,7 +49,7 @@ const zerodhaLoginValidator = (brokerDetails) => {
         try{
             await page.goto(
                 `https://kite.trade/connect/login?api_key=${api_key}&v=3`
-            );
+                );
             await sleep(500);
             await page.type("input[type=text]", user_id),
             await page.type("input[type=password]", user_password),
@@ -59,10 +62,10 @@ const zerodhaLoginValidator = (brokerDetails) => {
             page.url();
             browser.close();
             const redirectURL = requestUrls.filter(element => {
-                            if (element.includes("request_token")) {
-                                return true;
-                            }
-                        });
+                if (element.includes("request_token")) {
+                    return true;
+                }
+            });
             const requestToken = new URL(redirectURL[0]).searchParams.get('request_token');
             try {
                 const kite = new KiteConnect({ api_key: api_key });
@@ -74,12 +77,106 @@ const zerodhaLoginValidator = (brokerDetails) => {
                     access_token: accessToken.replace(/"/g, '')
                 };
 
-                fs.writeFile(zerodhaAccessTokenFilePath, JSON.stringify(credentials), (err) => {
-                    if (err){ throw err;}
-                    console.log(credentials,'Zerodha Access Token written to the file');
+
+                try {
+                    const userData = await User.findOne({ email });
+                    console.log(userData);
+                  
+                    let isUpdated = false;
+                  
+                    if (userData && Array.isArray(userData.BrokerList)) {
+                      for (const broker of userData.BrokerList) {
+                        if (broker.broker === BrokerList.broker) {
+                          console.log("con-1");
+                          broker.accessToken = credentials.access_token;
+                          isUpdated = true;
+                          await User.findOneAndUpdate(
+                            { email, "BrokerList.broker": BrokerList.broker },
+                            {
+                              $set: {
+                                "BrokerList.$": broker,
+                              },
+                            },
+                            { new: true, upsert: true }
+                          );
+                          console.log("Updated");
+                        }
+                      }
+                    }
+                  
+                    if (!isUpdated) {
+                      console.log("con-2");
+                  
+                      const updatedUserData = await User.findOneAndUpdate(
+                        { email },
+                        { $push: { BrokerList: { ...BrokerList, accessToken: credentials.access_token } } },
+                        { new: true }
+                      );
+                      console.log("Updated");
+                    }
+                  } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ status: "error", data: error });
+                  }
+                  
+
+
+                // var isUpdated=false;
+                // saving in database
+        // User.findOne({ email }).then(async (userData) => {
+        //     console.log(userData)
+        //     await userData.BrokerList.map(async broker=>{
+        //         if(broker.userId==BrokerList.userId){
+        //             console.log("con-1")
+        //             isUpdated=true
+        //             // update existing
+        //             await User.findOneAndUpdate(
+        //                 { email , "BrokerList.broker": BrokerList.broker },
+        //                 {
+        //                 $setOnInsert: {
+        //                     "BrokerList.$": { ...BrokerList, accessToken: credentials.access_token }
+        //                 }
+        //                 },
+        //                 { new: true, upsert: true }
+        //             )
+        //             .then((userData) => {
+        //                 console.log("Updated");
+        //             })
+        //             .catch((error) => {
+        //                 console.error(error);
+        //                 res.status(500).json({ status: "error", data: error });
+        //             });
+        //         }
+        //     })
+         
+        //  if(!isUpdated){
+        //     console.log("con-2")
+
+        //     User.findOneAndUpdate(
+        //         { email }, // Find the user by email
+        //         { $push: { BrokerList:{ ...BrokerList, accessToken: credentials.access_token } } }, // Push the form data to the formData array
+        //         { new: true } // Return the updated document
+        //       )
+        //         .then((userData) => {
+        //           console.log("updated")
+        //         })
+        //         .catch((error) => {
+        //           res.status(500).json({ status: "error", data: error });
+        //         });
+        //  }
+        // })
+        // .catch((error) => {
+        //   console.error(error);
+        // });
+        
+ 
+                // fs.writeFile(zerodhaAccessTokenFilePath, JSON.stringify(credentials), (err) => {
+                //     if (err){ throw err;}
+                //     console.log(credentials,'Zerodha Access Token written to the file');
                     
-                });            
+                // });            
                 console.log("Kite Instance Created Successfully");
+                console.log(credentials.access_token)
                 if(accessToken)
                     resolve({"validCreds": true, "broker": kite});
                 return reject({"validCreds": false, "broker": null});
@@ -171,11 +268,12 @@ const fyersLoginValidator = (brokerDetails) =>{
     })
 }
 
-const validateBrokerCreds = async(brokerDetails) => {
-      
+const validateBrokerCreds = async(BrokerList,brokerDetails,email) => {
     const timeout = 12000; 
+    console.log(brokerDetails)
     if(brokerDetails.broker_name === "Zerodha"){
-        return await withTimeout(() => zerodhaLoginValidator(brokerDetails), timeout)
+        console.log("first")
+        return await withTimeout(() => zerodhaLoginValidator(BrokerList,brokerDetails,email), timeout)
         .then((result) => {
           return result;
         })

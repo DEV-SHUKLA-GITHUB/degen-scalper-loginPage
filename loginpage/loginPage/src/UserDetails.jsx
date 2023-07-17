@@ -14,7 +14,8 @@ export default function UserDetails() {
   const [secretKey, setSecretKey] = useState("");
   const [formData, setFormData] = useState([]);
 
-
+ const data = JSON.parse(window.localStorage.getItem("userdata")).BrokerList
+ console.log(data)
   let value;
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -129,6 +130,31 @@ export default function UserDetails() {
     // Redirect to login page
     window.location.href = "./login";
   };
+  function handleButtonClick(brokerName){
+    fetch("http://localhost:8000/generateToken", {
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({  
+        token: window.localStorage.getItem("token"),
+        brokerName
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if(data.status==true){
+          console.log("congrats yoda")
+        }
+        else{
+          console.log("failed")
+        }
+      })
+    
+  }
 
   const handleShowData = () => {
     // console.log(formData.data)
@@ -328,7 +354,26 @@ export default function UserDetails() {
               </tr>
             </thead>
             <tbody>
-              <tr class="">
+{
+  data && data.map((item)=>(
+    <tr class="">
+    <th
+      scope="row"
+      class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+    >
+      {item.broker}
+    </th>
+    <td class="px-6 py-4">{item.totp}</td>
+    <td class="px-6 py-4">{item.secretKey}</td>
+    <td class="px-6 py-4 text-right">
+      <button className="text-red-600" onClick={()=>{handleButtonClick(item.broker)}}>
+        Generate Token
+      </button>
+    </td>
+  </tr>
+  ))
+}
+              {/* <tr class="">
                 <th
                   scope="row"
                   class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -375,7 +420,7 @@ export default function UserDetails() {
                     Delete
                   </a>
                 </td>
-              </tr>
+              </tr> */}
             </tbody>
           </table>
         </div>
