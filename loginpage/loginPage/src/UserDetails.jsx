@@ -355,23 +355,24 @@ export default function UserDetails() {
             </thead>
             <tbody>
 {
-  data && data.map((item)=>(
-    <tr class="">
+  data && data.map((item)=>{
+    console.log("item",item)
+return (<tr className="">
     <th
       scope="row"
-      class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
     >
       {item.broker}
     </th>
-    <td class="px-6 py-4">{item.totp}</td>
-    <td class="px-6 py-4">{item.secretKey}</td>
-    <td class="px-6 py-4 text-right">
+    <td className="px-6 py-4">{item.totp}</td>
+    <td className="px-6 py-4">{item.secretKey}</td>
+    <td className="px-6 py-4 text-right">
       <button className="text-red-600" onClick={()=>{handleButtonClick(item.broker)}}>
         Generate Token
       </button>
     </td>
-  </tr>
-  ))
+  </tr>)
+})
 }
               {/* <tr class="">
                 <th

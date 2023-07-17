@@ -82,9 +82,7 @@ const TradeDashboard = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        token: window.localStorage.getItem("token"),
-        email: "b@gmail.com",
-        username: window.localStorage.getItem("username"),
+        token: window.localStorage.getItem("token")
       }),
     })
       .then((res) => res.json())
@@ -114,8 +112,7 @@ const TradeDashboard = () => {
 
             const initialData = {
               token: window.localStorage.getItem("token"),
-              instrumentToken: '256265',
-              email: "b@gmail.com",
+              instrumentToken: '256265'
             };
       
             socket.send(JSON.stringify(initialData));
