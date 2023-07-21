@@ -18,13 +18,13 @@ export default function Dropdown(props) {
 
   return (
     <div className=" max-w-sm">
-      <label className="block text-sm font-medium text-gray-700">{props.label}</label>
+      <label className="block text-sm font-medium text-gray-50">{props.label}</label>
       <div className="relative inline-block text-right">
         <div>
           <Menu>
             {({ open }) => (
               <>
-                <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md text-white shadow-lg shadow-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-800">
                   {selectedOption}
                   <FaChevronDown className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
                 </Menu.Button>
@@ -41,7 +41,7 @@ export default function Dropdown(props) {
                 >
                   <Menu.Items
                     static
-                    className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md  shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >
                     <div className="py-1">
                       {props.itemList.map((item) => (

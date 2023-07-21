@@ -1,33 +1,29 @@
-import React, { useState,useEffect } from 'react';
-import Dropdown from './basic components/Dropdown';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import CustomCombobox from './basic components/AutoCompleteInput';
+import React, { useState, useEffect } from "react";
+import Dropdown from "./basic components/Dropdown";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import CustomCombobox from "./basic components/AutoCompleteInput";
 
 const TradeDashboard = () => {
+  const socket = new WebSocket("ws://localhost:7000/instruments");
 
-  const socket = new WebSocket('ws://localhost:7000/instruments');
-  
   socket.onopen = () => {
-    console.log('WebSocket connected');
-
-
+    console.log("WebSocket connected");
   };
 
   socket.onmessage = (event) => {
     const ticks = JSON.parse(event.data);
-    console.log('Received ticks:', ticks[0].last_price);
-    setSelectedOption2(ticks[0].last_price)
+    console.log("Received ticks:", ticks[0].last_price);
+    setSelectedOption2(ticks[0].last_price);
 
     // Handle the received tick data in the frontend as per your requirements
   };
 
   socket.onclose = () => {
-    console.log('WebSocket disconnected');
+    console.log("WebSocket disconnected");
   };
-  
 
-  const option = ['option1', 'option2', 'option3', 'option4'];
+  const option = ["option1", "option2", "option3", "option4"];
   const optionList = option.map((value) => ({ value, text: value }));
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
@@ -37,9 +33,9 @@ const TradeDashboard = () => {
   const [selectedOption6, setSelectedOption6] = useState(optionList[0]);
   const [selectedOption7, setSelectedOption7] = useState(optionList[0]);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [positions,setPositions] = useState(false)
-  const [orderBook,setOrderBook] = useState(false)
-  const [TradeBook,setTradeBook] = useState(false)
+  const [positions, setPositions] = useState(false);
+  const [orderBook, setOrderBook] = useState(false);
+  const [TradeBook, setTradeBook] = useState(false);
   const [positionButtonClicked, setPositionButtonClicked] = useState(false);
   const [orderBookButtonClicked, setOrderBookButtonClicked] = useState(false);
   const [tradeBookButtonClicked, setTradeBookButtonClicked] = useState(false);
@@ -61,9 +57,7 @@ const TradeDashboard = () => {
   };
 
   useEffect(() => {
-  const socket = new WebSocket('ws://localhost:7000/instruments');
-
-    
+    const socket = new WebSocket("ws://localhost:7000/instruments");
 
     return () => {
       // Clean up the WebSocket connection when the component unmounts
@@ -71,11 +65,8 @@ const TradeDashboard = () => {
     };
   }, []);
 
-
-
-  
-  const handleClick = () =>{
-    console.log(window.localStorage.getItem("email"))
+  const handleClick = () => {
+    console.log(window.localStorage.getItem("email"));
     fetch("http://localhost:8000/instruments/getInstruments", {
       method: "POST",
       headers: {
@@ -111,99 +102,91 @@ const TradeDashboard = () => {
             //     console.error("Error:", error);
             //   });
 
-
             const initialData = {
               token: window.localStorage.getItem("token"),
-              instrumentToken: '256265',
+              instrumentToken: "256265",
               email: "b@gmail.com",
             };
-      
+
             socket.send(JSON.stringify(initialData));
-
-
           } else {
             console.log("failed");
           }
         });
-        console.log(data)
+        console.log(data);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-      // const server=require("http").createServer(app)
-        // const WebSocket = require('ws');
+    // const server=require("http").createServer(app)
+    // const WebSocket = require('ws');
 
-        // const socket = new WebSocket('ws://localhost:7000/instruments'); // Replace 'ws://localhost:3000' with your backend WebSocket URL
+    // const socket = new WebSocket('ws://localhost:7000/instruments'); // Replace 'ws://localhost:3000' with your backend WebSocket URL
 
-        // socket.onopen = () => {
-        //   console.log('WebSocket connected');
+    // socket.onopen = () => {
+    //   console.log('WebSocket connected');
 
-        //   const initialData = {
-        //     token: 'your_token',
-        //     instrumentToken: '256265',
-        //     email: 'b@gmail.com',
-        //   };
+    //   const initialData = {
+    //     token: 'your_token',
+    //     instrumentToken: '256265',
+    //     email: 'b@gmail.com',
+    //   };
 
-        //   socket.send(JSON.stringify(initialData));
-        // };
+    //   socket.send(JSON.stringify(initialData));
+    // };
 
-        // socket.onmessage = (event) => {
-        //   const ticks = JSON.parse(event.data);
-        //   console.log('Received ticks:', ticks);
-        //   // Handle the received tick data in the frontend as per your requirements
-        // };
+    // socket.onmessage = (event) => {
+    //   const ticks = JSON.parse(event.data);
+    //   console.log('Received ticks:', ticks);
+    //   // Handle the received tick data in the frontend as per your requirements
+    // };
 
-        // socket.onclose = () => {
-        //   console.log('WebSocket disconnected');
-        // };
+    // socket.onclose = () => {
+    //   console.log('WebSocket disconnected');
+    // };
 
-        // import React, { useEffect } from 'react';
+    // import React, { useEffect } from 'react';
 
-// const MyComponent = () => {
-  //................................................................
+    // const MyComponent = () => {
+    //................................................................
 
+    // useEffect(() => {
+    //   const socket = new WebSocket('ws://localhost:7000/instruments');
 
+    //   socket.onopen = () => {
+    //     console.log('WebSocket connected');
 
-  // useEffect(() => {
-  //   const socket = new WebSocket('ws://localhost:7000/instruments');
+    //     const initialData = {
+    //       token: 'your_token',
+    //       instrumentToken: '256265',
+    //       email: 'b@gmail.com',
+    //     };
 
-  //   socket.onopen = () => {
-  //     console.log('WebSocket connected');
+    //     socket.send(JSON.stringify(initialData));
+    //   };
 
-  //     const initialData = {
-  //       token: 'your_token',
-  //       instrumentToken: '256265',
-  //       email: 'b@gmail.com',
-  //     };
+    //   socket.onmessage = (event) => {
+    //     const ticks = JSON.parse(event.data);
+    //     console.log('Received ticks:', ticks);
+    //     // Handle the received tick data in the frontend as per your requirements
+    //   };
 
-  //     socket.send(JSON.stringify(initialData));
-  //   };
-
-  //   socket.onmessage = (event) => {
-  //     const ticks = JSON.parse(event.data);
-  //     console.log('Received ticks:', ticks);
-  //     // Handle the received tick data in the frontend as per your requirements
-  //   };
-
-  //   socket.onclose = () => {
-  //     console.log('WebSocket disconnected');
-  //   };
+    //   socket.onclose = () => {
+    //     console.log('WebSocket disconnected');
+    //   };
 
     // return () => {
     //   // Clean up the WebSocket connection when the component unmounts
     //   socket.close();
     // };
-  // }, []);
+    // }, []);
 
+    //................................................................
+    // return <div>WebSocket Example</div>;
+    // };
+    // MyComponent();
 
-
-//................................................................
-  // return <div>WebSocket Example</div>;
-// };
-// MyComponent();
-
-// export default MyComponent;
-
+    // export default MyComponent;
   };
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
@@ -213,7 +196,7 @@ const TradeDashboard = () => {
     setOrderBook(false);
     setTradeBook(false);
   };
-  
+
   const handleOrderBookClick = () => {
     setOrderBookButtonClicked(true);
     setTradeBookButtonClicked(false);
@@ -222,7 +205,7 @@ const TradeDashboard = () => {
     setTradeBook(false);
     setPositions(false);
   };
-  
+
   const handleTradeBookClick = () => {
     setTradeBookButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -231,23 +214,22 @@ const TradeDashboard = () => {
     setOrderBook(false);
     setPositions(false);
   };
-  
-  const handleChange = (e) =>{
-    setSelectedOption1(e.target.value)
-    console.log(selectedOption1)
-  }
+
+  const handleChange = (e) => {
+    setSelectedOption1(e.target.value);
+    console.log(selectedOption1);
+  };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
 
-  
   return (
-    <div>
+    <div className="bg-black text-white h-screen bgPic ">
       <h2>
         Broker: <span className="font-semibold">Zerodha(User: YTNN30)</span>
       </h2>
-      <div className="flex p-2 m-2 justify-between">
+      <div className="flex p-2 m-2 justify-between ">
         {/* <Dropdown
           label="select a option"
           heading="Select options"
@@ -255,53 +237,56 @@ const TradeDashboard = () => {
           value={selectedOption1.value}
           onSelect={setSelectedOption1}
         /> */}
-        <div className='flex-col'>
-        {/* <label htmlFor="input">enter name</label><br /> */}
-{/* <div>
+        <div className="flex-col">
+          {/* <label htmlFor="input">enter name</label><br /> */}
+          {/* <div>
 <input onChange={handleChange} className=' w-auto border-2 border-black' type="text" />
 <button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
         add
       </button>
   </div>         */}
-  {/* <CustomCombobox
+          {/* <CustomCombobox
   people={people}
   selected={selected}
   query={query}
   setSelected={setSelected}
   setQuery={setQuery}
 /> */}
-<div className='flex'>
-<CustomCombobox options={options} onChange={handleOptionChange} />
-    <button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
-        add
-      </button>
-</div>
+          <div className="flex ">
+            <CustomCombobox options={options} onChange={handleOptionChange} />
+            <button
+              className="ml-2 border text-white  py-2 px-4  rounded"
+              onClick={handleClick}
+            >
+              add
+            </button>
+          </div>
         </div>
         <div className="relative inline-block text-right">
-          <label className="block text-sm text-start font-medium text-gray-700">
+          <label className="block text-sm text-start font-medium text-gray-200">
             start Date
           </label>
           <div>
-            <div className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+            <div className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
               <DatePicker
                 selected={selectedDate}
                 onChange={handleDateChange}
-                className="text-gray-900 text-sm font-semibold bg-white focus:outline-none"
+                className="text-gray-900 text-sm font-semibold focus:outline-none bg-transparent"
                 placeholderText="Select date"
               />
             </div>
           </div>
         </div>
         <div className="relative inline-block text-right">
-          <label className="block text-sm text-start font-medium text-gray-700">
+          <label className="block text-sm text-start font-medium text-gray-50">
             Expiry Date
           </label>
           <div>
-            <div className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+            <div className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
               <DatePicker
                 selected={selectedDate}
                 onChange={handleDateChange}
-                className="text-gray-900 text-sm font-semibold bg-white focus:outline-none"
+                className="text-gray-900 text-sm font-semibold focus:outline-none bg-transparent"
                 placeholderText="Select date"
               />
             </div>
@@ -313,6 +298,7 @@ const TradeDashboard = () => {
           itemList={optionList}
           value={selectedOption4.value}
           onSelect={setSelectedOption4}
+          
         />
         <Dropdown
           label="put strike price"
@@ -336,536 +322,593 @@ const TradeDashboard = () => {
           onSelect={setSelectedOption7}
         />
       </div>
-      <div className='mt-8 ml-4 mr-4 flex justify-between'>
+      <div className="mt-8 ml-4 mr-4 flex justify-between">
         <h3>strike: BANKNIFTY2238984984</h3>
         <h3>NIFTY BANK</h3>
         <h3>strike: BANKNIFTY84340929</h3>
       </div>
-      <div className='mt-2 ml-4 mr-4 flex justify-between'>
+      <div className="mt-2 ml-4 mr-4 flex justify-between">
         <h3>LTP: 279.3</h3>
         <h3>LTP: {selectedOption2}</h3>
         <h3>279.3 :LTP</h3>
       </div>
-      <div className='mt-4 mr-4 flex justify-between'>
+      <div className="mt-4 mr-4 flex justify-between">
         <div>
-        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded">
-        Sell Call
-      </button>
-      <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded">
-        Buy Call
-      </button>
+          <button className="ml-4 border hover:bg-gray-800 text-white font-bold py-2 px-4  rounded">
+            Sell Call
+          </button>
+          <button className="ml-4 border hover:bg-gray-800 text-white font-bold py-2 px-4  rounded">
+            Buy Call
+          </button>
         </div>
         <div>
-        <button className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
-        Close all Positions
-      </button>
-      <button className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
-        Cancel all orders
-      </button>
+          <button className="ml-4  hover:bg-blue-400 text-white font-bold py-2 px-4  rounded border-2 ">
+            Close all Positions
+          </button>
+          <button className="ml-4  hover:bg-blue-400 text-white font-bold py-2 px-4  rounded border-2 ">
+            Cancel all orders
+          </button>
         </div>
         <div>
-        <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded">
-        Buy Put
-      </button>
-      <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded">
-        Sell Put
-      </button>
+          <button className="mlhover:bg-blue-400 border hover:bg-gray-800 text-white font-bold py-2 px-4  rounded">
+            Buy Put
+          </button>
+          <button className="ml-4  border hover:bg-gray-800 text-white font-bold py-2 px-4  rounded">
+            Sell Put
+          </button>
         </div>
       </div>
-   <div>
-   <div className="flex mt-8 border-b-4 border-pink-300 ">
-      <button
-        className={`ml-8 font-medium w-40 h-10 border-0 border-white rounded ${positionButtonClicked ? 'bg-pink-200' : ''}`}
-        onClick={handlePositionClick}
-      >
-        positions
-      </button>
-      <button
-        className={`ml-8 font-medium w-40 h-10 border-0 rounded ${orderBookButtonClicked ? 'bg-pink-200' : ''}`}
-        onClick={handleOrderBookClick}
-      >
-        Order Book
-      </button>
-      <button
-        className={`ml-8 font-medium w-40 h-10 border-0 rounded ${tradeBookButtonClicked ? 'bg-pink-200' : ''}`}
-        onClick={handleTradeBookClick}
-      >
-        Trade Book
-      </button>
-    </div>
-{orderBook &&   <div>
-      <div className=' w-screen border-black '>
-      <div className='w-screen'>
-  <table className="w-screen ">
-    <thead className='bg-blue-100 border-2 border-black w-screen'>
-      <tr className=''>
-        <th className="text-center border-2 border-black">Symbol Name</th>
-        <th className="text-center border-2 border-black">Product</th>
-        <th className="text-center border-2 border-black">Side</th>
-        <th className="text-center border-2 border-black">NET Qty</th>
-        <th className="text-center border-2 border-black">LTF</th>
-        <th className="text-center border-2 border-black">SL</th>
-        <th className="text-center border-2 border-black">SL Button</th>
-        <th className="text-center border-2 border-black">UR. P&L</th>
-        <th className="text-center border-2 border-black">P&L</th>
-        <th className="text-center border-2 border-black">Action</th>
-        <th className="text-center border-2 border-black">Avg Price</th>
-        <th className="text-center border-2 border-black">Buy Qty</th>
-        <th className="text-center border-2 border-black">Buy Price</th>
-        <th className="text-center border-2 border-black">Sell Price</th>
-        <th className="text-center border-2 border-black">Sell Qty</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-  </div>
-  </div>}
-{positions &&   <div>
-  <div className='flex justify-around mt-2'>
-            <h2 className='font-bold'>Net Qty: 0</h2>
-            <h2 className='font-bold'>MTM: 32055.50</h2>
+      <div>
+        <div className="flex mt-8 border-b-4 border-cyan-300 ">
+          <button
+            className={`ml-8 font-medium w-40 h-10 border-0 border-white rounded ${
+              positionButtonClicked ? "bg-cyan-200" : ""
+            }`}
+            onClick={handlePositionClick}
+          >
+            positions
+          </button>
+          <button
+            className={`ml-8 font-medium w-40 h-10 border-0 rounded ${
+              orderBookButtonClicked ? "bg-cyan-200" : ""
+            }`}
+            onClick={handleOrderBookClick}
+          >
+            Order Book
+          </button>
+          <button
+            className={`ml-8 font-medium w-40 h-10 border-0 rounded ${
+              tradeBookButtonClicked ? "bg-cyan-200" : ""
+            }`}
+            onClick={handleTradeBookClick}
+          >
+            Trade Book
+          </button>
         </div>
-      <div className=' w-screen border-black '>
-      <div className='w-screen'>
-  <table className="w-screen ">
-    <thead className='bg-blue-100 border-2 border-black w-screen'>
-      <tr className=''>
-        <th className="text-center border-2 border-black">Symbol Name</th>
-        <th className="text-center border-2 border-black">Product</th>
-        <th className="text-center border-2 border-black">Side</th>
-        <th className="text-center border-2 border-black">NET Qty</th>
-        <th className="text-center border-2 border-black">LTF</th>
-        <th className="text-center border-2 border-black">SL</th>
-        <th className="text-center border-2 border-black">SL Button</th>
-        <th className="text-center border-2 border-black">UR. P&L</th>
-        <th className="text-center border-2 border-black">P&L</th>
-        <th className="text-center border-2 border-black">Action</th>
-        <th className="text-center border-2 border-black">Avg Price</th>
-        <th className="text-center border-2 border-black">Buy Qty</th>
-        <th className="text-center border-2 border-black">Buy Price</th>
-        <th className="text-center border-2 border-black">Sell Price</th>
-        <th className="text-center border-2 border-black">Sell Qty</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-  </div>
-  </div>}
-   </div>
-</div>
-
+        {orderBook && (
+          <div>
+            <div className=" w-screen border-black ">
+              <div className="w-screen">
+                <table className="w-screen ">
+                  <thead className=" border-2 border-black w-screen">
+                    <tr className="">
+                      <th className="text-center border-2 border-black">
+                        Symbol Name
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Product
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Side
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        NET Qty
+                      </th>
+                      <th className="text-center border-2 border-black">LTF</th>
+                      <th className="text-center border-2 border-black">SL</th>
+                      <th className="text-center border-2 border-black">
+                        SL Button
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        UR. P&L
+                      </th>
+                      <th className="text-center border-2 border-black">P&L</th>
+                      <th className="text-center border-2 border-black">
+                        Action
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Avg Price
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Buy Qty
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Buy Price
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Sell Price
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Sell Qty
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+        {positions && (
+          <div>
+            <div className="flex justify-around mt-2">
+              <h2 className="font-bold">Net Qty: 0</h2>
+              <h2 className="font-bold">MTM: 32055.50</h2>
+            </div>
+            <div className=" w-screen border-black ">
+              <div className="w-screen">
+                <table className="w-screen ">
+                  <thead className=" border-2 border-black w-screen">
+                    <tr className="">
+                      <th className="text-center border-2 border-black">
+                        Symbol Name
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Product
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Side
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        NET Qty
+                      </th>
+                      <th className="text-center border-2 border-black">LTF</th>
+                      <th className="text-center border-2 border-black">SL</th>
+                      <th className="text-center border-2 border-black">
+                        SL Button
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        UR. P&L
+                      </th>
+                      <th className="text-center border-2 border-black">P&L</th>
+                      <th className="text-center border-2 border-black">
+                        Action
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Avg Price
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Buy Qty
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Buy Price
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Sell Price
+                      </th>
+                      <th className="text-center border-2 border-black">
+                        Sell Qty
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="text-center">BANKNIFTY0495030</td>
+                      <td className="text-center">MARGIN</td>
+                      <td className="text-center">BUY</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">100307.5</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">0.00</td>
+                      <td className="text-center">76.00</td>
+                      <td className="text-center">76</td>
+                      <td className="text-center">-</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">307...</td>
+                      <td className="text-center">0.00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

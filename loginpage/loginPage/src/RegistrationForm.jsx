@@ -20,7 +20,7 @@ const RegistrationForm = () => {
   const inputRefs = useRef([]);
 
   useEffect(() => {
-    const text = "Welcome to Degen Money";
+    const text = "Weelcome to Degen Money";
     let index = 0;
     let timer;
 
@@ -158,12 +158,12 @@ const RegistrationForm = () => {
               <h2
                 className="text-4xl font-bold mb-4"
                 style={{
-                  textShadow: "0px 3px 4px rgba(36, 219, 16, 1)",
+                  // textShadow: "0px 3px 4px rgba(36, 219, 16, 1)",
                   color: "white",
                   fontFamily: "Montserrat, sans-serif",
                   fontWeight: "lighter",
                   width: "100%",
-                  fontSize: "18px",
+                  fontSize: "24px",
                 }}
               >
                 {welcomeText}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import bgVideo from "./assets/bgvideo.mp4";
+import bgVideo1 from "./assets/bgvideo1.mp4";
 import bg from "./assets/logo.png";
 import "./login.css";
 
@@ -53,27 +53,27 @@ const Login = () => {
     <div>
       <section className="min-h-screen flex items-center justify-center">
         <video
-          className="fixed top-0 left-0 object-cover w-full h-full z-[-1]"
-          src={bgVideo}
+          className="fixed  top-0 left-0 object-cover w-full h-full z-[-1]"
+          src={bgVideo1}
           autoPlay
-          loop
+         loop
           muted
         />
         {/* login container */}
-        <div className="hello flex rounded-2xl shadow-lg max-w-3xl p-5 items-center">
-          <div className="md:block hidden w-1/2">
-            <img className="rounded-2xl" src={bg} alt="Logo" />
-          </div>
-          <div className="border-r border-black h-full" />
-          <div className="md:w-1/2 px-8 md:px-16">
-            <h2 className="font-bold text-2xl text-[#002D74]">Login</h2>
-            <p className="text-xs mt-4 text-[#002D74]">
+        <div className="hello flex rounded-2xl  w-1/2 justify-center p-5 items-center">
+          {/* <div className="md:block hidden w-1/2">
+            <img className="rounded-2xl " src={bg} alt="Logo" />
+          </div> */}
+          <div className="border-white h-full" />
+          <div className="md:w-1/2 px-8 md:px-16  ">
+            <h2 className="font-bold text-4xl text-cyan-300">Login</h2>
+            <p className=" mt-4  text-cyan-300">
               If you are already a member, easily log in
             </p>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 ">
               <input
-                className="p-2 mt-8 rounded-xl border"
+                className="p-2 mt-8 text-white rounded-xl border border-cyan-300 bg-transparent "
                 type="email"
                 name="email"
                 placeholder="Email"
@@ -82,7 +82,7 @@ const Login = () => {
               />
               <div className="relative">
                 <input
-                  className="p-2 rounded-xl border w-full"
+                  className="p-2 rounded-xl text-white border w-full bg-transparent border-cyan-300"
                   type="password"
                   name="password"
                   placeholder="Password"
@@ -103,18 +103,18 @@ const Login = () => {
               </div>
 
               {error && <p className="error-message">{error}</p>}
-              <button className="bg-[#002D74] rounded-xl text-white py-2 hover:scale-105 duration-300">
+              <button className="  w-1/2 ml-12 mt-4 border  rounded-xl text-white py-2 hover:scale-105 duration-300">
                 Login
               </button>
             </form>
 
-            <div className="mt-5 text-xs border-b border-[#002D74] py-4 text-[#002D74]">
+            <div className="mt-5 text-xs border-b border-[#002D74] py-4 text-cyan-300">
               <a href="#">Forgot your password?</a>
             </div>
 
-            <div className="mt-3 text-xs flex justify-between items-center text-[#002D74]">
+            <div className="mt-3 text-xs flex justify-between items-center text-cyan-300">
               <p>Don't have an account?</p>
-              <button className="py-2 px-5 bg-white border rounded-xl hover:scale-110 duration-300">
+              <button className="py-2 px-5 border rounded-xl hover:scale-110 duration-300">
                 <Link to="/signup">Register</Link>
               </button>
             </div>

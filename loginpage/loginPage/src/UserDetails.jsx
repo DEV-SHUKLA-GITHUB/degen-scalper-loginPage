@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DropdownButton from "./basic components/userDetailsDropDown";
 import Typewriter from "typewriter-effect";
+import { Dna } from  'react-loader-spinner'
 
 export default function UserDetails() {
   const [userData, setUserData] = useState("");
@@ -69,8 +70,18 @@ export default function UserDetails() {
 
 
   if (!isLoggedIn) {
+    
     // Render a loading state or redirect to login
-    return <div>Loading...</div>;
+    return <div className=" h-screen w-full flex items-center justify-center bg-black">
+<Dna
+  visible={true}
+  height="200"
+  width="200"
+  ariaLabel="dna-loading"
+  wrapperStyle={{}}
+  wrapperClass="dna-wrapper"
+/>
+    </div>;
   }
 
   const handleSubmit = (e) => {
@@ -368,6 +379,11 @@ export default function UserDetails() {
     <td class="px-6 py-4 text-right">
       <button className="text-red-600" onClick={()=>{handleButtonClick(item.broker)}}>
         Generate Token
+      </button>
+    </td>
+    <td class="px-6 py-4 text-right">
+      <button className="text-red-600" onClick={()=>{window.location.href = "./tradeDashboard"}}>
+        Trade Now
       </button>
     </td>
   </tr>
