@@ -13,8 +13,8 @@ const TradeDashboard = () => {
 
   socket.onmessage = (event) => {
     const ticks = JSON.parse(event.data);
-    console.log("Received ticks:", ticks[0].last_price);
-    setSelectedOption2(ticks[0].last_price);
+    console.log('Received ticks:', ticks[0].last_price);
+    setSelectedOption2(ticks[0].last_price)
 
     // Handle the received tick data in the frontend as per your requirements
   };
@@ -23,11 +23,12 @@ const TradeDashboard = () => {
     console.log("WebSocket disconnected");
   };
 
-  const option = ["option1", "option2", "option3", "option4"];
+  const option = ['option1', 'option2', 'option3', 'option4'];
   const optionList = option.map((value) => ({ value, text: value }));
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
-  const [selectedOption3, setSelectedOption3] = useState(optionList[0]);
+  const [expiryList ,setExpiryList] = useState();
+  const [selectedOption3, setSelectedOption3] = useState();
   const [selectedOption4, setSelectedOption4] = useState(optionList[0]);
   const [selectedOption5, setSelectedOption5] = useState(optionList[0]);
   const [selectedOption6, setSelectedOption6] = useState(optionList[0]);
@@ -40,11 +41,11 @@ const TradeDashboard = () => {
   const [orderBookButtonClicked, setOrderBookButtonClicked] = useState(false);
   const [tradeBookButtonClicked, setTradeBookButtonClicked] = useState(false);
   // const [selected, setSelected] = useState(people[0]);
-  const [query, setQuery] = useState("");
+  // const [query, setQuery] = useState("");
   const options = [
-    { id: 1, name: "NIFTY 50" },
-    { id: 2, name: "Reliance" },
-    { id: 3, name: "option 3" },
+    { id: 1, name: "NIFTY" },
+    { id: 2, name: "BANKNIFTY" },
+    { id: 3, name: "FINNIFTY" },
     // Add more options as needed
   ];
 
@@ -63,9 +64,16 @@ const TradeDashboard = () => {
       // Clean up the WebSocket connection when the component unmounts
       socket.close();
     };
+
+    
   }, []);
 
-  const handleClick = () => {
+
+
+  
+  const handleClick = (selected) => {
+    // setSelectedOption1(selected);
+  
     console.log(window.localStorage.getItem("email"));
     fetch("http://localhost:8000/instruments/getInstruments", {
       method: "POST",
@@ -74,120 +82,51 @@ const TradeDashboard = () => {
       },
       body: JSON.stringify({
         token: window.localStorage.getItem("token"),
-        email: "b@gmail.com",
-        username: window.localStorage.getItem("username"),
+        selected,
       }),
     })
       .then((res) => res.json())
       .then((data) => {
-        data.forEach((instrument) => {
-          if (selectedOption1 === instrument.name) {
-            // fetch("http://localhost:8000/instruments/getData", {
-            //   method: "POST",
-            //   headers: {
-            //     "Content-Type": "application/json",
-            //   },
-            //   body: JSON.stringify({instrumentName:"NSE:NIFTY 50",
-            //   token: window.localStorage.getItem("token"),
-            //   email: window.localStorage.getItem("email"),
-            //   username: window.localStorage.getItem("username"),
-            // }),
-            // })
-            //   .then((res) => res.json())
-            //   .then((data) => {
-            //     console.log(data);
-            //     console.log(window.localStorage.getItem("email"))
-            //   })
-            //   .catch((error) => {
-            //     console.error("Error:", error);
-            //   });
-
+        for (const instrument of data.instruments) {
+          if ((selected.name || selected) === instrument.name) {
+            instrumentToken = instrument.instrument_token;
             const initialData = {
               token: window.localStorage.getItem("token"),
-              instrumentToken: "256265",
-              email: "b@gmail.com",
+              instrumentToken: instrument.instrument_token,
             };
-
+  
             socket.send(JSON.stringify(initialData));
+            break;
           } else {
             console.log("failed");
           }
-        });
+        }
         console.log(data);
+        if (data.uniqueExpiryDates && data.uniqueExpiryDates.length > 0) {
+          setExpiryList(
+            data.uniqueExpiryDates.map((value) => ({ value, text: value }))
+          );
+          setSelectedOption3(data.uniqueExpiryDates[0]);
+        } else {
+          setExpiryList([]);
+        }
+        if (data.uniqueStrikes && data.uniqueStrikes.length > 0) {
+          setStrikeList(
+            data.uniqueStrikes.map((value) => ({ value, text: value }))
+          );
+          setSelectedOption4(data.uniqueStrikes[0]);
+          setSelectedOption5(data.uniqueStrikes[0]);
+        } else {
+          setStrikeList([]);
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-    // const server=require("http").createServer(app)
-    // const WebSocket = require('ws');
-
-    // const socket = new WebSocket('ws://localhost:7000/instruments'); // Replace 'ws://localhost:3000' with your backend WebSocket URL
-
-    // socket.onopen = () => {
-    //   console.log('WebSocket connected');
-
-    //   const initialData = {
-    //     token: 'your_token',
-    //     instrumentToken: '256265',
-    //     email: 'b@gmail.com',
-    //   };
-
-    //   socket.send(JSON.stringify(initialData));
-    // };
-
-    // socket.onmessage = (event) => {
-    //   const ticks = JSON.parse(event.data);
-    //   console.log('Received ticks:', ticks);
-    //   // Handle the received tick data in the frontend as per your requirements
-    // };
-
-    // socket.onclose = () => {
-    //   console.log('WebSocket disconnected');
-    // };
-
-    // import React, { useEffect } from 'react';
-
-    // const MyComponent = () => {
-    //................................................................
-
-    // useEffect(() => {
-    //   const socket = new WebSocket('ws://localhost:7000/instruments');
-
-    //   socket.onopen = () => {
-    //     console.log('WebSocket connected');
-
-    //     const initialData = {
-    //       token: 'your_token',
-    //       instrumentToken: '256265',
-    //       email: 'b@gmail.com',
-    //     };
-
-    //     socket.send(JSON.stringify(initialData));
-    //   };
-
-    //   socket.onmessage = (event) => {
-    //     const ticks = JSON.parse(event.data);
-    //     console.log('Received ticks:', ticks);
-    //     // Handle the received tick data in the frontend as per your requirements
-    //   };
-
-    //   socket.onclose = () => {
-    //     console.log('WebSocket disconnected');
-    //   };
-
-    // return () => {
-    //   // Clean up the WebSocket connection when the component unmounts
-    //   socket.close();
-    // };
-    // }, []);
-
-    //................................................................
-    // return <div>WebSocket Example</div>;
-    // };
-    // MyComponent();
-
-    // export default MyComponent;
   };
+  useEffect(() => {
+      handleClick("NIFTY");      
+    }, []);
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -252,46 +191,20 @@ const TradeDashboard = () => {
   setSelected={setSelected}
   setQuery={setQuery}
 /> */}
-          <div className="flex ">
-            <CustomCombobox options={options} onChange={handleOptionChange} />
-            <button
-              className="ml-2 border text-white  py-2 px-4  rounded"
-              onClick={handleClick}
-            >
-              add
-            </button>
-          </div>
+<div className='flex'>
+<CustomCombobox options={options} onChange={handleClick} />
+    {/* <button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
+        add
+      </button> */}
+</div>
         </div>
-        <div className="relative inline-block text-right">
-          <label className="block text-sm text-start font-medium text-gray-200">
-            start Date
-          </label>
-          <div>
-            <div className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                className="text-gray-900 text-sm font-semibold focus:outline-none bg-transparent"
-                placeholderText="Select date"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="relative inline-block text-right">
-          <label className="block text-sm text-start font-medium text-gray-50">
-            Expiry Date
-          </label>
-          <div>
-            <div className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                className="text-gray-900 text-sm font-semibold focus:outline-none bg-transparent"
-                placeholderText="Select date"
-              />
-            </div>
-          </div>
-        </div>
+        <Dropdown
+          label="Expiry date"
+          heading="select expiry"
+          itemList={expiryList}
+          value={selectedOption3}
+          onSelect={setSelectedOption3}
+        />
         <Dropdown
           label="call strike price"
           heading="Select options"

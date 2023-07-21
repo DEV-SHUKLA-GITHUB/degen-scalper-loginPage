@@ -118,63 +118,7 @@ const zerodhaLoginValidator = (BrokerList,brokerDetails,email) => {
                     console.error(error);
                     res.status(500).json({ status: "error", data: error });
                   }
-                  
-
-
-                // var isUpdated=false;
-                // saving in database
-        // User.findOne({ email }).then(async (userData) => {
-        //     console.log(userData)
-        //     await userData.BrokerList.map(async broker=>{
-        //         if(broker.userId==BrokerList.userId){
-        //             console.log("con-1")
-        //             isUpdated=true
-        //             // update existing
-        //             await User.findOneAndUpdate(
-        //                 { email , "BrokerList.broker": BrokerList.broker },
-        //                 {
-        //                 $setOnInsert: {
-        //                     "BrokerList.$": { ...BrokerList, accessToken: credentials.access_token }
-        //                 }
-        //                 },
-        //                 { new: true, upsert: true }
-        //             )
-        //             .then((userData) => {
-        //                 console.log("Updated");
-        //             })
-        //             .catch((error) => {
-        //                 console.error(error);
-        //                 res.status(500).json({ status: "error", data: error });
-        //             });
-        //         }
-        //     })
-         
-        //  if(!isUpdated){
-        //     console.log("con-2")
-
-        //     User.findOneAndUpdate(
-        //         { email }, // Find the user by email
-        //         { $push: { BrokerList:{ ...BrokerList, accessToken: credentials.access_token } } }, // Push the form data to the formData array
-        //         { new: true } // Return the updated document
-        //       )
-        //         .then((userData) => {
-        //           console.log("updated")
-        //         })
-        //         .catch((error) => {
-        //           res.status(500).json({ status: "error", data: error });
-        //         });
-        //  }
-        // })
-        // .catch((error) => {
-        //   console.error(error);
-        // });
-        
- 
-                // fs.writeFile(zerodhaAccessTokenFilePath, JSON.stringify(credentials), (err) => {
-                //     if (err){ throw err;}
-                //     console.log(credentials,'Zerodha Access Token written to the file');
-                    
-                // });            
+                      
                 console.log("Kite Instance Created Successfully");
                 console.log(credentials.access_token)
                 if(accessToken)
