@@ -44,7 +44,7 @@ if (fs.existsSync(instrumentDataPath)) {
   const jsonData = fs.readFileSync(instrumentDataPath, 'utf-8');
   instrumentsData = JSON.parse(jsonData).map(instrument => ({
     ...instrument,
-    expiry: new Date(instrument.expiry), // Convert the expiry date to a JavaScript Date object
+    expiry: instrument.expiry, // Convert the expiry date to a JavaScript Date object
   }));
   console.log('Instruments data loaded from instrument.json.');
 } else {

@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import CustomCombobox from './basic components/AutoCompleteInput';
 
 const TradeDashboard = () => {
-
+var instrumentToken;
   const socket = new WebSocket('ws://localhost:7000/instruments');
   
   socket.onopen = () => {
@@ -14,17 +14,26 @@ const TradeDashboard = () => {
 
   };
 
-  socket.onmessage = (event) => {
-    const ticks = JSON.parse(event.data);
+socket.onmessage = (event) => {
+  const ticks = JSON.parse(event.data);
 
-    //if this is not working, comment line 21 & 22 and uncomment line 23 & 24
-    console.log('Received ticks:', ticks[0].last_price);
-    setSelectedOption2(ticks[0].last_price)
+  // Check if there are any ticks received
+
+    // const receivedInstrumentToken = ticks[0].instrument_token;
+    // console.log(ticks[0].instrument_token,"backend")
+    // console.log(instrumentToken,"frontend")
+    console.log(ticks,"ticks")
+    if (ticks[0].instrument_token == instrumentToken) {
+      setSelectedOption2(ticks[0].last_price);
+      console.log("Ticks received for selected instrument");
+    } else {
+      console.log("Ticks received, but not for the selected instrument");
+    }
+};
     // console.log('Received ticks:', ticks.last_price);
     // setSelectedOption2(ticks.last_price)
 
     // Handle the received tick data in the frontend as per your requirements
-  };
 
   socket.onclose = () => {
     console.log('WebSocket disconnected');
@@ -35,6 +44,7 @@ const TradeDashboard = () => {
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
   const [expiryList ,setExpiryList] = useState();
+  const [strikeList ,setStrikeList] = useState();
   const [selectedOption3, setSelectedOption3] = useState();
   const [selectedOption4, setSelectedOption4] = useState(optionList[0]);
   const [selectedOption5, setSelectedOption5] = useState(optionList[0]);
@@ -44,6 +54,19 @@ const TradeDashboard = () => {
   const [positions,setPositions] = useState(false)
   const [orderBook,setOrderBook] = useState(false)
   const [TradeBook,setTradeBook] = useState(false)
+  const [customize,setCustomize] = useState(false)
+  const [customBuyCallKey, setCustomBuyCallKey] = useState(
+    localStorage.getItem('customBuyCallKey') || ''
+  );
+  const [customSellCallKey, setCustomSellCallKey] = useState(
+    localStorage.getItem('customSellCallKey') || ''
+  );
+  const [customBuyPutKey, setCustomBuyPutKey] = useState(
+    localStorage.getItem('customBuyPutKey') || ''
+  );
+  const [customSellPutKey, setCustomSellPutKey] = useState(
+    localStorage.getItem('customSellPutKey') || ''
+  );
   const [positionButtonClicked, setPositionButtonClicked] = useState(false);
   const [orderBookButtonClicked, setOrderBookButtonClicked] = useState(false);
   const [tradeBookButtonClicked, setTradeBookButtonClicked] = useState(false);
@@ -58,12 +81,6 @@ const TradeDashboard = () => {
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
-  const handleOptionChange = (selected) => {
-    setSelectedOption(selected);
-    // You can now access the selected option and perform any necessary actions
-    console.log("Selected Option:", selected);
-  };
-
   useEffect(() => {
   const socket = new WebSocket('ws://localhost:7000/instruments');
 
@@ -76,58 +93,11 @@ const TradeDashboard = () => {
 
     
   }, []);
-  // useEffect((selected) => {
-  //   console.log(window.localStorage.getItem("email"))
-  //   fetch("http://localhost:8000/instruments/getInstruments", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({
-  //       token: window.localStorage.getItem("token") 
-  //     }),
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       data.forEach((instrument) => {
-  //         if (selectedOption1 === instrument.name) {
-  //           const initialData = {
-  //             token: window.localStorage.getItem("token"),
-  //             instrumentToken: '256265'
-  //           };
-      
-  //           socket.send(JSON.stringify(initialData));
-
-
-  //         } else {
-  //           console.log("failed");
-  //         }
-  //       });
-  //       console.log(data)
-  //       if (data && data.length > 0) {
-  //         setExpiryList(data.map((value) => ({ value, text: value })));
-  //         setSelectedOption3(expiryList);
-  //       } else {
-  //         setExpiryList([]) 
-  //       }
-  //       // expirylist = data.map((value) => ({ value, text: value }));
-  //       // setSelectedOption3(expirylist[0])
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error:", error);
-  //     });
-    
-  // }, []);
-
-
-
+// console.log(window.localStorage.getItem("token"))
+  const handleClick = (selected) => {
+    // setSelectedOption1(selected);
   
-  const handleClick = (selected) =>{
-    // setSelectedOption1(selected)
-    // console.log(selected.name)
-    
-    // setSelectedOption(selected)
-    console.log(window.localStorage.getItem("email"))
+    console.log(window.localStorage.getItem("email"));
     fetch("http://localhost:8000/instruments/getInstruments", {
       method: "POST",
       headers: {
@@ -135,43 +105,55 @@ const TradeDashboard = () => {
       },
       body: JSON.stringify({
         token: window.localStorage.getItem("token"),
-        selected
+        selected,
       }),
     })
-    .then((res) => res.json())
+      .then((res) => res.json())
       .then((data) => {
-        // console.log(data.instruments[0].name)
-        // console.log(selectedOption1)
         for (const instrument of data.instruments) {
-          if (selected.name === instrument.name) {
-            console.log(instrument);  
+          if ((selected.name || selected) === instrument.name) {
+            instrumentToken = instrument.instrument_token;
+            console.log(instrumentToken,"instrumenttokenHandleClick")
             const initialData = {
               token: window.localStorage.getItem("token"),
-              instrumentToken: instrument.instrument_token
+              instrumentToken: instrument.instrument_token,
             };
-        
+  
             socket.send(JSON.stringify(initialData));
             break;
           } else {
             console.log("failed");
           }
         }
-        console.log(data)
+        console.log(data);
         if (data.uniqueExpiryDates && data.uniqueExpiryDates.length > 0) {
-          setExpiryList(data.uniqueExpiryDates.map((value) => ({ value, text: value })));
-          setSelectedOption3(expiryList);
+          setExpiryList(
+            data.uniqueExpiryDates.map((value) => ({ value, text: value }))
+          );
+          setSelectedOption3(data.uniqueExpiryDates[0]);
         } else {
-          setExpiryList([]) 
+          setExpiryList([]);
         }
-        // expirylist = data.map((value) => ({ value, text: value }));
-        // setSelectedOption3(expirylist[0])
+        if (data.uniqueStrikes && data.uniqueStrikes.length > 0) {
+          setStrikeList(
+            data.uniqueStrikes.map((value) => ({ value, text: value }))
+          );
+          setSelectedOption4(data.uniqueStrikes[0]);
+          setSelectedOption5(data.uniqueStrikes[0]);
+        } else {
+          setStrikeList([]);
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-
-
   };
+  useEffect(() => {
+      handleClick("NIFTY");      
+    }, []);
+
+  
+
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -198,15 +180,56 @@ const TradeDashboard = () => {
     setOrderBook(false);
     setPositions(false);
   };
-  
-  const handleChange = (e) =>{
-    setSelectedOption1(e.target.value)
-    console.log(selectedOption1)
-  }
+  const handleKeyDown = (event) => {
+    // ... (existing code)
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
+    // Step 4: Check against customized keys for each button
+    if (event.key === (customSellCallKey || 'ArrowLeft')) {
+      console.log('sell call');
+    }
+    if (event.key === (customBuyCallKey || 'ArrowUp')) {
+      console.log('Buy call');
+    }
+    if (event.key === (customBuyPutKey || 'ArrowDown')) {
+      console.log('buy put');
+    }
+    if (event.key === (customSellPutKey || 'ArrowRight')) {
+      console.log('sell put');
+    }
   };
+
+  const handleCustomizeClick = () => {
+    setCustomize(true);
+  };
+
+  const handleCustomizeClickSave = () => {
+    // Step 1: Save the customized keys in local storage
+    localStorage.setItem('customBuyCallKey', customBuyCallKey);
+    localStorage.setItem('customSellCallKey', customSellCallKey);
+    localStorage.setItem('customBuyPutKey', customBuyPutKey);
+    localStorage.setItem('customSellPutKey', customSellPutKey);
+    setCustomize(false);
+  };
+
+  useEffect(() => {
+    const customBuyCallKeyFromStorage = localStorage.getItem('customBuyCallKey');
+    const customSellCallKeyFromStorage = localStorage.getItem('customSellCallKey');
+    const customBuyPutKeyFromStorage = localStorage.getItem('customBuyPutKey');
+    const customSellPutKeyFromStorage = localStorage.getItem('customSellPutKey');
+
+    if (customBuyCallKeyFromStorage) {
+      setCustomBuyCallKey(customBuyCallKeyFromStorage);
+    }
+    if (customSellCallKeyFromStorage) {
+      setCustomSellCallKey(customSellCallKeyFromStorage);
+    }
+    if (customBuyPutKeyFromStorage) {
+      setCustomBuyPutKey(customBuyPutKeyFromStorage);
+    }
+    if (customSellPutKeyFromStorage) {
+      setCustomSellPutKey(customSellPutKeyFromStorage);
+    }
+  }, []);
 
   
   return (
@@ -215,34 +238,10 @@ const TradeDashboard = () => {
         Broker: <span className="font-semibold">Zerodha(User: YTNN30)</span>
       </h2>
       <div className="flex p-2 m-2 justify-between">
-        {/* <Dropdown
-          label="select a option"
-          heading="Select options"
-          itemList={optionList}
-          value={selectedOption1.value}
-          onSelect={setSelectedOption1}
-        /> */}
         <div className='flex-col'>
-        {/* <label htmlFor="input">enter name</label><br /> */}
-{/* <div>
-<input onChange={handleChange} className=' w-auto border-2 border-black' type="text" />
-<button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
-        add
-      </button>
-  </div>         */}
-  {/* <CustomCombobox
-  people={people}
-  selected={selected}
-  query={query}
-  setSelected={setSelected}
-  setQuery={setQuery}
-/> */}
-<div className='flex'>
-<CustomCombobox options={options} onChange={handleClick} />
-    {/* <button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
-        add
-      </button> */}
-</div>
+        <div className='flex'>
+        <CustomCombobox options={options} onChange={handleClick} />
+        </div>
         </div>
         <Dropdown
           label="Expiry date"
@@ -254,15 +253,15 @@ const TradeDashboard = () => {
         <Dropdown
           label="call strike price"
           heading="Select options"
-          itemList={optionList}
-          value={selectedOption4.value}
+          itemList={strikeList}
+          value={selectedOption4}
           onSelect={setSelectedOption4}
         />
         <Dropdown
           label="put strike price"
           heading="Select options"
-          itemList={optionList}
-          value={selectedOption5.value}
+          itemList={strikeList}
+          value={selectedOption5}
           onSelect={setSelectedOption5}
         />
         <Dropdown
@@ -280,6 +279,69 @@ const TradeDashboard = () => {
           onSelect={setSelectedOption7}
         />
       </div>
+      <button
+        className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
+        onKeyDown={handleKeyDown}
+      >
+        Enable click
+      </button>
+      <button
+        className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
+        onClick={handleCustomizeClick}
+      >
+        Customize click
+      </button>
+      {/* <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" onKeyDown={handleKeyDown}> Enable click</button>
+      <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleCustomizeClick}> Customize click</button> */}
+      {/* {customize && 
+        <div>
+        <input type="text" onKeyDown={handleInput1} className='m-2 p-2 border-2 rounded border-black' placeholder='customize key for Buy call' />
+        <input type="text" onKeyDown={handleInput2} className='m-2 p-2 border-2 rounded border-black' placeholder='customize key for sell call' />
+        <input type="text" onKeyDown={handleInput3} className='m-2 p-2 border-2 rounded border-black' placeholder='customize key for Buy put' />
+        <input type="text" onKeyDown={handleInput4} className='m-2 p-2 border-2 rounded border-black' placeholder='customize key for sell put' />
+        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleCustomizeClickSave}> save</button>
+        </div>
+      } */}
+            {customize && (
+        <div>
+          {/* Step 2: Show input fields for customized keys */}
+          <input
+            type="text"
+            value={customBuyCallKey}
+            onChange={(e) => setCustomBuyCallKey(e.target.value)}
+            className="m-2 p-2 border-2 rounded border-black"
+            placeholder="customize key for Buy call"
+          />
+          <input
+            type="text"
+            value={customSellCallKey}
+            onChange={(e) => setCustomSellCallKey(e.target.value)}
+            className="m-2 p-2 border-2 rounded border-black"
+            placeholder="customize key for sell call"
+          />
+          <input
+            type="text"
+            value={customBuyPutKey}
+            onChange={(e) => setCustomBuyPutKey(e.target.value)}
+            className="m-2 p-2 border-2 rounded border-black"
+            placeholder="customize key for Buy put"
+          />
+          <input
+            type="text"
+            value={customSellPutKey}
+            onChange={(e) => setCustomSellPutKey(e.target.value)}
+            className="m-2 p-2 border-2 rounded border-black"
+            placeholder="customize key for sell put"
+          />
+          {/* Step 3: Save button to save the customized keys */}
+          <button
+            className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
+            onClick={handleCustomizeClickSave}
+          >
+            Save
+          </button>
+        </div>
+      )}
       <div className='mt-8 ml-4 mr-4 flex justify-between'>
         <h3>strike: BANKNIFTY2238984984</h3>
         <h3>NIFTY BANK</h3>
@@ -292,10 +354,10 @@ const TradeDashboard = () => {
       </div>
       <div className='mt-4 mr-4 flex justify-between'>
         <div>
-        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded">
-        Sell Call
+        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" >
+        Sell Call  
       </button>
-      <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded">
+      <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded ">
         Buy Call
       </button>
         </div>
@@ -308,10 +370,10 @@ const TradeDashboard = () => {
       </button>
         </div>
         <div>
-        <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded">
+        <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded " >
         Buy Put
       </button>
-      <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded">
+      <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" > 
         Sell Put
       </button>
         </div>
