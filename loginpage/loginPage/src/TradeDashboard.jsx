@@ -5,6 +5,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import CustomCombobox from './basic components/AutoCompleteInput';
 
 const TradeDashboard = () => {
+  const [prev_token, setPrev_token]=useState("")
+
 
   const socket = new WebSocket('ws://localhost:7000/instruments');
   
@@ -147,8 +149,10 @@ const TradeDashboard = () => {
             console.log(instrument);  
             const initialData = {
               token: window.localStorage.getItem("token"),
-              instrumentToken: instrument.instrument_token
+              instrumentToken: instrument.instrument_token,
+              prev_instrumentToken: prev_token
             };
+            setPrev_token(instrument.instrument_token)
         
             socket.send(JSON.stringify(initialData));
             break;

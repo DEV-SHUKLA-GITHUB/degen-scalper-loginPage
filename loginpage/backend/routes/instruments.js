@@ -36,6 +36,8 @@ router.post("/getInstruments",async (req,res)=>{
     
     //here perform any kite operations
     const instruments = await kite.getInstruments(["NFO"]);
+    const orderHistory = await kite.getOrderHistory();
+
     const filteredInstruments = instruments.filter(
       (instrument) => instrument.name === selected.name && instrument.segment === 'NFO-OPT'
     );
@@ -68,7 +70,7 @@ wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
     const initialData = JSON.parse(message);
     // console.log("recived",initialData)
-    const { token, instrumentToken, email } = initialData;
+    const { token, instrumentToken, prev_instrumentToken } = initialData;
     console.log("token",instrumentToken)                                    
     // Use the received data (token, instrumentToken, email) for further processing or to retrieve the required tick data
     try {
@@ -84,6 +86,8 @@ wss.on('connection', (ws) => {
         var ticker = new KiteTicker({api_key, access_token});
         function onTicks(ticks) {
           console.log("Ticks", ticks);
+          // console.log(ticks[0].instrument_token)
+          console.log("\n\n\n\n\n")
         ws.send(JSON.stringify(ticks));
       }
       function subscribe() {
@@ -91,9 +95,20 @@ wss.on('connection', (ws) => {
           ticker.subscribe(items);
           ticker.setMode(ticker.modeQuote, items);
       }
-    
+      function unsubscribe() {
+        var items = [Number(prev_instrumentToken)];
+        ticker.subscribe(items);
+        console.log(`token ${prev_instrumentToken} is unsubscribed`)
+        // ticker.setMode(ticker.modeQuote, items);
+    }
+        // ticker.disconnect()
         ticker.connect();
-        ticker.on("connect", subscribe);
+        ticker.on("connect", ()=>{
+          if(prev_instrumentToken!=""){
+            console.log(prev_instrumentToken)
+            unsubscribe()}
+          
+          subscribe()});
         ticker.on("ticks", onTicks);     
 }
 a()
