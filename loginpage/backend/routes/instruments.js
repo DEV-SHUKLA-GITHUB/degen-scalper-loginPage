@@ -37,7 +37,6 @@ const downloadInstrumentsData = async () => {
     console.error('Error downloading or converting instruments data:', error);
   }
 };
-
 // Read instruments data from instrument.json on server start
 const instrumentDataPath = path.join(dataDir, 'instrument.json');
 if (fs.existsSync(instrumentDataPath)) {
@@ -71,6 +70,9 @@ router.post("/getInstruments", async (req, res) => {
     const a = async () => {
       const kite = new KiteConnect({ api_key });
       kite.setAccessToken(access_token);
+      
+      const orderbook = await kite.getOrders(); 
+      console.log(orderbook,"orderbook")
 
       // Perform any kite operations here
       const instruments = await kite.getInstruments(["NFO"]);    
@@ -91,7 +93,7 @@ router.post("/getInstruments", async (req, res) => {
       );
 
       // Send the response to the client
-      res.send({ uniqueExpiryDates, instruments, uniqueStrikes });
+      res.send({ uniqueExpiryDates, instruments, uniqueStrikes, orderbook, accountName:jsonData.BrokerList[0].accountName  });
     };
 
     a();
@@ -99,6 +101,9 @@ router.post("/getInstruments", async (req, res) => {
     console.error('Error parsing JSON:', error);
   }
 });
+
+// WebSocket server code
+// ...
 
 // WebSocket server code
 const wss = new WebSocket.Server({ server });
@@ -129,7 +134,7 @@ wss.on('connection', (ws) => {
         const ticker = new KiteTicker({ api_key, access_token });
 
         function onTicks(ticks) {
-          // console.log("Ticks", ticks);
+          console.log("Ticks", ticks);
           const instrumentTokens = clientInstrumentMap.get(ws);
           if (instrumentTokens && instrumentTokens.includes(ticks[0].instrument_token)) {
             // Send the ticks data to the current client
@@ -138,30 +143,36 @@ wss.on('connection', (ws) => {
           }
         }
 
-        function subscribe() {
+        function subscribe(instrumentToken) {
           var items = [Number(instrumentToken)];
-          ticker.subscribe(items)
+          ticker.subscribe(items);
           instoken = ticker.subscribe(items);
-          console.log(ticker.subscribe(items), "hello")
+          console.log(ticker.subscribe(items), "hello");
 
           ticker.setMode(ticker.modeQuote, items);
         }
 
-        function unsubscribe() {
-          let instrumentTokens = [];
-          const existingInstrumentTokens = clientInstrumentMap.get(ws);
-          console.log(existingInstrumentTokens,"up")
-          console.log(instoken,"instoken")
-          if (instoken) {
-            // instrumentTokens = existingInstrumentTokens;
-            ticker.unsubscribe(instoken);
+        function unsubscribe(instrumentToken) {
+          let instrumentTokens = clientInstrumentMap.get(ws);
+          console.log(instrumentTokens, "up");
+          console.log(instoken, "instoken");
+          if (instrumentTokens) {
+            const index = instrumentTokens.indexOf(Number(instrumentToken));
+            if (index > -1) {
+              instrumentTokens.splice(index, 1);
+              ticker.unsubscribe(instoken);
+            }
           }
         }
 
         ticker.connect();
         ticker.on("connect", () => {
-          unsubscribe(Number(instrumentToken)); // Unsubscribe from previously subscribed instrument tokens
-          subscribe(); // Subscribe to the selected instrument token
+          // Extract the previous instrument token
+          const previousInstrumentToken = clientInstrumentMap.get(ws);
+          if (previousInstrumentToken) {
+            unsubscribe(previousInstrumentToken[0]); // Unsubscribe from the previous instrument token
+          }
+          subscribe(instrumentToken); // Subscribe to the newly selected instrument token
           clientInstrumentMap.set(ws, [Number(instrumentToken)]); // Update the instrument token mapping
         });
         ticker.on("ticks", onTicks);
@@ -173,6 +184,8 @@ wss.on('connection', (ws) => {
     }
   });
 });
+
+// ...
 
 server.listen(7000, () => {
   console.log('Server started on port 7000');
