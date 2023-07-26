@@ -23,17 +23,18 @@ const HomePage = () => {
         </section>
 
         <h1 className="text-6xl  mb-10 drop-shadow-2xl shadow-white  text-cyan-500">
-        {/* <Typewriter
+        <Typewriter
   onInit={(typewriter) => {
     typewriter
-      .pauseFor(10) // Optional: Add a pause before starting
+    .changeDelay(50)
+       // Optional: Add a pause before starting
       .typeString("The Advanced way of Trading the Markets")
-      .changeDelay(10) // Set a lower value for faster typewriter effect
+       // Set a lower value for faster typewriter effect
       .start();
   }}
-/> */}
+/>
 
-<Typewriter
+{/* <Typewriter
   options={{
     strings: ["The Advanced way of Trading the Markets"],
     autoStart: true,
@@ -41,8 +42,8 @@ const HomePage = () => {
     pauseFor :5000,
     loop:false,
     deleteSpeed: 10000
-  }}
-/>
+  }} */}
+
 
         </h1>
         <div className="space-y-4 m-2">

@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
 import DropdownButton from "./basic components/userDetailsDropDown";
 import Typewriter from "typewriter-effect";
-import { Dna } from  'react-loader-spinner'
+import { Dna } from "react-loader-spinner";
+import { ColorRing } from "react-loader-spinner";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function UserDetails() {
   const [userData, setUserData] = useState("");
-  const [mainData,setMainData] = useState( {
+  const [mainData, setMainData] = useState({
     username: "",
-    password:"",
-    totp:"",
-    userId:"",
-    apiKey:"",
-    secretKey:"",
-    broker: "" // Add the selected dropdown value
+    password: "",
+    totp: "",
+    userId: "",
+    apiKey: "",
+    secretKey: "",
+    broker: "", // Add the selected dropdown value
   });
-  const [updatedMainData,setUpdatedMainData] = useState(JSON.parse(window.localStorage.getItem("userdata")).BrokerList);
+  const [updatedMainData, setUpdatedMainData] = useState(
+    JSON.parse(window.localStorage.getItem("userdata")).BrokerList
+  );
   const [selectedOption, setSelectedOption] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [show, setShow] = useState(false);
@@ -24,9 +29,9 @@ export default function UserDetails() {
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [formData, setFormData] = useState([]);
+  const [isGeneratingToken, setIsGeneratingToken] = useState(false);
 
- 
-//  console.log(data)
+  //  console.log(data)
   let value;
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -39,7 +44,7 @@ export default function UserDetails() {
     // Check if the user is logged in
     const token = window.localStorage.getItem("token");
     const email = window.localStorage.getItem("email");
-    console.log(email,"email")
+    console.log(email, "email");
     const username = window.localStorage.getItem("username");
     if (token) {
       // User is logged in, fetch user data
@@ -77,22 +82,22 @@ export default function UserDetails() {
       window.location.href = "./login";
     }
   }, []);
-  console.log(userData)
-
+  console.log(userData);
 
   if (!isLoggedIn) {
-    
     // Render a loading state or redirect to login
-    return <div className=" h-screen w-full flex items-center justify-center bg-black">
-<Dna
-  visible={true}
-  height="200"
-  width="200"
-  ariaLabel="dna-loading"
-  wrapperStyle={{}}
-  wrapperClass="dna-wrapper"
-/>
-    </div>;
+    return (
+      <div className=" h-screen w-full flex items-center justify-center bg-black">
+        <Dna
+          visible={true}
+          height="200"
+          width="200"
+          ariaLabel="dna-loading"
+          wrapperStyle={{}}
+          wrapperClass="dna-wrapper"
+        />
+      </div>
+    );
   }
 
   const handleSubmit = (e) => {
@@ -112,34 +117,32 @@ export default function UserDetails() {
     // setMainData(formDataObj)
     // Create a new array with the existing form data and the new form data object
 
-      
-      // Serialize the form data array as a string
-      // const formDataString = JSON.stringify(updatedMainData, null, 2);
-      
-      // Send the updated form data string to the backend
-      fetch("http://localhost:8000/userData", {
-        method: "POST",
-        crossDomain: true,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({
-          token: window.localStorage.getItem("token"),
-          BrokerList: formDataObj, // Send the form data string
-        }),
-      })
+    // Serialize the form data array as a string
+    // const formDataString = JSON.stringify(updatedMainData, null, 2);
+
+    // Send the updated form data string to the backend
+    fetch("http://localhost:8000/userData", {
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({
+        token: window.localStorage.getItem("token"),
+        BrokerList: formDataObj, // Send the form data string
+      }),
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data.status) {
-          
           // setUpdatedMainData(prev=>[...prev, formDataObj])
-          setUpdatedMainData(prev => {
+          setUpdatedMainData((prev) => {
             if (!Array.isArray(prev)) {
               return [formDataObj]; // Set prev to an empty array if it's not already an array
             }
-          
+
             return [...prev, formDataObj];
           });
           console.log("Form data updated successfully");
@@ -162,7 +165,8 @@ export default function UserDetails() {
     // Redirect to login page
     window.location.href = "./login";
   };
-  function handleButtonClick(brokerName){
+  function handleButtonClick(brokerName) {
+    setIsGeneratingToken(true);
     fetch("http://localhost:8000/generateToken", {
       method: "POST",
       crossDomain: true,
@@ -171,21 +175,31 @@ export default function UserDetails() {
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      body: JSON.stringify({  
+      body: JSON.stringify({
         token: window.localStorage.getItem("token"),
-        brokerName
+        brokerName,
       }),
     })
       .then((res) => res.json())
       .then((data) => {
-        if(data.status==true){
-          console.log("congrats yoda")
+        if (data.status == true) {
+          console.log("congrats yoda");
+        } else {
+          console.log("failed");
         }
-        else{
-          console.log("failed")
-        }
-      })
-    
+
+        setIsGeneratingToken(false);
+        toast.success("Token Generated", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      });
   }
 
   // const handleShowData = () => {
@@ -213,22 +227,19 @@ export default function UserDetails() {
         </button>
       </div>
       <div className=" flex w-full h-4/6">
-        <div   className="border-r-2 font-thin  border-cyan-800 w-1/4 flex items-center justify-center text-4xl text-cyan-300 capitalize">
+        <div className="border-r-2 font-thin  border-cyan-800 w-1/4 flex items-center justify-center text-4xl text-cyan-300 capitalize">
           <Typewriter
             onInit={(typewriter) => {
               typewriter
-            
-                .typeString( ` Welcome ${userData.FullName}`)
+
+                .typeString(` Welcome ${userData.FullName}`)
                 .callFunction(() => {
                   // console.log("String typed out!");
-                }) 
-                
-                
-                
+                })
+
                 .start();
-                
             }}
-           />
+          />
         </div>
 
         <div className="m-3 w-3/4 flex flex-col items-center justify-center ">
@@ -260,7 +271,7 @@ export default function UserDetails() {
           {/* <DropdownButton /> */}
           {showForm && (
             <form
-              className="border-2 border-cyan-300  flex flex-col p-5 w-1/2"
+              className="border-2 border-cyan-300  flex flex-col p-5 w-1/2 transition-transform"
               onSubmit={handleSubmit}
             >
               <div className="relative z-0 w-full mb-6 group">
@@ -387,35 +398,64 @@ export default function UserDetails() {
               </tr>
             </thead>
             <tbody>
-{
-  updatedMainData && updatedMainData.map((item)=>{
-  console.log(updatedMainData,"updatedMainData");
-  console.log(mainData,"maindata")
-    console.log(item,"item")
-    return(
-      <tr class="">
-      <th
-        scope="row"
-        class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-      >
-        {item.broker}
-      </th>
-      <td class="px-6 py-4">{item.totp}</td>
-      <td class="px-6 py-4">{item.secretKey}</td>
-      <td class="px-6 py-4 text-right">
-        <button className="text-red-600" onClick={()=>{handleButtonClick(item.broker)}}>
-          Generate Token
-        </button>
-      </td>
-      <td class="px-6 py-4 text-right">
-        <button className="text-red-600" onClick={()=>{window.location.href = "./tradeDashboard";}}>
-          Trade Now
-        </button>
-      </td>
-    </tr>
-    )
-  })
-}
+              {updatedMainData &&
+                updatedMainData.map((item) => {
+                  console.log(updatedMainData, "updatedMainData");
+                  console.log(mainData, "maindata");
+                  console.log(item, "item");
+                  return (
+                    <tr class="">
+                      <th
+                        scope="row"
+                        class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      >
+                        {item.broker}
+                      </th>
+                      <td class="px-6 py-4">{item.totp}</td>
+                      <td class="px-6 py-4">{item.secretKey}</td>
+                      <td class="px-6 py-4 text-right">
+                        {isGeneratingToken ? (
+                          <span className="text-yellow-500">
+                            <ColorRing
+                              visible={true}
+                              height="80"
+                              width="80"
+                              ariaLabel="blocks-loading"
+                              wrapperStyle={{}}
+                              wrapperClass="blocks-wrapper"
+                              colors={[
+                                "#e15b64",
+                                "#f47e60",
+                                "#f8b26a",
+                                "#abbd81",
+                                "#849b87",
+                              ]}
+                            />
+                          </span>
+                        ) : (
+                          <button
+                            className="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                            onClick={() => {
+                              handleButtonClick(item.broker);
+                            }}
+                          >
+                            Generate Token
+                          </button>
+                        )}
+                      </td>
+                      <td class="px-6 py-4 text-right">
+                        <button
+                          className="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                          onClick={() => {
+                            window.location.href = "./tradeDashboard";
+                          }}
+                        >
+                          Trade Now
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               {/* <tr class="">
                 <th
                   scope="row"

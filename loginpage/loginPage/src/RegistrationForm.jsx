@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import bg from "./assets/mainBg.mp4";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RegistrationForm = () => {
   const [fields, setFields] = useState([
@@ -15,7 +17,9 @@ const RegistrationForm = () => {
   const [isEmailExists, setIsEmailExists] = useState(false);
   const [isUsernameExists, setIsUsernameExists] = useState(false);
   const [welcomeText, setWelcomeText] = useState("");
-  
+
+  const notify = () => toast("Wow so easy!");
+
   // Ref for input fields
   const inputRefs = useRef([]);
 
@@ -121,6 +125,16 @@ const RegistrationForm = () => {
                 .then((res) => {
                   console.log(res, "userRegister");
                   setIsRegistrationSuccessful(true);
+                  toast.success("Registration Successful", {
+                    position: "top-left",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                  });
                 })
                 .catch((error) => {
                   console.error("Registration failed:", error);
@@ -150,9 +164,9 @@ const RegistrationForm = () => {
       <div className="flex items-center justify-center h-screen">
         <div className="w-1/4 bg-transparent text-white p-8 z-10">
           {isRegistrationSuccessful ? (
-            <div className="bg-green-500 text-white p-4 mb-4">
-              Registration Successful!
-            </div>
+            <div>
+        
+          </div>
           ) : (
             <div className="mb-6">
               <h2
@@ -208,6 +222,7 @@ const RegistrationForm = () => {
               })}
             </div>
           )}
+
           {isEmailExists && (
             <div className="bg-red-500 text-white p-2 mb-4">
               Email already exists. Please choose a different email.
@@ -218,6 +233,7 @@ const RegistrationForm = () => {
               Username already exists. Please choose a different username.
             </div>
           )}
+
           <div className="text-center">
             Already registered?
             <div className="text-center">

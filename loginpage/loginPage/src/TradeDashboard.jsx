@@ -1,26 +1,37 @@
-import React, { useState, useEffect } from "react";
-import Dropdown from "./basic components/Dropdown";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import CustomCombobox from "./basic components/AutoCompleteInput";
+import React, { useState,useEffect } from 'react';
+import Dropdown from './basic components/Dropdown';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import CustomCombobox from './basic components/AutoCompleteInput';
 
 const TradeDashboard = () => {
-  const socket = new WebSocket("ws://localhost:7000/instruments");
-
+let instrumentToken;
+  const socket = new WebSocket('ws://localhost:7000/instruments');
+  
   socket.onopen = () => {
-    console.log("WebSocket connected");
+    console.log('WebSocket connected');
+
+
   };
 
   socket.onmessage = (event) => {
     const ticks = JSON.parse(event.data);
-    console.log('Received ticks:', ticks[0].last_price);
-    setSelectedOption2(ticks[0].last_price)
+
+    //if this is not working, comment line 21 & 22 and uncomment line 23 & 24
+    console.log(ticks)
+    console.log(ticks[0].instrument_token,"backend");
+    console.log(instrumentToken,"frontend");
+    if(ticks[0].instrument_token==instrumentToken){
+      setSelectedOption2(ticks[0].last_price)
+    }
+    // console.log('Received ticks:', ticks.last_price);
+    // setSelectedOption2(ticks.last_price)
 
     // Handle the received tick data in the frontend as per your requirements
   };
 
   socket.onclose = () => {
-    console.log("WebSocket disconnected");
+    console.log('WebSocket disconnected');
   };
 
   const option = ['option1', 'option2', 'option3', 'option4'];
@@ -28,15 +39,16 @@ const TradeDashboard = () => {
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
   const [expiryList ,setExpiryList] = useState();
+  const [strikeList ,setStrikeList] = useState();
   const [selectedOption3, setSelectedOption3] = useState();
   const [selectedOption4, setSelectedOption4] = useState(optionList[0]);
   const [selectedOption5, setSelectedOption5] = useState(optionList[0]);
   const [selectedOption6, setSelectedOption6] = useState(optionList[0]);
   const [selectedOption7, setSelectedOption7] = useState(optionList[0]);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [positions, setPositions] = useState(false);
-  const [orderBook, setOrderBook] = useState(false);
-  const [TradeBook, setTradeBook] = useState(false);
+  const [positions,setPositions] = useState(false)
+  const [orderBook,setOrderBook] = useState(false)
+  const [TradeBook,setTradeBook] = useState(false)
   const [positionButtonClicked, setPositionButtonClicked] = useState(false);
   const [orderBookButtonClicked, setOrderBookButtonClicked] = useState(false);
   const [tradeBookButtonClicked, setTradeBookButtonClicked] = useState(false);
@@ -51,14 +63,10 @@ const TradeDashboard = () => {
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
-  const handleOptionChange = (selected) => {
-    setSelectedOption(selected);
-    // You can now access the selected option and perform any necessary actions
-    console.log("Selected Option:", selected);
-  };
-
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:7000/instruments");
+  const socket = new WebSocket('ws://localhost:7000/instruments');
+
+    
 
     return () => {
       // Clean up the WebSocket connection when the component unmounts
@@ -67,10 +75,7 @@ const TradeDashboard = () => {
 
     
   }, []);
-
-
-
-  
+// console.log(window.localStorage.getItem("token"))
   const handleClick = (selected) => {
     // setSelectedOption1(selected);
   
@@ -127,6 +132,9 @@ const TradeDashboard = () => {
   useEffect(() => {
       handleClick("NIFTY");      
     }, []);
+
+  
+
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -135,7 +143,7 @@ const TradeDashboard = () => {
     setOrderBook(false);
     setTradeBook(false);
   };
-
+  
   const handleOrderBookClick = () => {
     setOrderBookButtonClicked(true);
     setTradeBookButtonClicked(false);
@@ -144,7 +152,7 @@ const TradeDashboard = () => {
     setTradeBook(false);
     setPositions(false);
   };
-
+  
   const handleTradeBookClick = () => {
     setTradeBookButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -153,49 +161,15 @@ const TradeDashboard = () => {
     setOrderBook(false);
     setPositions(false);
   };
-
-  const handleChange = (e) => {
-    setSelectedOption1(e.target.value);
-    console.log(selectedOption1);
-  };
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
-
   return (
     <div className="bg-black text-white h-screen bgPic ">
       <h2>
         Broker: <span className="font-semibold">Zerodha(User: YTNN30)</span>
       </h2>
       <div className="flex p-2 m-2 justify-between ">
-        {/* <Dropdown
-          label="select a option"
-          heading="Select options"
-          itemList={optionList}
-          value={selectedOption1.value}
-          onSelect={setSelectedOption1}
-        /> */}
         <div className="flex-col">
-          {/* <label htmlFor="input">enter name</label><br /> */}
-          {/* <div>
-<input onChange={handleChange} className=' w-auto border-2 border-black' type="text" />
-<button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
-        add
-      </button>
-  </div>         */}
-          {/* <CustomCombobox
-  people={people}
-  selected={selected}
-  query={query}
-  setSelected={setSelected}
-  setQuery={setQuery}
-/> */}
 <div className='flex'>
 <CustomCombobox options={options} onChange={handleClick} />
-    {/* <button className="ml-2 bg-blue-500 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleClick}>
-        add
-      </button> */}
 </div>
         </div>
         <Dropdown
@@ -208,16 +182,16 @@ const TradeDashboard = () => {
         <Dropdown
           label="call strike price"
           heading="Select options"
-          itemList={optionList}
-          value={selectedOption4.value}
+          itemList={strikeList}
+          value={selectedOption4}
           onSelect={setSelectedOption4}
           
         />
         <Dropdown
           label="put strike price"
           heading="Select options"
-          itemList={optionList}
-          value={selectedOption5.value}
+          itemList={strikeList}
+          value={selectedOption5}
           onSelect={setSelectedOption5}
         />
         <Dropdown

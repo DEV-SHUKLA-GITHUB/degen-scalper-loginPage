@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import bgVideo1 from "./assets/bgvideo1.mp4";
 import bg from "./assets/logo.png";
 import "./login.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+const isVibrationSupported = "vibrate" in navigator;
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -41,13 +45,36 @@ const Login = () => {
           window.localStorage.setItem("email", data.email);
           window.localStorage.setItem("userdata", JSON.stringify(data.data));
           window.location.href = "./userDetails";
+
+          toast.success("Login Successful", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            });
         } else {
           setError("Invalid email or password");
+          if (isVibrationSupported) {
+            navigator.vibrate([100, 50, 100]); // Vibrate for 100ms, pause for 50ms, and vibrate again for 100ms
+          }
+
+          toast.error("Invalid Credentials", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            });
         }
       })
-      .catch((error) => {
-        setError("An error occurred during login");
-      });
+     
   };
 
   return (
