@@ -67,7 +67,9 @@ const [instrumentToken,setInstrumentToken] = useState()
   }, []);
 // console.log(window.localStorage.getItem("token"))
   const handleClick = (selected) => {
-    // setSelectedOption1(selected);
+    console.log("selected", selected)
+    setSelectedOption1(selected.name || selected);
+    console.log(selectedOption1)
   
     console.log(window.localStorage.getItem("email"));
     fetch("http://localhost:8000/instruments/getInstruments", {
@@ -104,7 +106,11 @@ const [instrumentToken,setInstrumentToken] = useState()
         setAccountName(data.accountName)
         if (data.uniqueExpiryDates && data.uniqueExpiryDates.length > 0) {
           setExpiryList(
-            data.uniqueExpiryDates.map((value) => ({ value, text: value }))
+            data.uniqueExpiryDates.map((value) => {
+              const dateObject = new Date(value.split('T')[0]); // Convert the date string to a Date object
+              const formattedDate = dateObject.toISOString().split('T')[0]; // Convert the Date object back to a formatted string
+              return { value: formattedDate, text: formattedDate };
+            }).sort((a, b) => new Date(a.value) - new Date(b.value))
           );
           setSelectedOption3(data.uniqueExpiryDates[0]);
         } else {
@@ -112,7 +118,7 @@ const [instrumentToken,setInstrumentToken] = useState()
         }
         if (data.uniqueStrikes && data.uniqueStrikes.length > 0) {
           setStrikeList(
-            data.uniqueStrikes.map((value) => ({ value, text: value }))
+            data.uniqueStrikes.map((value) => ({value, text: value }))
           );
           setSelectedOption4(data.uniqueStrikes[0]);
           setSelectedOption5(data.uniqueStrikes[0]);
@@ -128,6 +134,73 @@ const [instrumentToken,setInstrumentToken] = useState()
       handleClick("NIFTY");      
     }, []);
 
+  //   const dateList=[
+  //     {value:"2023-07-04T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-07-11T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-07-15T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-07-21T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-07-27T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-08-27T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  
+  // ]
+  const dateList=expiryList||[{}]
+  const date=selectedOption3?selectedOption3:""
+  const name=selectedOption1||""
+  const price=selectedOption4
+  const type="CE"
+  function formater(name, price, dateList, date, type){
+  
+      let formatedName;
+      //2023-07-27T00:00:00.000Z
+      // console.log(
+      const trimedDate=date.split('T')[0]
+      const trimedDateList=(dateList.map(item=>item.value&&item.value))
+      trimedDateList.map((date,index)=>{
+          if(date==trimedDate){
+              // console.log(trimedDateList[index+1])
+              if(trimedDateList[index+1]&&trimedDateList[index+1].substring(5,7)===date.substring(5,7)){
+                  formatedName= name+trimedDate.substring(2,4)+(trimedDate.substring(5,6)==='0'?trimedDate.substring(6,7):trimedDate.substring(5,7))+trimedDate.substring(8)+price+type
+              }
+              else{
+                  function getShortMonth(monthNumber) {
+                      switch (monthNumber) {
+                        case "01":
+                          return 'JAN';
+                        case "02":
+                          return 'FEB';
+                        case "03":
+                          return 'MAR';
+                        case "04":
+                          return 'APR';
+                        case "05":
+                          return 'MAY';
+                        case "06":
+                          return 'JUN';
+                        case "07":
+                          return 'JUL';
+                        case "08":
+                          return 'AUG';
+                        case "09":
+                          return 'SEP';
+                        case "10":
+                          return 'OCT';
+                        case "11":
+                          return 'NOV';
+                        case "12":
+                          return 'DEC';
+                        default:
+                          return 'Invalid month';
+                      }
+                    }
+                  formatedName= name+trimedDate.substring(2,4)+getShortMonth(trimedDate.substring(5,7))+price+type
+              }
+          }
+      })
+  
+  return formatedName
+  }
+  const format = formater(name,price,dateList,date,type)
+
     const socket = new WebSocket('ws://localhost:7000/instruments');
   
   socket.onopen = () => {
@@ -141,12 +214,12 @@ socket.onmessage = (event) => {
   console.log(instrumentToken, "frontend");
   
   // Make sure instrumentToken is a string for proper comparison
-  if (String(ticks[0].instrument_token) === String(instrumentToken)) {
+  // if (String(ticks[0].instrument_token) === String(instrumentToken)) {
     setSelectedOption2(ticks[0].last_price);
     console.log("ticks received");
-  } else {
-    console.log("ticks not received");
-  }
+  // } else {
+  //   console.log("ticks not received");
+  // }
 };
 
     // console.log('Received ticks:', ticks.last_price);
@@ -269,13 +342,26 @@ socket.onmessage = (event) => {
           value={selectedOption5}
           onSelect={setSelectedOption5}
         />
-        <Dropdown
+        {/* <Dropdown
           label="Qty"
           heading="Select options"
           itemList={optionList}
           value={selectedOption6.value}
           onSelect={setSelectedOption6}
-        />
+        /> */}
+{/* <div className='qty-container flex'> */}
+  {/* <label htmlFor="input" className="text-xs inline">QTY</label> */}
+  <input
+    type="number"
+    placeholder='QTY 1 to 36' 
+    className="h-10 border-2 m-4 rounded border-black"
+    value={selectedOption6}
+    onChange={(e) => {
+      setSelectedOption6(e.target.value);
+      console.log(selectedOption6);
+    }}
+  />
+{/* </div> */}
         <Dropdown
           label="Product"
           heading="Select options"
@@ -348,7 +434,7 @@ socket.onmessage = (event) => {
         </div>
       )}
       <div className='mt-8 ml-4 mr-4 flex justify-between'>
-        <h3>strike: BANKNIFTY2238984984</h3>
+        <h3>strike: {format}</h3>
         <h3>NIFTY BANK</h3>
         <h3>strike: BANKNIFTY84340929</h3>
       </div>
