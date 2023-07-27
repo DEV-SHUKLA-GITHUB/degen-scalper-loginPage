@@ -22,7 +22,7 @@ export default function Dropdown(props) {
   const itemList = props.itemList || [];
 
   return (
-    <div className="max-w-sm">
+    <div className="max-w-sm ">
       <label className="block text-sm font-medium text-gray-700">{props.label}</label>
       <div className="relative inline-block text-right">
         <div>

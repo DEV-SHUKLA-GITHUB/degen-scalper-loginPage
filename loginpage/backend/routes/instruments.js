@@ -37,14 +37,13 @@ const downloadInstrumentsData = async () => {
     console.error('Error downloading or converting instruments data:', error);
   }
 };
-
 // Read instruments data from instrument.json on server start
 const instrumentDataPath = path.join(dataDir, 'instrument.json');
 if (fs.existsSync(instrumentDataPath)) {
   const jsonData = fs.readFileSync(instrumentDataPath, 'utf-8');
   instrumentsData = JSON.parse(jsonData).map(instrument => ({
     ...instrument,
-    expiry: new Date(instrument.expiry), // Convert the expiry date to a JavaScript Date object
+    expiry: instrument.expiry, // Convert the expiry date to a JavaScript Date object
   }));
   console.log('Instruments data loaded from instrument.json.');
 } else {
@@ -71,6 +70,9 @@ router.post("/getInstruments", async (req, res) => {
     const a = async () => {
       const kite = new KiteConnect({ api_key });
       kite.setAccessToken(access_token);
+      
+      const orderbook = await kite.getOrders(); 
+      console.log(orderbook,"orderbook")
 
       // Perform any kite operations here
       const instruments = await kite.getInstruments(["NFO"]);    
@@ -91,7 +93,7 @@ router.post("/getInstruments", async (req, res) => {
       );
 
       // Send the response to the client
-      res.send({ uniqueExpiryDates, instruments, uniqueStrikes });
+      res.send({ uniqueExpiryDates, instruments, uniqueStrikes, orderbook, accountName:jsonData.BrokerList[0].accountName  });
     };
 
     a();
@@ -101,10 +103,13 @@ router.post("/getInstruments", async (req, res) => {
 });
 
 // WebSocket server code
+// ...
+
+// WebSocket server code
 const wss = new WebSocket.Server({ server });
 
 // Store the WebSocket connection and selected instrument token mapping for each client
-const clientInstrumentMap = new Map();
+// const clientInstrumentMap = new Map();
 
 wss.on('connection', (ws) => {
   console.log('Client connected');
@@ -112,6 +117,7 @@ wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
     const initialData = JSON.parse(message);
     const { token, instrumentToken, email } = initialData;
+    // console.log(instrumentToken)
 
     // Use the received data (token, instrumentToken, email) for further processing or to retrieve the required tick data
     try {
@@ -127,42 +133,44 @@ wss.on('connection', (ws) => {
 
       const a = async () => {
         const ticker = new KiteTicker({ api_key, access_token });
-
+        
         function onTicks(ticks) {
-          // console.log("Ticks", ticks);
-          const instrumentTokens = clientInstrumentMap.get(ws);
-          if (instrumentTokens && instrumentTokens.includes(ticks[0].instrument_token)) {
-            // Send the ticks data to the current client
-            // console.log("got it")
-            ws.send(JSON.stringify(ticks));
+          console.log("Ticks", ticks);
+          ws.send(JSON.stringify(ticks));
+          // const instrumentTokens = clientInstrumentMap.get(ws);
+          // if (instrumentTokens && instrumentTokens.includes(ticks[0].instrument_token)) {
+            //   // Send the ticks data to the current client
+            //   // console.log("got it")
+            // }
           }
-        }
-
-        function subscribe() {
-          var items = [Number(instrumentToken)];
-          ticker.subscribe(items)
-          instoken = ticker.subscribe(items);
-          console.log(ticker.subscribe(items), "hello")
-
-          ticker.setMode(ticker.modeQuote, items);
-        }
-
-        function unsubscribe() {
-          let instrumentTokens = [];
-          const existingInstrumentTokens = clientInstrumentMap.get(ws);
-          console.log(existingInstrumentTokens,"up")
-          console.log(instoken,"instoken")
-          if (instoken) {
-            // instrumentTokens = existingInstrumentTokens;
-            ticker.unsubscribe(instoken);
+          
+          function subscribe(instrumentToken) {
+            // console.log("inside subscribe", instrumentToken)
+            console.log(instrumentToken)
+            var items = instrumentToken;
+            ticker.subscribe(instrumentToken);
+            // instoken = ticker.subscribe(items);
+            // console.log(ticker.subscribe(items), "hello");
+            
+            ticker.setMode(ticker.modeQuote, items);
           }
-        }
-
-        ticker.connect();
-        ticker.on("connect", () => {
-          unsubscribe(Number(instrumentToken)); // Unsubscribe from previously subscribed instrument tokens
-          subscribe(); // Subscribe to the selected instrument token
-          clientInstrumentMap.set(ws, [Number(instrumentToken)]); // Update the instrument token mapping
+          
+          // function unsubscribe(instrumentToken) {
+            //   let instrumentTokens = clientInstrumentMap.get(ws);
+            //   console.log(instrumentTokens, "up");
+            //   console.log(instoken, "instoken");
+            //   if (instrumentTokens) {
+              //     const index = instrumentTokens.indexOf(Number(instrumentToken));
+              //     if (index > -1) {
+                //       instrumentTokens.splice(index, 1);
+                //       ticker.unsubscribe(instoken);
+                //     }
+                //   }
+                // }
+                
+                ticker.connect();
+                ticker.on("connect", () => {
+                    subscribe(instrumentToken); 
         });
         ticker.on("ticks", onTicks);
       };
@@ -173,6 +181,8 @@ wss.on('connection', (ws) => {
     }
   });
 });
+
+// ...
 
 server.listen(7000, () => {
   console.log('Server started on port 7000');
