@@ -13,6 +13,7 @@ const checkAuthRouter=require("./routes/checkAuth")
 const checkRouter=require("./routes/check")
 const generateTokenRouter=require("./routes/generateToken")
 const instruments=require("./routes/instruments")
+const placeOrder=require("./routes/placeOrder")
 
 const User = require("./models/userDetails"); // Import the user schema from userDetails.js
 app.use(express.json());
@@ -47,6 +48,7 @@ mongoose
   app.use("/check",checkRouter)
   app.use("/generateToken",generateTokenRouter)
   app.use("/instruments",instruments)
+  app.use("/placeOrder",placeOrder)
 
   
 

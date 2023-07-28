@@ -7,7 +7,7 @@ const app = express();
 const server = require("http").createServer(app);
 const WebSocket = require('ws');
 const router = express.Router();
-const User = require("../models/userDetails"); // Import the user schema from userDetails.js
+const User = require("../models/userDetails"); 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const axios = require('axios');
@@ -77,6 +77,7 @@ router.post("/getInstruments", async (req, res) => {
 
       // Perform any kite operations here
       const instruments = await kite.getInstruments(["NFO"]);
+      console.log(instruments, "instruments");
       const filteredInstruments = instrumentsData.filter(
         (instrument) => instrument.name === (selected.name || selected) && instrument.segment === 'NFO-OPT'
       );
@@ -117,7 +118,7 @@ const setupWebSocket = (ws, api_key, access_token, instrumentToken) => {
     // Check if the WebSocket connection is still open before sending data
     if (ws.readyState === WebSocket.OPEN) {
       // Send the ticks data to the current client
-      ws.send(JSON.stringify(ticks));
+//       ws.send(JSON.stringify(ticks));
     }
   }
 
@@ -157,6 +158,7 @@ wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
     const initialData = JSON.parse(message);
     const { token, instrumentToken, email } = initialData;
+    // console.log(instrumentToken)
 
     // Use the received data (token, instrumentToken, email) for further processing or to retrieve the required tick data
     try {
@@ -171,7 +173,48 @@ wss.on('connection', (ws) => {
       const api_key = apiKey;
 
       const a = async () => {
-        setupWebSocket(ws, api_key, access_token, instrumentToken);
+        const ticker = new KiteTicker({ api_key, access_token });
+        
+        function onTicks(ticks) {
+          // console.log("Ticks", ticks);
+          ws.send(JSON.stringify(ticks));
+          // const instrumentTokens = clientInstrumentMap.get(ws);
+          // if (instrumentTokens && instrumentTokens.includes(ticks[0].instrument_token)) {
+            //   // Send the ticks data to the current client
+            //   // console.log("got it")
+            // }
+          }
+          
+          function subscribe(instrumentToken) {
+            // console.log("inside subscribe", instrumentToken)
+            console.log(instrumentToken)
+            var items = instrumentToken;
+            ticker.subscribe(instrumentToken);
+            // instoken = ticker.subscribe(items);
+            // console.log(ticker.subscribe(items), "hello");
+            
+            ticker.setMode(ticker.modeQuote, items);
+          }
+          
+          // function unsubscribe(instrumentToken) {
+            //   let instrumentTokens = clientInstrumentMap.get(ws);
+            //   console.log(instrumentTokens, "up");
+            //   console.log(instoken, "instoken");
+            //   if (instrumentTokens) {
+              //     const index = instrumentTokens.indexOf(Number(instrumentToken));
+              //     if (index > -1) {
+                //       instrumentTokens.splice(index, 1);
+                //       ticker.unsubscribe(instoken);
+                //     }
+                //   }
+                // }
+                
+                ticker.connect();
+                ticker.on("connect", () => {
+                    subscribe(instrumentToken); 
+        });
+        ticker.on("ticks", onTicks);
+
       };
 
       a();

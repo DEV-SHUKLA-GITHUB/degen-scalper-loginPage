@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useRef } from 'react';
 import Dropdown from './basic components/Dropdown';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -8,11 +8,19 @@ const TradeDashboard = () => {
 
 // var instrumentToken;
 const [instrumentToken,setInstrumentToken] = useState()
+const instrumentTokenRef = useRef(instrumentToken);
+    useEffect(() => {
+      // Whenever instrumentToken changes, update instrumentTokenRef.current
+      instrumentTokenRef.current = instrumentToken;
+    }, [instrumentToken]);const [ticksData,setTicksData]=useState()
 
   const option = ['option1', 'option2', 'option3', 'option4'];
+  const product = ['MIS','normal'];
   const optionList = option.map((value) => ({ value, text: value }));
+  const productList = product.map((value) => ({ value, text: value }));
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
+  const [sellltp, setSellltp] = useState();
   const [expiryList ,setExpiryList] = useState();
   const [strikeList ,setStrikeList] = useState();
   const [selectedOption3, setSelectedOption3] = useState();
@@ -53,25 +61,25 @@ const [instrumentToken,setInstrumentToken] = useState()
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
-  useEffect(() => {
-  const socket = new WebSocket('ws://localhost:7000/instruments');
-
+  // useEffect(() => {
+    // const socket = new WebSocket('ws://localhost:7000/instruments');
+    
     
 
-    return () => {
-      // Clean up the WebSocket connection when the component unmounts
-      socket.close();
-    };
+  //   return () => {
+  //     // Clean up the WebSocket connection when the component unmounts
+  //     socket.close();
+  //   };
 
-    
-  }, []);
-// console.log(window.localStorage.getItem("token"))
+  
+  // }, []);
+  // console.log(window.localStorage.getItem("token"))
   const handleClick = (selected) => {
     console.log("selected", selected)
     setSelectedOption1(selected.name || selected);
     console.log(selectedOption1)
   
-    console.log(window.localStorage.getItem("email"));
+    // console.log(window.localStorage.getItem("email"));
     fetch("http://localhost:8000/instruments/getInstruments", {
       method: "POST",
       headers: {
@@ -87,15 +95,18 @@ const [instrumentToken,setInstrumentToken] = useState()
         for (const instrument of data.instruments) {
           if ((selected.name || selected) === instrument.name) {
             // Set the selected instrument token in state
-            setSelectedOption2(null); // Clear the state when changing instruments
+            // setSelectedOption2(null); // Clear the state when changing instruments
+            console.log("This is my instrument token : ",instrumentToken)
             setInstrumentToken(instrument.instrument_token);
-            const initialData = {
-              token: window.localStorage.getItem("token"),
-              instrumentToken: instrument.instrument_token,
-            };
-            console.log(initialData,"initialdata");
-            // console.log(instrumentToken,"instrumentToken")
-            socket.send(JSON.stringify(initialData));
+            // ticksData.map(tick=>{
+            //   // setTicksData(ticks)
+            //   // console.log(String(tick.instrument_token),String(instrument.instrument_token))
+            //   if (String(tick.instrument_token) === String(instrument.instrument_token)){
+              
+              //     setSelectedOption2(tick.last_price);
+            //   }
+            // })
+           
             break;
           } else {
             console.log("failed");
@@ -112,6 +123,7 @@ const [instrumentToken,setInstrumentToken] = useState()
               return { value: formattedDate, text: formattedDate };
             }).sort((a, b) => new Date(a.value) - new Date(b.value))
           );
+          console.log(expiryList)
           setSelectedOption3(data.uniqueExpiryDates[0]);
         } else {
           setExpiryList([]);
@@ -133,7 +145,25 @@ const [instrumentToken,setInstrumentToken] = useState()
   useEffect(() => {
       handleClick("NIFTY");      
     }, []);
-
+    const placeOrder = (orderType)=> {
+      fetch("http://localhost:8000/placeOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: window.localStorage.getItem("token"),
+          symbol: format,
+          qty: selectedOption6,
+          transaction_type: orderType,
+          product: selectedOption7,
+          variety: "regular"
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data,"data")
+    })}
   //   const dateList=[
   //     {value:"2023-07-04T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
   //     {value:"2023-07-11T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
@@ -200,36 +230,44 @@ const [instrumentToken,setInstrumentToken] = useState()
   return formatedName
   }
   const format = formater(name,price,dateList,date,type)
+  const arrayOfTokens=[8963586,8963842,10227202];
 
+  useEffect(() => {
+    // Set up the WebSocket connection and event listeners only once
     const socket = new WebSocket('ws://localhost:7000/instruments');
-  
-  socket.onopen = () => {
-    console.log('WebSocket connected');
 
+    socket.onopen = () => {
+      console.log('WebSocket connected test');
+      console.log("array of token", arrayOfTokens);
+      const initialData = {
+        token: window.localStorage.getItem("token"),
+        instrumentToken: arrayOfTokens,
+      };
+      console.log(initialData, "initialdata");
+      socket.send(JSON.stringify(initialData));
+    };
 
-  };
+    socket.onmessage = (event) => {
+      const ticks = JSON.parse(event.data);
+      console.log(instrumentTokenRef.current, "frontend");
+      ticks.map((tick) => {
+        console.log(String(instrumentTokenRef.current));
+        if (String(tick.instrument_token) === String(instrumentTokenRef.current)) {
+          setSelectedOption2(tick.last_price);
+        }
+      });
+      console.log("ticks received");
+    };
 
-socket.onmessage = (event) => {
-  const ticks = JSON.parse(event.data);
-  console.log(instrumentToken, "frontend");
-  
-  // Make sure instrumentToken is a string for proper comparison
-  // if (String(ticks[0].instrument_token) === String(instrumentToken)) {
-    setSelectedOption2(ticks[0].last_price);
-    console.log("ticks received");
-  // } else {
-  //   console.log("ticks not received");
-  // }
-};
+    socket.onclose = () => {
+      console.log('WebSocket disconnected');
+    };
 
-    // console.log('Received ticks:', ticks.last_price);
-    // setSelectedOption2(ticks.last_price)
-
-    // Handle the received tick data in the frontend as per your requirements
-
-  socket.onclose = () => {
-    console.log('WebSocket disconnected');
-  };
+    // Clean up the WebSocket connection when the component unmounts
+    return () => {
+      socket.close();
+    };
+  }, []);
 
 
   const handlePositionClick = () => {
@@ -365,8 +403,8 @@ socket.onmessage = (event) => {
         <Dropdown
           label="Product"
           heading="Select options"
-          itemList={optionList}
-          value={selectedOption7.value}
+          itemList={productList}
+          value={selectedOption7}
           onSelect={setSelectedOption7}
         />
       </div>
@@ -435,20 +473,22 @@ socket.onmessage = (event) => {
       )}
       <div className='mt-8 ml-4 mr-4 flex justify-between'>
         <h3>strike: {format}</h3>
-        <h3>NIFTY BANK</h3>
+        <h3>{selectedOption1}</h3>
         <h3>strike: BANKNIFTY84340929</h3>
       </div>
       <div className='mt-2 ml-4 mr-4 flex justify-between'>
-        <h3>LTP: 279.3</h3>
+        <h3>LTP: {sellltp}</h3>
         <h3>LTP: {selectedOption2}</h3>
         <h3>279.3 :LTP</h3>
       </div>
       <div className='mt-4 mr-4 flex justify-between'>
         <div>
-        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" >
+        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" 
+         onClick={placeOrder("SELL")}>
         Sell Call  
       </button>
-      <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded ">
+      <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
+       onClick={placeOrder("BUY")}>
         Buy Call
       </button>
         </div>
