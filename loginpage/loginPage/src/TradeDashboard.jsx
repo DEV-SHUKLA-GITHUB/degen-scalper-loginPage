@@ -58,6 +58,11 @@ const instrumentTokenRef = useRef(instrumentToken);
     { id: 3, name: "FINNIFTY" },
     // Add more options as needed
   ];
+  const products = [
+    { id: 1, name: "MIS" },
+    { id: 2, name: "NORMAL" },
+    // Add more options as needed
+  ];
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
@@ -145,25 +150,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   useEffect(() => {
       handleClick("NIFTY");      
     }, []);
-    const placeOrder = (orderType)=> {
-      fetch("http://localhost:8000/placeOrder", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token: window.localStorage.getItem("token"),
-          symbol: format,
-          qty: selectedOption6,
-          transaction_type: orderType,
-          product: selectedOption7,
-          variety: "regular"
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data,"data")
-    })}
+
   //   const dateList=[
   //     {value:"2023-07-04T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
   //     {value:"2023-07-11T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
@@ -269,7 +256,25 @@ const instrumentTokenRef = useRef(instrumentToken);
     };
   }, []);
 
-
+  const placeOrder = (orderType) => {
+    fetch("http://localhost:8000/placeOrder", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: window.localStorage.getItem("token"),
+        symbol: format,
+        qty: selectedOption6,
+        transaction_type: orderType,
+        product: selectedOption7,
+        variety: "regular"
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data,"data")
+  })}
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -400,13 +405,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     }}
   />
 {/* </div> */}
-        <Dropdown
-          label="Product"
-          heading="Select options"
-          itemList={productList}
-          value={selectedOption7}
-          onSelect={setSelectedOption7}
-        />
+<CustomCombobox options={products} onChange={handleClick} />
       </div>
       <button
         className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"

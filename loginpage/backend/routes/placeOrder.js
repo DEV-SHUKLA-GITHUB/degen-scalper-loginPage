@@ -7,8 +7,9 @@ const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
 const KiteConnect = require("kiteconnect").KiteConnect;
 const {checkAuth}=require("../modules/auth")
 
-router.post("/placeOrder", async (req, res) => {
-    const {symbol, qty, transaction_type,product,variety, token, } = req.body;
+router.post("/", async (req, res) => {
+    const {symbol, qty, transaction_type,product,variety, token } = req.body;
+    console.log(symbol, qty, transaction_type,product,variety, token)
     try {
         const checkAuthResponse = await checkAuth(token)
         if(!checkAuthResponse.status){
