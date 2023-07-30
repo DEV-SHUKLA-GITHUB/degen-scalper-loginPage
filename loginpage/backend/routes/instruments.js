@@ -7,7 +7,7 @@ const app = express();
 const server = require("http").createServer(app);
 const WebSocket = require('ws');
 const router = express.Router();
-const User = require("../models/userDetails"); // Import the user schema from userDetails.js
+const User = require("../models/userDetails"); 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const axios = require('axios');
@@ -15,7 +15,7 @@ const csvtojson = require('csvtojson');
 const cron = require('node-cron');
 const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
 let instoken;
-let instrumentsData=[];
+let instrumentsData = [];
 
 // Create a directory 'data' to store the instrument.json file
 const dataDir = path.join(__dirname, 'data');
@@ -37,6 +37,7 @@ const downloadInstrumentsData = async () => {
     console.error('Error downloading or converting instruments data:', error);
   }
 };
+
 // Read instruments data from instrument.json on server start
 const instrumentDataPath = path.join(dataDir, 'instrument.json');
 if (fs.existsSync(instrumentDataPath)) {
@@ -70,12 +71,13 @@ router.post("/getInstruments", async (req, res) => {
     const a = async () => {
       const kite = new KiteConnect({ api_key });
       kite.setAccessToken(access_token);
-      
-      const orderbook = await kite.getOrders(); 
-      console.log(orderbook,"orderbook")
+
+      const orderbook = await kite.getOrders();
+      console.log(orderbook, "orderbook");
 
       // Perform any kite operations here
-      const instruments = await kite.getInstruments(["NFO"]);    
+      const instruments = await kite.getInstruments(["NFO"]);
+      // console.log(instruments, "instruments");
       const filteredInstruments = instrumentsData.filter(
         (instrument) => instrument.name === (selected.name || selected) && instrument.segment === 'NFO-OPT'
       );
@@ -93,7 +95,7 @@ router.post("/getInstruments", async (req, res) => {
       );
 
       // Send the response to the client
-      res.send({ uniqueExpiryDates, instruments, uniqueStrikes, orderbook, accountName:jsonData.BrokerList[0].accountName  });
+      res.send({ uniqueExpiryDates, instruments, uniqueStrikes, orderbook, accountName: jsonData.BrokerList[0].accountName });
     };
 
     a();
@@ -103,15 +105,60 @@ router.post("/getInstruments", async (req, res) => {
 });
 
 // WebSocket server code
-// ...
-
-// WebSocket server code
 const wss = new WebSocket.Server({ server });
 
+<<<<<<< HEAD
 // Store the WebSocket connection and selected instrument token mapping for each client
 const clientInstrumentMap = new Map();
 // let connectedClients = new Set();
 // let firstClient = true
+=======
+// Store the WebSocket connection and ticker mapping for each client
+const clientTickerMap = new Map();
+
+// Function to set up the WebSocket connection and ticker
+const setupWebSocket = (ws, api_key, access_token, instrumentToken) => {
+  const ticker = new KiteTicker({ api_key, access_token });
+
+  function onTicks(ticks) {
+    // Check if the WebSocket connection is still open before sending data
+    if (ws.readyState === WebSocket.OPEN) {
+      // Send the ticks data to the current client
+//       ws.send(JSON.stringify(ticks));
+    }
+  }
+
+  function subscribe() {
+    var items = [Number(instrumentToken)];
+    ticker.subscribe(items);
+    instoken = ticker.subscribe(items);
+    console.log(ticker.subscribe(items), "hello");
+
+    ticker.setMode(ticker.modeQuote, items);
+  }
+
+  function unsubscribe() {
+    if (instoken) {
+      ticker.unsubscribe(instoken);
+      console.log("Unsubscribed from instrument token:", instoken);
+      instoken = null;
+    }
+  }
+
+  // Close the previous ticker instance for this client, if any
+  unsubscribe();
+
+  ticker.connect();
+  ticker.on("connect", () => {
+    subscribe(); // Subscribe to the selected instrument token
+  });
+  ticker.on("ticks", onTicks);
+
+  // Save the current ticker instance in the map for this client
+  clientTickerMap.set(ws, ticker);
+};
+
+>>>>>>> 69b9d76664aa9e775c4be2cea029795f5275f142
 wss.on('connection', (ws) => {
   const subscribedInstruments = [];
 
@@ -120,15 +167,20 @@ wss.on('connection', (ws) => {
 
   ws.on('message', async (message) => {
     const initialData = JSON.parse(message);
+<<<<<<< HEAD
     const { token, instrumentToken} = initialData;
     // console.log(instrumentToken)
     Token=[Number(instrumentToken)]
+=======
+    const { token, instrumentToken, email } = initialData;
+    // console.log(instrumentToken)
+>>>>>>> 69b9d76664aa9e775c4be2cea029795f5275f142
 
     // Use the received data (token, instrumentToken, email) for further processing or to retrieve the required tick data
     try {
       const user = jwt.verify(token, JWT_SECRET);
       const { email } = user;
-      // console.log(email);
+      console.log(email);
       const jsonData = await User.findOne({ email });
 
       // Extract the access token
@@ -137,6 +189,7 @@ wss.on('connection', (ws) => {
       const api_key = apiKey;
       console.log("access_token",access_token)
 
+<<<<<<< HEAD
       
         ticker = new KiteTicker({ api_key, access_token }); 
 
@@ -168,33 +221,81 @@ wss.on('connection', (ws) => {
               instrumentTokens.splice(index, 1);
               ticker.unsubscribe(instoken);
             }
+=======
+      const a = async () => {
+        const ticker = new KiteTicker({ api_key, access_token });
+        
+        function onTicks(ticks) {
+          // console.log("Ticks", ticks);
+          ws.send(JSON.stringify(ticks));
+          // const instrumentTokens = clientInstrumentMap.get(ws);
+          // if (instrumentTokens && instrumentTokens.includes(ticks[0].instrument_token)) {
+            //   // Send the ticks data to the current client
+            //   // console.log("got it")
+            // }
           }
-        }
-
-        ticker.connect();
-        ticker.on("connect", () => {
-          // Extract the previous instrument token
-          const previousInstrumentToken = clientInstrumentMap.get(ws);
-          if (previousInstrumentToken) {
-            unsubscribe(previousInstrumentToken[0]); // Unsubscribe from the previous instrument token
+          
+          function subscribe(instrumentToken) {
+            // console.log("inside subscribe", instrumentToken)
+            console.log(instrumentToken)
+            var items = instrumentToken;
+            ticker.subscribe(instrumentToken);
+            // instoken = ticker.subscribe(items);
+            // console.log(ticker.subscribe(items), "hello");
+            
+            ticker.setMode(ticker.modeQuote, items);
+>>>>>>> 69b9d76664aa9e775c4be2cea029795f5275f142
           }
-          subscribe(instrumentToken); // Subscribe to the newly selected instrument token
-          clientInstrumentMap.set(ws, [Number(instrumentToken)]); // Update the instrument token mapping
+          
+          // function unsubscribe(instrumentToken) {
+            //   let instrumentTokens = clientInstrumentMap.get(ws);
+            //   console.log(instrumentTokens, "up");
+            //   console.log(instoken, "instoken");
+            //   if (instrumentTokens) {
+              //     const index = instrumentTokens.indexOf(Number(instrumentToken));
+              //     if (index > -1) {
+                //       instrumentTokens.splice(index, 1);
+                //       ticker.unsubscribe(instoken);
+                //     }
+                //   }
+                // }
+                
+                ticker.connect();
+                ticker.on("connect", () => {
+                    subscribe(instrumentToken); 
         });
         ticker.on("ticks", onTicks);
+<<<<<<< HEAD
       
+=======
+
+      };
+
+      a();
+>>>>>>> 69b9d76664aa9e775c4be2cea029795f5275f142
     } catch (error) {
       console.error('Error parsing JSON:', error);
     }
   });
+<<<<<<< HEAD
   ws.on("close",()=>{
     ticker&&ticker.disconnect()
     delete ticker
     console.log("182",ticker)
   })
 });
+=======
+>>>>>>> 69b9d76664aa9e775c4be2cea029795f5275f142
 
-// ...
+  ws.on('close', () => {
+    // Close the ticker instance for this client when the WebSocket connection is closed
+    const ticker = clientTickerMap.get(ws);
+    if (ticker) {
+      ticker.disconnect();
+      clientTickerMap.delete(ws);
+    }
+  });
+});
 
 server.listen(7000, () => {
   console.log('Server started on port 7000');

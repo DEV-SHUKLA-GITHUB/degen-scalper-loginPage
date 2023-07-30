@@ -1,112 +1,98 @@
-const express = require("express");
-  const jwt = require("jsonwebtoken");
-  const mongoose = require("mongoose");
-  const app = express();
-  app.use(express.json());
+// const KiteConnect = require("kiteconnect").KiteConnect;
+const KiteTicker = require("kiteconnect").KiteTicker;
+const fs = require('fs');
+const path = require('path');
 
-  const JWT_SECRET = "hey";
-  mongoose
-    .connect(
-      "mongodb+srv://hackingprotection11:deTtcjao8jWaWuwn@cluster0.64hlp4f.mongodb.net/?retryWrites=true&w=majority"
-    )
-    .then(() => console.log("db connected"))
-    .catch((err) => {
-      console.log(err);
-    });
-  const userSchema = mongoose.Schema(
-    {
-      name: { type: String, required: true },
-      email: { type: String, required: true, unique: true },
-      password: { type: String, required: true },
-      education: { type: String, required: true },
-      city: { type: String, required: true },
-      mobile: { type: Number, required: true },
-    },
-    {
-      collection: "user-data",
-    }
-  );
-  const userModel = mongoose.model("UserData", userSchema);
-  const key = "key";
-  app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
+const readTokensFromFile = () => {
+  // Specify the file path from where to read the data
+  const filePath = path.join(__dirname, 'tokens.json');
 
-    // Validate user credentials
-    try {
-      
-      const user = await userModel.findOne({ email });
-    console.log(user)
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error("Error reading file:", err);
+    } else {
+      try {
+        // Parse the JSON data into an array
+        const arrayOfTokens = JSON.parse(data);
+        return arrayOfTokens;
 
 
-      if (!user) {
-        return res.status(400).json({ error: "Invalid credentials" });
+    //   const a = async () => {
+    //     const ticker = new KiteTicker({ api_key, access_token });
+        
+    //     function onTicks(ticks) {
+    //       console.log("Ticks", ticks);
+    //       ws.send(JSON.stringify(ticks));
+    //       // const instrumentTokens = clientInstrumentMap.get(ws);
+    //       // if (instrumentTokens && instrumentTokens.includes(ticks[0].instrument_token)) {
+    //         //   // Send the ticks data to the current client
+    //         //   // console.log("got it")
+    //         // }
+    //       }
+          
+    //       function subscribe(instrumentToken) {
+    //         // console.log("inside subscribe", instrumentToken)
+    //         // console.log(instrumentToken)
+    //         var items = instrumentToken;
+    //         ticker.subscribe(instrumentToken);
+    //         // instoken = ticker.subscribe(items);
+    //         // console.log(ticker.subscribe(items), "hello");
+            
+    //         ticker.setMode(ticker.modeQuote, items);
+    //       }
+          
+    //       // function unsubscribe(instrumentToken) {
+    //         //   let instrumentTokens = clientInstrumentMap.get(ws);
+    //         //   console.log(instrumentTokens, "up");
+    //         //   console.log(instoken, "instoken");
+    //         //   if (instrumentTokens) {
+    //           //     const index = instrumentTokens.indexOf(Number(instrumentToken));
+    //           //     if (index > -1) {
+    //             //       instrumentTokens.splice(index, 1);
+    //             //       ticker.unsubscribe(instoken);
+    //             //     }
+    //             //   }
+    //             // }
+                
+    //             ticker.connect();
+    //             ticker.on("connect", () => {
+    //               // Extract the previous instrument token
+    //               // const previousInstrumentToken = clientInstrumentMap.get(ws);
+    //               // if (previousInstrumentToken) {
+    //                 //   unsubscribe(previousInstrumentToken[0]); // Unsubscribe from the previous instrument token
+    //                 // }
+    //                 ticker.on("connect", ()=>{subscribe(arrayOfTokens);}); // Subscribe to the newly selected instrument token
+    //                 // clientInstrumentMap.set(ws, [Number(instrumentToken)]); // Update the instrument token mapping
+    //     });
+    //     ticker.on("ticks", onTicks);
+    //   };
+
+    //   a();
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
       }
-
-    
-      
-
-      // If password is invalid, send an error response
-      if (user.password!=password) {
-        return res.status(400).json({ error: "Invalid credentials" });
-      }
-
-
-      const token = jwt.sign({ email: user.email }, JWT_SECRET);
-
-      // Send the token as a response
-      console.log("loged in")
-      res.json({ status: "ok", token: token, data:user});
-    } catch (error) {
-      console.error("Login failed:", error);
-      res.status(500).json({ error: "An error occurred during login" });
     }
   });
-  app.post("/profile", verifyToken, (req, res) => {
-    jwt.verify(req.token, key, (err, auth) => {
-      if (err) {
-        res.sendStatus({
-          message: "Imvalid",
-        });
-      } else {
-        res.json({
-          message: "Profile ",
-          auth,
-        });
-      }
-    });
-  });
-  function verifyToken(req, res, next) {
-    const bearerHeader = req.headers["authorization"];
-    if (!bearerHeader)
-      res.send({
-        result: "Invalid Token",
-      });
-    else {
-      const bearer = bearerHeader.split(" ");
-      const token = bearer[1];
-      req.token = token;
-      next();
-    }
-  }
-  app.get("/",(req, res) => {
-    res.json({
-      message: "api",
-    });
-  });
-  app.post("/signup",async(req,res)=>{
-    const data=req.body
-    await userModel.create({
-      name:data.name,
-      email:data.email,
-      password:data.password,
-      mobile:data.mobile,
-      education:data.education,
-      city:data.city,
-    });
+};
+const arrayOfTokens=[8963586,8963842,10227202]
+// console.log( arrayOfTokens)
 
-    res.send({ status: "ok" });
+// var KiteTicker = require("kiteconnect").KiteTicker;
+var ticker = new KiteTicker({
+    api_key: "elrfps73mpn9aou4",
+    access_token: "G1wmukgRdwOVobTrTKhvc6tLcXPiM1c6"
+});
 
-  })
-  app.listen(3000, () => {
-    console.log("first");
-  });
+ticker.connect();
+ticker.on("ticks", onTicks);
+ticker.on("connect", subscribe);
+
+function onTicks(ticks) {
+    console.log("Ticks", ticks);
+}
+
+function subscribe() {
+    var items = arrayOfTokens;
+    ticker.subscribe(items);
+    ticker.setMode(ticker.modeFull, items);
+}

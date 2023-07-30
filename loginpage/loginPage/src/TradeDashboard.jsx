@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useRef } from 'react';
 import Dropdown from './basic components/Dropdown';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -8,11 +8,19 @@ const TradeDashboard = () => {
 
 // var instrumentToken;
 const [instrumentToken,setInstrumentToken] = useState()
+const instrumentTokenRef = useRef(instrumentToken);
+    useEffect(() => {
+      // Whenever instrumentToken changes, update instrumentTokenRef.current
+      instrumentTokenRef.current = instrumentToken;
+    }, [instrumentToken]);const [ticksData,setTicksData]=useState()
 
   const option = ['option1', 'option2', 'option3', 'option4'];
+  const product = ['MIS','normal'];
   const optionList = option.map((value) => ({ value, text: value }));
+  const productList = product.map((value) => ({ value, text: value }));
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
+  const [sellltp, setSellltp] = useState();
   const [expiryList ,setExpiryList] = useState();
   const [strikeList ,setStrikeList] = useState();
   const [selectedOption3, setSelectedOption3] = useState();
@@ -55,8 +63,8 @@ const [instrumentToken,setInstrumentToken] = useState()
   const [tokenArray, setTokenArray]=useState([])
 
   // useEffect(() => {
-  // const socket = new WebSocket('ws://localhost:7000/instruments');
-
+    // const socket = new WebSocket('ws://localhost:7000/instruments');
+    
     
 
   //   return () => {
@@ -64,61 +72,15 @@ const [instrumentToken,setInstrumentToken] = useState()
   //     socket.close();
   //   };
 
-    
-  // }, []);
-  // useEffect(()=>{
-    
-  // },[tokenArray])
-
-
-
-  fetch("http://localhost:8000/instruments/getInstruments", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      token: window.localStorage.getItem("token"),
-      selected:"NIFTY"
-    }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      // setTokenArray(data.instruments.map(item=>item.instrument_token))
-      let arrayOfToken=data.instruments.map(item=>Number(item.instrument_token))
-      arrayOfToken=[...new Set(arrayOfToken)];
-      console.log(arrayOfToken)
-      
-      const initialData = {
-        token: window.localStorage.getItem("token"),
-        instrumentToken:arrayOfToken
-      };
-      const socket = new WebSocket('ws://localhost:7000/instruments');
-      // console.log(currentConnection)
-      // currentConnection&&currentConnection.close()
-      // setCurrentConnection(socket)
-      socket.onopen = () => {
-        console.log('WebSocket connected');
-        socket.send(JSON.stringify(initialData));
-      };
-
-      socket.onmessage = (event) => {
-          const ticks = JSON.parse(event.data);
-          console.log("ticks",ticks.filter(tick=>tick.instrument_token==instrumentToken).instrument_token)
-          setSelectedOption2(ticks[0].last_price);
-      };
-      socket.onclose = () => {
-        console.log('WebSocket disconnected');
-      };
-    })
-
-
-
-// console.log(window.localStorage.getItem("token"))
-  const handleClick = (selected) => {
-    // setSelectedOption1(selected);
   
-    console.log(window.localStorage.getItem("email"));
+  // }, []);
+  // console.log(window.localStorage.getItem("token"))
+  const handleClick = (selected) => {
+    console.log("selected", selected)
+    setSelectedOption1(selected.name || selected);
+    console.log(selectedOption1)
+  
+    // console.log(window.localStorage.getItem("email"));
     fetch("http://localhost:8000/instruments/getInstruments", {
       method: "POST",
       headers: {
@@ -134,15 +96,18 @@ const [instrumentToken,setInstrumentToken] = useState()
         for (const instrument of data.instruments) {
           if ((selected.name || selected) === instrument.name) {
             // Set the selected instrument token in state
-            setSelectedOption2(null); // Clear the state when changing instruments
+            // setSelectedOption2(null); // Clear the state when changing instruments
+            console.log("This is my instrument token : ",instrumentToken)
             setInstrumentToken(instrument.instrument_token);
-            const initialData = {
-              token: window.localStorage.getItem("token"),
-              instrumentToken: instrument.instrument_token,
-            };
-            console.log(initialData,"initialdata");
-            // console.log(instrumentToken,"instrumentToken")
-            socket.send(JSON.stringify(initialData));
+            // ticksData.map(tick=>{
+            //   // setTicksData(ticks)
+            //   // console.log(String(tick.instrument_token),String(instrument.instrument_token))
+            //   if (String(tick.instrument_token) === String(instrument.instrument_token)){
+              
+              //     setSelectedOption2(tick.last_price);
+            //   }
+            // })
+           
             break;
           } else {
             console.log("failed");
@@ -153,15 +118,20 @@ const [instrumentToken,setInstrumentToken] = useState()
         setAccountName(data.accountName)
         if (data.uniqueExpiryDates && data.uniqueExpiryDates.length > 0) {
           setExpiryList(
-            data.uniqueExpiryDates.map((value) => ({ value, text: value }))
+            data.uniqueExpiryDates.map((value) => {
+              const dateObject = new Date(value.split('T')[0]); // Convert the date string to a Date object
+              const formattedDate = dateObject.toISOString().split('T')[0]; // Convert the Date object back to a formatted string
+              return { value: formattedDate, text: formattedDate };
+            }).sort((a, b) => new Date(a.value) - new Date(b.value))
           );
+          console.log(expiryList)
           setSelectedOption3(data.uniqueExpiryDates[0]);
         } else {
           setExpiryList([]);
         }
         if (data.uniqueStrikes && data.uniqueStrikes.length > 0) {
           setStrikeList(
-            data.uniqueStrikes.map((value) => ({ value, text: value }))
+            data.uniqueStrikes.map((value) => ({value, text: value }))
           );
           setSelectedOption4(data.uniqueStrikes[0]);
           setSelectedOption5(data.uniqueStrikes[0]);
@@ -173,39 +143,132 @@ const [instrumentToken,setInstrumentToken] = useState()
         console.error("Error:", error);
       });
   };
-  // useEffect(() => {
-  //     handleClick("NIFTY");      
-  //   }, []);
-
-    const socket = new WebSocket('ws://localhost:7000/instruments');
+  useEffect(() => {
+      handleClick("NIFTY");      
+    }, []);
+    const placeOrder = (orderType)=> {
+      fetch("http://localhost:8000/placeOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: window.localStorage.getItem("token"),
+          symbol: format,
+          qty: selectedOption6,
+          transaction_type: orderType,
+          product: selectedOption7,
+          variety: "regular"
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data,"data")
+    })}
+  //   const dateList=[
+  //     {value:"2023-07-04T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-07-11T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-07-15T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-07-21T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-07-27T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
+  //     {value:"2023-08-27T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
   
-  socket.onopen = () => {
-    console.log('WebSocket connected');
-
-
-  };
-
-socket.onmessage = (event) => {
-  const ticks = JSON.parse(event.data);
-  console.log(instrumentToken, "frontend");
+  // ]
+  const dateList=expiryList||[{}]
+  const date=selectedOption3?selectedOption3:""
+  const name=selectedOption1||""
+  const price=selectedOption4
+  const type="CE"
+  function formater(name, price, dateList, date, type){
   
-  // Make sure instrumentToken is a string for proper comparison
-  if (String(ticks[0].instrument_token) === String(instrumentToken)) {
-    setSelectedOption2(ticks[0].last_price);
-    console.log("ticks received");
-  } else {
-    console.log("ticks not received");
+      let formatedName;
+      //2023-07-27T00:00:00.000Z
+      // console.log(
+      const trimedDate=date.split('T')[0]
+      const trimedDateList=(dateList.map(item=>item.value&&item.value))
+      trimedDateList.map((date,index)=>{
+          if(date==trimedDate){
+              // console.log(trimedDateList[index+1])
+              if(trimedDateList[index+1]&&trimedDateList[index+1].substring(5,7)===date.substring(5,7)){
+                  formatedName= name+trimedDate.substring(2,4)+(trimedDate.substring(5,6)==='0'?trimedDate.substring(6,7):trimedDate.substring(5,7))+trimedDate.substring(8)+price+type
+              }
+              else{
+                  function getShortMonth(monthNumber) {
+                      switch (monthNumber) {
+                        case "01":
+                          return 'JAN';
+                        case "02":
+                          return 'FEB';
+                        case "03":
+                          return 'MAR';
+                        case "04":
+                          return 'APR';
+                        case "05":
+                          return 'MAY';
+                        case "06":
+                          return 'JUN';
+                        case "07":
+                          return 'JUL';
+                        case "08":
+                          return 'AUG';
+                        case "09":
+                          return 'SEP';
+                        case "10":
+                          return 'OCT';
+                        case "11":
+                          return 'NOV';
+                        case "12":
+                          return 'DEC';
+                        default:
+                          return 'Invalid month';
+                      }
+                    }
+                  formatedName= name+trimedDate.substring(2,4)+getShortMonth(trimedDate.substring(5,7))+price+type
+              }
+          }
+      })
+  
+  return formatedName
   }
-};
+  const format = formater(name,price,dateList,date,type)
+  const arrayOfTokens=[8963586,8963842,10227202];
 
-    // console.log('Received ticks:', ticks.last_price);
-    // setSelectedOption2(ticks.last_price)
+  useEffect(() => {
+    // Set up the WebSocket connection and event listeners only once
+    const socket = new WebSocket('ws://localhost:7000/instruments');
 
-    // Handle the received tick data in the frontend as per your requirements
+    socket.onopen = () => {
+      console.log('WebSocket connected test');
+      console.log("array of token", arrayOfTokens);
+      const initialData = {
+        token: window.localStorage.getItem("token"),
+        instrumentToken: arrayOfTokens,
+      };
+      console.log(initialData, "initialdata");
+      socket.send(JSON.stringify(initialData));
+    };
 
-  socket.onclose = () => {
-    console.log('WebSocket disconnected');
-  };
+    socket.onmessage = (event) => {
+      const ticks = JSON.parse(event.data);
+      console.log(instrumentTokenRef.current, "frontend");
+      ticks.map((tick) => {
+        console.log(String(instrumentTokenRef.current));
+        if (String(tick.instrument_token) === String(instrumentTokenRef.current)) {
+          setSelectedOption2(tick.last_price);
+        }
+      });
+      console.log("ticks received");
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket disconnected');
+    };
+
+    // Clean up the WebSocket connection when the component unmounts
+    return () => {
+      socket.close();
+    };
+  }, []);
 
 
   const handlePositionClick = () => {
@@ -318,18 +381,31 @@ socket.onmessage = (event) => {
           value={selectedOption5}
           onSelect={setSelectedOption5}
         />
-        <Dropdown
+        {/* <Dropdown
           label="Qty"
           heading="Select options"
           itemList={optionList}
           value={selectedOption6.value}
           onSelect={setSelectedOption6}
-        />
+        /> */}
+{/* <div className='qty-container flex'> */}
+  {/* <label htmlFor="input" className="text-xs inline">QTY</label> */}
+  <input
+    type="number"
+    placeholder='QTY 1 to 36' 
+    className="h-10 border-2 m-4 rounded border-black"
+    value={selectedOption6}
+    onChange={(e) => {
+      setSelectedOption6(e.target.value);
+      console.log(selectedOption6);
+    }}
+  />
+{/* </div> */}
         <Dropdown
           label="Product"
           heading="Select options"
-          itemList={optionList}
-          value={selectedOption7.value}
+          itemList={productList}
+          value={selectedOption7}
           onSelect={setSelectedOption7}
         />
       </div>
@@ -397,21 +473,23 @@ socket.onmessage = (event) => {
         </div>
       )}
       <div className='mt-8 ml-4 mr-4 flex justify-between'>
-        <h3>strike: BANKNIFTY2238984984</h3>
-        <h3>NIFTY BANK</h3>
+        <h3>strike: {format}</h3>
+        <h3>{selectedOption1}</h3>
         <h3>strike: BANKNIFTY84340929</h3>
       </div>
       <div className='mt-2 ml-4 mr-4 flex justify-between'>
-        <h3>LTP: 279.3</h3>
+        <h3>LTP: {sellltp}</h3>
         <h3>LTP: {selectedOption2}</h3>
         <h3>279.3 :LTP</h3>
       </div>
       <div className='mt-4 mr-4 flex justify-between'>
         <div>
-        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" >
+        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" 
+         onClick={placeOrder("SELL")}>
         Sell Call  
       </button>
-      <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded ">
+      <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
+       onClick={placeOrder("BUY")}>
         Buy Call
       </button>
         </div>
