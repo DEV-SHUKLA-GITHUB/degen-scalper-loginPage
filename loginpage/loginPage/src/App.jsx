@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import RegistrationForm from "./RegistrationForm";
+import { Provider } from 'react-redux'; 
+import store from './store'; 
 import LoginForm from "./LoginForm";
 import UserDetails from "./UserDetails.jsx";
 import UserHome from "./UserHome";
@@ -10,6 +12,7 @@ import TradeDashboard from "./TradeDashboard";
 
 const App = () => {
   return (
+    <Provider store={store}>
     <Router>
       <div className="App">
         <Routes>
@@ -22,6 +25,8 @@ const App = () => {
         </Routes>
       </div>
     </Router>
+    </Provider>
+
   );
 };
 

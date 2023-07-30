@@ -5,10 +5,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import CustomCombobox from './basic components/AutoCompleteInput';
 
 const TradeDashboard = () => {
-var [instrumentToken,setInstrumentToken]=useState();
-  
 
-  const [currentConnection, setCurrentConnection]=useState()
+// var instrumentToken;
+const [instrumentToken,setInstrumentToken] = useState()
 
   const option = ['option1', 'option2', 'option3', 'option4'];
   const optionList = option.map((value) => ({ value, text: value }));
@@ -26,6 +25,8 @@ var [instrumentToken,setInstrumentToken]=useState();
   const [orderBook,setOrderBook] = useState(false)
   const [TradeBook,setTradeBook] = useState(false)
   const [customize,setCustomize] = useState(false)
+  const [orderbook,setOrderbook]=useState()
+  const [accountName,setAccountName]=useState("")
   const [customBuyCallKey, setCustomBuyCallKey] = useState(
     localStorage.getItem('customBuyCallKey') || ''
   );
@@ -132,43 +133,24 @@ var [instrumentToken,setInstrumentToken]=useState();
       .then((data) => {
         for (const instrument of data.instruments) {
           if ((selected.name || selected) === instrument.name) {
-            instrumentToken = instrument.instrument_token;
-            console.log(instrumentToken,"instrumenttokenHandleClick")
+            // Set the selected instrument token in state
+            setSelectedOption2(null); // Clear the state when changing instruments
+            setInstrumentToken(instrument.instrument_token);
             const initialData = {
               token: window.localStorage.getItem("token"),
               instrumentToken: instrument.instrument_token,
             };
-            const socket = new WebSocket('ws://localhost:7000/instruments');
-            console.log(currentConnection)
-            currentConnection&&currentConnection.close()
-            setCurrentConnection(socket)
-            socket.onopen = () => {
-              console.log('WebSocket connected');
-              socket.send(JSON.stringify(initialData));
-            };
-
-            socket.onmessage = (event) => {
-                const ticks = JSON.parse(event.data);
-                console.log(instrumentToken)
-                if (ticks[0].instrument_token == instrumentToken) {
-                  console.log(ticks,"ticks")
-                  setSelectedOption2(ticks[0].last_price);
-                  console.log("Ticks received for selected instrument");
-                } else {
-                  console.log("Ticks received, but not for the selected instrument");
-                }
-            };
-            socket.onclose = () => {
-              console.log('WebSocket disconnected');
-            };
-            console.log(initialData)
-  
+            console.log(initialData,"initialdata");
+            // console.log(instrumentToken,"instrumentToken")
+            socket.send(JSON.stringify(initialData));
             break;
           } else {
             console.log("failed");
           }
-        }
-        console.log(data);
+        }    
+        console.log(data,"data 133");
+        setOrderbook(data.orderbook)
+        setAccountName(data.accountName)
         if (data.uniqueExpiryDates && data.uniqueExpiryDates.length > 0) {
           setExpiryList(
             data.uniqueExpiryDates.map((value) => ({ value, text: value }))
@@ -195,7 +177,36 @@ var [instrumentToken,setInstrumentToken]=useState();
   //     handleClick("NIFTY");      
   //   }, []);
 
+    const socket = new WebSocket('ws://localhost:7000/instruments');
   
+  socket.onopen = () => {
+    console.log('WebSocket connected');
+
+
+  };
+
+socket.onmessage = (event) => {
+  const ticks = JSON.parse(event.data);
+  console.log(instrumentToken, "frontend");
+  
+  // Make sure instrumentToken is a string for proper comparison
+  if (String(ticks[0].instrument_token) === String(instrumentToken)) {
+    setSelectedOption2(ticks[0].last_price);
+    console.log("ticks received");
+  } else {
+    console.log("ticks not received");
+  }
+};
+
+    // console.log('Received ticks:', ticks.last_price);
+    // setSelectedOption2(ticks.last_price)
+
+    // Handle the received tick data in the frontend as per your requirements
+
+  socket.onclose = () => {
+    console.log('WebSocket disconnected');
+  };
+
 
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
@@ -442,239 +453,25 @@ var [instrumentToken,setInstrumentToken]=useState();
         Trade Book
       </button>
     </div>
-{orderBook &&   <div>
-      <div className=' w-screen border-black '>
-      <div className='w-screen'>
-  <table className="w-screen ">
-    <thead className='bg-blue-100 border-2 border-black w-screen'>
-      <tr className=''>
-        <th className="text-center border-2 border-black">Symbol Name</th>
-        <th className="text-center border-2 border-black">Product</th>
-        <th className="text-center border-2 border-black">Side</th>
-        <th className="text-center border-2 border-black">NET Qty</th>
-        <th className="text-center border-2 border-black">LTF</th>
-        <th className="text-center border-2 border-black">SL</th>
-        <th className="text-center border-2 border-black">SL Button</th>
-        <th className="text-center border-2 border-black">UR. P&L</th>
-        <th className="text-center border-2 border-black">P&L</th>
-        <th className="text-center border-2 border-black">Action</th>
-        <th className="text-center border-2 border-black">Avg Price</th>
-        <th className="text-center border-2 border-black">Buy Qty</th>
-        <th className="text-center border-2 border-black">Buy Price</th>
-        <th className="text-center border-2 border-black">Sell Price</th>
-        <th className="text-center border-2 border-black">Sell Qty</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-  </div>
-  </div>}
+{orderBook && orderbook.map((item,index)=>{
+              // return <MarketPlaceItem key={index} 
+              // symbol={item.tradingsymbol} 
+              // timeStamp={item.order_timestamp} 
+              // qty={item.tradingsymbol}
+              //  orderType={item.tradingsymbol}
+              //   transactionType={item.transaction_type}
+              //    status={item.status}   />
+              return (
+                <tr className="">
+                <th>{item.tradingsymbol}</th>
+                <td>{item.order_timestamp}</td>
+                <td>{item.tradingsymbol}</td>
+                <td>{item.tradingsymbol}</td>
+                <td>{item.transaction_type}</td>
+                <td>{item.status}</td>
+              </tr>
+              )
+            })}
 {positions &&   <div>
   <div className='flex justify-around mt-2'>
             <h2 className='font-bold'>Net Qty: 0</h2>
