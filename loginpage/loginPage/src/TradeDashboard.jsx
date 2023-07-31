@@ -13,6 +13,7 @@ const instrumentTokenRef = useRef(instrumentToken);
       // Whenever instrumentToken changes, update instrumentTokenRef.current
       instrumentTokenRef.current = instrumentToken;
     }, [instrumentToken]);const [ticksData,setTicksData]=useState()
+  const [tickData, setTickData] =useState()
 
   const option = ['option1', 'option2', 'option3', 'option4'];
   const product = ['MIS','normal'];
@@ -255,6 +256,7 @@ const instrumentTokenRef = useRef(instrumentToken);
         console.log(String(instrumentTokenRef.current));
         if (String(tick.instrument_token) === String(instrumentTokenRef.current)) {
           setSelectedOption2(tick.last_price);
+          setTickData(ticks)
         }
       });
       console.log("ticks received");

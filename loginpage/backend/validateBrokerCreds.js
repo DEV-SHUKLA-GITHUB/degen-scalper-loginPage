@@ -51,6 +51,7 @@ const zerodhaLoginValidator = (BrokerList,brokerDetails,email) => {
                 `https://kite.trade/connect/login?api_key=${api_key}&v=3`
                 );
             await sleep(500);
+            console.log(user_id)
             await page.type("input[type=text]", user_id),
             await page.type("input[type=password]", user_password),
             await page.keyboard.press("Enter"),
