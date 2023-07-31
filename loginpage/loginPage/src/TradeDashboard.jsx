@@ -26,8 +26,8 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [selectedOption3, setSelectedOption3] = useState();
   const [selectedOption4, setSelectedOption4] = useState(optionList[0]);
   const [selectedOption5, setSelectedOption5] = useState(optionList[0]);
-  const [selectedOption6, setSelectedOption6] = useState(optionList[0]);
-  const [selectedOption7, setSelectedOption7] = useState(optionList[0]);
+  const [selectedOption6, setSelectedOption6] = useState(0);
+  const [selectedOption7, setSelectedOption7] = useState(productList[0]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [positions,setPositions] = useState(false)
   const [orderBook,setOrderBook] = useState(false)
@@ -61,7 +61,6 @@ const instrumentTokenRef = useRef(instrumentToken);
   const products = [
     { id: 1, name: "MIS" },
     { id: 2, name: "NORMAL" },
-    // Add more options as needed
   ];
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
@@ -79,6 +78,8 @@ const instrumentTokenRef = useRef(instrumentToken);
   
   // }, []);
   // console.log(window.localStorage.getItem("token"))
+
+  
   const handleClick = (selected) => {
     console.log("selected", selected)
     setSelectedOption1(selected.name || selected);
@@ -119,6 +120,7 @@ const instrumentTokenRef = useRef(instrumentToken);
         }    
         console.log(data,"data 133");
         setOrderbook(data.orderbook)
+        console.log(orderbook,"orderbook")
         setAccountName(data.accountName)
         if (data.uniqueExpiryDates && data.uniqueExpiryDates.length > 0) {
           setExpiryList(
@@ -150,6 +152,31 @@ const instrumentTokenRef = useRef(instrumentToken);
   useEffect(() => {
       handleClick("NIFTY");      
     }, []);
+
+    const placeOrder = (orderType)=> {
+      console.log("placedorder:",orderType);
+      try{fetch("http://localhost:8000/placeOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: window.localStorage.getItem("token"),
+          symbol: format,
+          qty: selectedOption6,
+          transaction_type: orderType,
+          product: selectedOption7.name,
+          variety: "regular"
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data,"data")
+    })}
+    catch(err) {
+      console.log("request error: " + err)
+    }
+  }
 
   //   const dateList=[
   //     {value:"2023-07-04T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
@@ -236,14 +263,15 @@ const instrumentTokenRef = useRef(instrumentToken);
 
     socket.onmessage = (event) => {
       const ticks = JSON.parse(event.data);
-      console.log(instrumentTokenRef.current, "frontend");
+
+      // console.log(instrumentTokenRef.current, "frontend");
       ticks.map((tick) => {
         console.log(String(instrumentTokenRef.current));
         if (String(tick.instrument_token) === String(instrumentTokenRef.current)) {
           setSelectedOption2(tick.last_price);
         }
       });
-      console.log("ticks received");
+      // console.log("ticks received");
     };
 
     socket.onclose = () => {
@@ -256,25 +284,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     };
   }, []);
 
-  const placeOrder = (orderType) => {
-    fetch("http://localhost:8000/placeOrder", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        token: window.localStorage.getItem("token"),
-        symbol: format,
-        qty: selectedOption6,
-        transaction_type: orderType,
-        product: selectedOption7,
-        variety: "regular"
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data,"data")
-  })}
+
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -405,7 +415,14 @@ const instrumentTokenRef = useRef(instrumentToken);
     }}
   />
 {/* </div> */}
-<CustomCombobox options={products} onChange={handleClick} />
+        {/* <Dropdown
+          label="Product"
+          heading="Select options"
+          itemList={productList}
+          value={selectedOption7}
+          onSelect={setSelectedOption7}
+        /> */}
+        <CustomCombobox options={products} onChange={setSelectedOption7} />
       </div>
       <button
         className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
@@ -483,11 +500,11 @@ const instrumentTokenRef = useRef(instrumentToken);
       <div className='mt-4 mr-4 flex justify-between'>
         <div>
         <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" 
-         onClick={placeOrder("SELL")}>
+         onClick={()=>{placeOrder("SELL")}}>
         Sell Call  
       </button>
       <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
-       onClick={placeOrder("BUY")}>
+       onClick={()=>{placeOrder("BUY")}}>
         Buy Call
       </button>
         </div>
@@ -529,25 +546,50 @@ const instrumentTokenRef = useRef(instrumentToken);
         Trade Book
       </button>
     </div>
-{orderBook && orderbook.map((item,index)=>{
-              // return <MarketPlaceItem key={index} 
-              // symbol={item.tradingsymbol} 
-              // timeStamp={item.order_timestamp} 
-              // qty={item.tradingsymbol}
-              //  orderType={item.tradingsymbol}
-              //   transactionType={item.transaction_type}
-              //    status={item.status}   />
-              return (
-                <tr className="">
-                <th>{item.tradingsymbol}</th>
-                <td>{item.order_timestamp}</td>
-                <td>{item.tradingsymbol}</td>
-                <td>{item.tradingsymbol}</td>
-                <td>{item.transaction_type}</td>
-                <td>{item.status}</td>
-              </tr>
-              )
-            })}
+{orderBook && 
+              <div className="flex flex-col gap-4 bg-[#101013] text-white w-full h-full">
+              {/* header - nifty time  */}
+        
+              <h2 className="font-bold text-2xl">{accountName}</h2>
+        
+              {/* main area displays cards */}
+              <div className="overflow-x-auto">
+                <table className="table w-full text-white">
+                  {/* head */}
+                  <thead className="bg[#0A0A0C]">
+                    <tr className=" text-[#BABABA] text-lg">
+                      <th className="font-normal">Symbol</th>
+                      {/* <th className="font-normal">LTP</th> */}
+                      <th className="font-normal">Time Stamp</th>
+                      <th className="font-normal">Qty</th>
+                      <th className="font-normal">Order Type</th>
+                      <th className="font-normal">Transaction Type</th>
+        
+                      <th className="font-normal">Status</th>
+                      {/* <th className="font-normal">Sell</th> */}
+                    </tr>
+                  </thead>
+                  <tbody className="">
+                    {/* use map here  */}
+                    {orderbook&&orderbook.map((item,index)=>{
+                      return (
+                        <tr  className="bg-[#262832]  border-2 border-[#212126] w-screen" >
+                        <th className='mr-10 p-10'>{item.tradingsymbol}</th>
+                        <td className='mr-10 p-10'>{item.order_timestamp.split('T')[0]}</td>
+                        <td className='mr-10 p-10'>{item.tradingsymbol}</td>
+                        <td className='mr-10 p-10'>{item.tradingsymbol}</td>
+                        <td className='mr-10 p-10'>{item.transaction_type}</td>
+                        <td className='mr-10 p-10'>{item.status}</td>
+                      </tr>        
+                      )
+                    })}
+                  </tbody>
+                </table>
+                
+              </div>
+            </div>
+
+            }
 {positions &&   <div>
   <div className='flex justify-around mt-2'>
             <h2 className='font-bold'>Net Qty: 0</h2>
