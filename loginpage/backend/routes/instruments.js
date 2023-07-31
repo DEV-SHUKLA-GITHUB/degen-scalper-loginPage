@@ -13,6 +13,7 @@ const jwt = require("jsonwebtoken");
 const axios = require('axios');
 const csvtojson = require('csvtojson');
 const cron = require('node-cron');
+const { json } = require("body-parser");
 const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
 let instoken;
 let instrumentsData = [];
@@ -29,10 +30,24 @@ const downloadInstrumentsData = async () => {
     const url = 'https://api.kite.trade/instruments';
     const response = await axios.get(url);
     const jsonData = await csvtojson().fromString(response.data);
+    console.log(jsonData, "json data");
 
-    // Store the instruments data in instrument.json
-    fs.writeFileSync(path.join(dataDir, 'instrument.json'), JSON.stringify(jsonData, null, 2));
-    console.log('Instruments data downloaded and stored in instrument.json.');
+    // Filter the jsonData array based on the given conditions
+    const filteredData = jsonData.filter(item => {
+      return (
+        item.name === "NIFTY" ||
+        item.name === "BANKNIFTY" ||
+        item.name === "FINNIFTY"
+      );
+    });
+console.log(filteredData,"filteredData")
+    // Store the filtered instruments data in instrument.json
+    fs.writeFileSync(
+      path.join(dataDir, 'instrument.json'),
+      JSON.stringify(filteredData, null, 2)
+    );
+
+    console.log('Instruments data downloaded, filtered, and stored in instrument.json.');
   } catch (error) {
     console.error('Error downloading or converting instruments data:', error);
   }
@@ -77,7 +92,7 @@ router.post("/getInstruments", async (req, res) => {
 
       // Perform any kite operations here
       const instruments = await kite.getInstruments(["NFO"]);
-      // console.log(instruments, "instruments");
+      console.log(instruments, "instruments");
       const filteredInstruments = instrumentsData.filter(
         (instrument) => instrument.name === (selected.name || selected) && instrument.segment === 'NFO-OPT'
       );
