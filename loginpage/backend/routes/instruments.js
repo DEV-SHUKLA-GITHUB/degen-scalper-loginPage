@@ -40,19 +40,28 @@ const downloadInstrumentsData = async () => {
         item.name === "FINNIFTY"
       );
     });
-
+console.log(filteredData,"filtered data");
+const tokenData = filteredData.map(item=>{
+  return(
+    item.instrument_token
+  )
+})
     // Store the filtered instruments data in instrument.json
     fs.writeFileSync(
       path.join(dataDir, 'instrument.json'),
       JSON.stringify(filteredData, null, 2)
     );
+    fs.writeFileSync(
+      path.join(dataDir, 'instrumentToken.json'),
+      JSON.stringify(tokenData, null, 2))
+
 
     console.log('Instruments data downloaded, filtered, and stored in instrument.json.');
   } catch (error) {
     console.error('Error downloading or converting instruments data:', error);
   }
 };
-
+downloadInstrumentsData()
 // Read instruments data from instrument.json on server start
 const instrumentDataPath = path.join(dataDir, 'instrument.json');
 if (fs.existsSync(instrumentDataPath)) {
