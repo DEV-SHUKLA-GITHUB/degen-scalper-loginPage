@@ -3,6 +3,9 @@ import Dropdown from './basic components/Dropdown';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomCombobox from './basic components/AutoCompleteInput';
+import WatchList from './watchList';
+import maindata from '../../backend/routes/data/instrument.json';
+
 
 const TradeDashboard = () => {
 
@@ -64,6 +67,11 @@ const instrumentTokenRef = useRef(instrumentToken);
   ];
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
+  const [arrayOfTokens,setArrayOfToken]=useState([8963586,8963842,10227202]);
+  const changeArrayOfToken=(newArray)=>{
+    setArrayOfToken(newArray)
+    addToken(newarray[-1]);
+  }
 
   // useEffect(() => {
     // const socket = new WebSocket('ws://localhost:7000/instruments');
@@ -244,7 +252,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   return formatedName
   }
   const format = formater(name,price,dateList,date,type)
-  const arrayOfTokens=[8963586,8963842,10227202];
+
 
   useEffect(() => {
     // Set up the WebSocket connection and event listeners only once
@@ -260,10 +268,14 @@ const instrumentTokenRef = useRef(instrumentToken);
       console.log(initialData, "initialdata");
       socket.send(JSON.stringify(initialData));
     };
+    const addToken=(token)=>{
+      socket.emit("addToken",{token:token});
+    }
 
     socket.onmessage = (event) => {
       const ticks = JSON.parse(event.data);
-
+      console.log(ticks,'TICKS')
+      setTicksData(ticks)
       // console.log(instrumentTokenRef.current, "frontend");
       ticks.map((tick) => {
         console.log(String(instrumentTokenRef.current));
@@ -273,6 +285,7 @@ const instrumentTokenRef = useRef(instrumentToken);
       });
       // console.log("ticks received");
     };
+    socket
 
     socket.onclose = () => {
       console.log('WebSocket disconnected');
@@ -280,6 +293,7 @@ const instrumentTokenRef = useRef(instrumentToken);
 
     // Clean up the WebSocket connection when the component unmounts
     return () => {
+      console.log("useEffect has been deprecated")
       socket.close();
     };
   }, []);
@@ -362,9 +376,13 @@ const instrumentTokenRef = useRef(instrumentToken);
     }
   }, []);
 
-  
+  console.log(ticksData,"ticksdata")
   return (
-    <div>
+    <div className='flex'>
+      <div className='h-screen w-1/5'>
+        <WatchList tokens={arrayOfTokens} add={changeArrayOfToken} ticks={ticksData}/>
+      </div>
+      <div className='h-screen w-3/4'>
       <h2>
         Broker: <span className="font-semibold">Zerodha(User: YTNN30)</span>
       </h2>
@@ -576,8 +594,8 @@ const instrumentTokenRef = useRef(instrumentToken);
                         <tr  className="bg-[#262832]  border-2 border-[#212126] w-screen" >
                         <th className='mr-10 p-10'>{item.tradingsymbol}</th>
                         <td className='mr-10 p-10'>{item.order_timestamp.split('T')[0]}</td>
-                        <td className='mr-10 p-10'>{item.tradingsymbol}</td>
-                        <td className='mr-10 p-10'>{item.tradingsymbol}</td>
+                        <td className='mr-10 p-10'>{item.quantity}</td>
+                        <td className='mr-10 p-10'>{item.order_type}</td>
                         <td className='mr-10 p-10'>{item.transaction_type}</td>
                         <td className='mr-10 p-10'>{item.status}</td>
                       </tr>        
@@ -829,6 +847,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   </div>}
    </div>
 </div>
+    </div>
 
   );
 };

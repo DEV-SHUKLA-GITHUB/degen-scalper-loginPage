@@ -40,7 +40,7 @@ const downloadInstrumentsData = async () => {
         item.name === "FINNIFTY"
       );
     });
-console.log(filteredData,"filteredData")
+
     // Store the filtered instruments data in instrument.json
     fs.writeFileSync(
       path.join(dataDir, 'instrument.json'),
@@ -92,7 +92,7 @@ router.post("/getInstruments", async (req, res) => {
 
       // Perform any kite operations here
       const instruments = await kite.getInstruments(["NFO"]);
-      console.log(instruments, "instruments");
+      // console.log(instruments, "instruments");
       const filteredInstruments = instrumentsData.filter(
         (instrument) => instrument.name === (selected.name || selected) && instrument.segment === 'NFO-OPT'
       );
@@ -131,6 +131,7 @@ const setupWebSocket = (ws, api_key, access_token, instrumentToken) => {
 
   function onTicks(ticks) {
     // Check if the WebSocket connection is still open before sending data
+    // console.log(ticks)
     if (ws.readyState === WebSocket.OPEN) {
       // Send the ticks data to the current client
 //       ws.send(JSON.stringify(ticks));
@@ -191,7 +192,7 @@ wss.on('connection', (ws) => {
         const ticker = new KiteTicker({ api_key, access_token });
         
         function onTicks(ticks) {
-          // console.log("Ticks", ticks);
+          console.log("Ticks", ticks);
           ws.send(JSON.stringify(ticks));
           // const instrumentTokens = clientInstrumentMap.get(ws);
           // if (instrumentTokens && instrumentTokens.includes(ticks[0].instrument_token)) {
