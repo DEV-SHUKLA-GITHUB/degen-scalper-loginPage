@@ -16,6 +16,10 @@ const cron = require('node-cron');
 const { json } = require("body-parser");
 const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
 let instoken;
+let tokenData = fs.readFileSync(path.join(__dirname, 'data/instrumentToken.json'), 'utf8');
+// const instrumentDataPath = path.join(dataDir, 'instrument.json');
+
+// console.log(tokenData)
 let instrumentsData = [];
  
 // Create a directory 'data' to store the instrument.json file
@@ -40,14 +44,27 @@ const downloadInstrumentsData = async () => {
         item.name === "FINNIFTY"
       );
     });
-console.log(filteredData,"filteredData")
+console.log(filteredData,"filtered data");
+ tokenData = filteredData.map(item=>{
+return(
+  item.instrument_token
+  )
+})
     // Store the filtered instruments data in instrument.json
     fs.writeFileSync(
       path.join(dataDir, 'instrument.json'),
       JSON.stringify(filteredData, null, 2)
     );
-
-    console.log('Instruments data downloaded, filtered, and stored in instrument.json.');
+    fs.writeFileSync(
+      path.join(dataDir, 'instrumentToken.json'),
+      JSON.stringify(tokenData, null, 2))
+      
+      
+      
+      console.log('Instruments data downloaded, filtered, and stored in instrument.json.');
+      // console.log(tokenData)
+      
+     
   } catch (error) {
     console.error('Error downloading or converting instruments data:', error);
   }
@@ -64,7 +81,7 @@ if (fs.existsSync(instrumentDataPath)) {
   console.log('Instruments data loaded from instrument.json.');
 } else {
   console.log('Instruments data not found. Downloading...');
-  downloadInstrumentsData();
+  // downloadInstrumentsData();
 }
 
 // Set up a cron job to download the file once every day (adjust the cron schedule as needed)
@@ -92,7 +109,7 @@ router.post("/getInstruments", async (req, res) => {
 
       // Perform any kite operations here
       const instruments = await kite.getInstruments(["NFO"]);
-      console.log(instruments, "instruments");
+      // console.log(instruments, "instruments");
       const filteredInstruments = instrumentsData.filter(
         (instrument) => instrument.name === (selected.name || selected) && instrument.segment === 'NFO-OPT'
       );
@@ -137,6 +154,7 @@ const setupWebSocket = (ws, api_key, access_token, instrumentToken) => {
 
   function onTicks(ticks) {
     // Check if the WebSocket connection is still open before sending data
+    // console.log(ticks)
     if (ws.readyState === WebSocket.OPEN) {
       // Send the ticks data to the current client
 //       ws.send(JSON.stringify(ticks));
@@ -201,7 +219,7 @@ wss.on('connection', (ws) => {
         const ticker = new KiteTicker({ api_key, access_token });
         
         function onTicks(ticks) {
-          console.log("Ticks", ticks);
+          console.log("Ticks", ticks.length);
           ws.send(JSON.stringify(ticks));
           // const instrumentTokens = clientInstrumentMap.get(ws);
           // if (instrumentTokens && instrumentTokens.includes(ticks[0].instrument_token)) {
@@ -210,15 +228,12 @@ wss.on('connection', (ws) => {
             // }
           }
           
-          function subscribe(instrumentToken) {
+          function subscribe() {
+            console.log(typeof tokenData)
+            tokenData= JSON.parse(tokenData).map(Number);
             // console.log("inside subscribe", instrumentToken)
-            console.log(instrumentToken)
-            var items = instrumentToken;
-            ticker.subscribe(instrumentToken);
-            // instoken = ticker.subscribe(items);
-            // console.log(ticker.subscribe(items), "hello");
-            
-            ticker.setMode(ticker.modeQuote, items);
+            ticker.subscribe(tokenData);
+            ticker.setMode(ticker.modeQuote, tokenData);
           }
           
           // function unsubscribe(instrumentToken) {
@@ -236,7 +251,7 @@ wss.on('connection', (ws) => {
                 
                 ticker.connect();
                 ticker.on("connect", () => {
-                    subscribe(instrumentToken); 
+                    subscribe(); 
         });
         ticker.on("ticks", onTicks);
 
