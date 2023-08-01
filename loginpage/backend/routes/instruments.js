@@ -50,6 +50,10 @@ return(
   item.instrument_token
   )
 })
+const tradingSymbolData = filteredData.map((item, index) => ({
+  id: index + 1,
+  name: item.tradingsymbol,
+}));
     // Store the filtered instruments data in instrument.json
     fs.writeFileSync(
       path.join(dataDir, 'instrument.json'),
@@ -58,6 +62,10 @@ return(
     fs.writeFileSync(
       path.join(dataDir, 'instrumentToken.json'),
       JSON.stringify(tokenData, null, 2))
+
+    fs.writeFileSync(
+      path.join(dataDir, 'instrumentTradingSymbol.json'),
+      JSON.stringify(tradingSymbolData, null, 2))
       
       
       
@@ -69,7 +77,6 @@ return(
     console.error('Error downloading or converting instruments data:', error);
   }
 };
-
 // Read instruments data from instrument.json on server start
 const instrumentDataPath = path.join(dataDir, 'instrument.json');
 if (fs.existsSync(instrumentDataPath)) {
