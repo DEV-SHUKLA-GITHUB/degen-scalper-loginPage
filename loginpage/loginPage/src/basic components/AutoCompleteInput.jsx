@@ -10,10 +10,17 @@ const CustomCombobox = ({ options, onChange }) => {
     if (query === "") {
       return options;
     }
-    return options.filter((option) =>
-      option.name.toLowerCase().replace(/\s+/g, "").includes(query.toLowerCase().replace(/\s+/g, ""))
-    );
+  
+    const queryWords = query.toLowerCase().split(/\s+/);
+  
+    return options.filter((option) => {
+      const nameWords = option.name.toLowerCase().split(/\s+/);
+      return queryWords.every((queryWord) =>
+        nameWords.some((nameWord) => nameWord.includes(queryWord))
+      );
+    });
   }, [options, query]);
+  
 
   const handleSelect = (selectedOption) => {
     setSelected(selectedOption);

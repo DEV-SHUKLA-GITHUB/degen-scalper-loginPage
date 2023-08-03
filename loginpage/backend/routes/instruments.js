@@ -52,8 +52,10 @@ return(
 })
 const tradingSymbolData = filteredData.map((item, index) => ({
   id: index + 1,
-  name: item.tradingsymbol,
+  name: item.tradingsymbol.replace(/Y/g, "Y ").replace(/(FUT|CE|PE)/g, " $1"),
 }));
+
+
     // Store the filtered instruments data in instrument.json
     fs.writeFileSync(
       path.join(dataDir, 'instrument.json'),
@@ -77,6 +79,7 @@ const tradingSymbolData = filteredData.map((item, index) => ({
     console.error('Error downloading or converting instruments data:', error);
   }
 };
+// downloadInstrumentsData()
 // Read instruments data from instrument.json on server start
 const instrumentDataPath = path.join(dataDir, 'instrument.json');
 if (fs.existsSync(instrumentDataPath)) {

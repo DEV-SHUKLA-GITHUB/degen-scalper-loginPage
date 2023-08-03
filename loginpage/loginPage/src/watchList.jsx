@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import maindata from '../../backend/routes/data/instrument.json';
 import tradingsymbols from '../../backend/routes/data/instrumentTradingSymbol.json';
+import instruments from '../../backend/routes/data/instrument.json';
 import CustomCombobox from './basic components/AutoCompleteInput';
 
 const WatchList = (props) => {
@@ -12,18 +13,33 @@ const WatchList = (props) => {
   ];
 
   const [data, setData] = useState(props.tokens);
+  const [tokendata, setTokendata] = useState();
+  const [name, setName] = useState();
   const [inputVal, setInputVal] = useState('');
+  useEffect(() => {
+    if (tokendata !== undefined) {
+      // Update the data state only when tokendata is updated
+      setData([...data, { token: tokendata, ltp: 0 ,name:name}]);
+      props.add([...data, { token: tokendata, ltp: 0 ,name:name}]);
+    }
+  }, [tokendata]); // This effect will run whenever tokendata changes
 
-  const handleClick = () => {
-    // function nameToToken(inputVal){
-    //   let token;
-    //   //...
-    //   return token
-    // }
+  const token = (selected) => {
+    instruments.forEach((item) => {
+      if (item.tradingsymbol === selected) {
+        console.log(item.tradingsymbol, "tradingsymbol");
+        console.log(item.instrument_token, "tradingsymbol");
+        console.log(typeof Number(item.instrument_token));
+        setTokendata(item.instrument_token);
+        return;
+      }
+    });
+  };
 
-    setData([...data, {token: Number(inputVal), ltp:0}]);
-    props.add([...data, {token: Number(inputVal), ltp:0}])
-    setInputVal('');
+  const handleClick = (selected) => {
+    token(selected.name);
+    setName(selected.name)
+    // Removed the data update here, it will be handled in useEffect
   };
 // console.log(props.ticks,"ticks")
 
@@ -56,12 +72,12 @@ const WatchList = (props) => {
     </div>
     {props.tokens.map((value, index) => {
         return (<div >
-                    <div className='flex justify-between m-4'>
+                    {/* <div className='flex justify-between m-4'>
                         <div>Value</div>
                         <div>LTP</div>
-                    </div>
+                    </div> */}
                     <div className='flex justify-between m-4'>
-                        <div key={index}>{value.token}</div>
+                        <div key={index}>{value.name}</div>
                         <div>{value.ltp}</div>
                     </div>
                 </div>)

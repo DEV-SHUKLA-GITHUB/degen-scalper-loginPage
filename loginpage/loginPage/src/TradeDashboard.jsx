@@ -68,10 +68,11 @@ const instrumentTokenRef = useRef(instrumentToken);
   ];
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
-  const [arrayOfTokens,setArrayOfToken]=useState([{token:8963586, ltp:0},{token:8963842, ltp:0},{token:10227202, ltp:0}]);
+  const [arrayOfTokens,setArrayOfToken]=useState([{token:8963586, ltp:0,name:"BANKNIFTY"},{token:8963842, ltp:0,name:"NIFTY"},{token:10227202, ltp:0,name:"FINNIFTY"}]);
   const changeArrayOfToken=(newArray)=>{
     setArrayOfToken(newArray)
     console.log(arrayOfTokens)
+    console.log(newArray)
     // addToken(newarray[-1]);
   }
 
@@ -274,24 +275,23 @@ const instrumentTokenRef = useRef(instrumentToken);
 
     socket.onmessage = (event) => {
       const ticks = JSON.parse(event.data);
-      // console.log(ticks,'TICKS')
-      setTicksData(ticks)
-      // console.log(instrumentTokenRef.current, "frontend");
-      const watchList=arrayOfTokens
-      ticks.map((tick) => {
-        arrayOfTokens.map((item,index)=>{
-          if (String(tick.instrument_token) === String(item.token)){
-            watchList[index].ltp=tick.last_price
-          }
-          // console.log(String(instrumentTokenRef.current));
-        })
-        setArrayOfToken(watchList)
-        if (String(tick.instrument_token) === String(instrumentTokenRef.current)) {
-          setSelectedOption2(tick.last_price);
-          setTickData(ticks)
-        }
+    
+      setArrayOfToken((prevArrayOfTokens) => {
+        const watchList = [...prevArrayOfTokens]; 
+        ticks.forEach((tick) => {
+          watchList.forEach((item, index) => {
+            if (String(tick.instrument_token) === String(item.token)) {
+              watchList[index].ltp = tick.last_price;
+            }
+            if (String(tick.instrument_token) === String(instrumentTokenRef.current)) {
+              setSelectedOption2(tick.last_price);
+              setTickData(ticks);
+            }
+          });
+        });
+        return watchList; 
       });
-      // console.log("ticks received");
+    
     };
     
 
