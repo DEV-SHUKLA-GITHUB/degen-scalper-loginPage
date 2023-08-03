@@ -14,6 +14,9 @@ const checkRouter=require("./routes/check")
 const generateTokenRouter=require("./routes/generateToken")
 const instruments=require("./routes/instruments")
 const placeOrder=require("./routes/placeOrder")
+const exitRouter=require("./routes/exit")
+const exitAllRouter=require("./routes/exitAll")
+
 
 const User = require("./models/userDetails"); // Import the user schema from userDetails.js
 app.use(express.json());
@@ -49,6 +52,8 @@ mongoose
   app.use("/generateToken",generateTokenRouter)
   app.use("/instruments",instruments)
   app.use("/placeOrder",placeOrder)
+  app.use("/exit", exitRouter)
+  app.use("/exitAll", exitAllRouter)
 
   
 
