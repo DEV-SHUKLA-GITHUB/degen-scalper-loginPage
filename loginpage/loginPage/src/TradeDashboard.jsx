@@ -15,9 +15,10 @@ const instrumentTokenRef = useRef(instrumentToken);
     useEffect(() => {
       // Whenever instrumentToken changes, update instrumentTokenRef.current
       instrumentTokenRef.current = instrumentToken;
-    }, [instrumentToken]);const [ticksData,setTicksData]=useState()
+    }, [instrumentToken]);
+  const [ticksData,setTicksData]=useState()
   const [tickData, setTickData] =useState()
-
+  const [pnl, setPnl] = useState("0")
   const option = ['option1', 'option2', 'option3', 'option4'];
   const product = ['MIS','normal'];
   const optionList = option.map((value) => ({ value, text: value }));
@@ -37,7 +38,22 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [orderBook,setOrderBook] = useState(false)
   const [TradeBook,setTradeBook] = useState(false)
   const [customize,setCustomize] = useState(false)
+  // const instrumentTokenRef = useRef(instrumentToken);
+  //   useEffect(() => {
+  //     // Whenever instrumentToken changes, update instrumentTokenRef.current
+  //     instrumentTokenRef.current = instrumentToken;
+  //   }, [instrumentToken]);
   const [orderbook,setOrderbook]=useState()
+  const [tradebook, setTradebook]=useState()
+  const [fetchedPositions, setFetchedPositions]=useState()
+  const orderbookRef=useRef(orderbook)
+  const tradebookRef=useRef(tradebook)
+  const fetchedPositionsRef=useRef(fetchedPositions)
+  useEffect(()=>{
+    orderbookRef.current=orderBook
+    tradebookRef.current=tradebook
+    fetchedPositionsRef.current=fetchedPositions
+  },[orderBook, tradebook, fetchedPositions])
   const [accountName,setAccountName]=useState("")
   const [customBuyCallKey, setCustomBuyCallKey] = useState(
     localStorage.getItem('customBuyCallKey') || ''
@@ -73,6 +89,10 @@ const instrumentTokenRef = useRef(instrumentToken);
     setArrayOfToken(newArray)
     console.log(arrayOfTokens)
     // addToken(newarray[-1]);
+  }
+
+  const totalPnl=function( orderBook, ){
+    return pnl
   }
 
   // useEffect(() => {
@@ -128,9 +148,12 @@ const instrumentTokenRef = useRef(instrumentToken);
             console.log("failed");
           }
         }    
-        console.log(data,"data 133");
+        // console.log(data,"data 133");
         setOrderbook(data.orderbook)
-        console.log(orderbook,"orderbook")
+        setTradebook(data.tradebook)
+        setFetchedPositions(data.positions)
+        // console.log(data.tradebook,"trade  book")
+        // console.log(data.positions, "positions")
         setAccountName(data.accountName)
         if (data.uniqueExpiryDates && data.uniqueExpiryDates.length > 0) {
           setExpiryList(
@@ -164,6 +187,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     }, []);
 
     const placeOrder = (orderType)=> {
+      console.log(selectedOption7,"test")
       console.log("placedorder:",orderType);
       try{fetch("http://localhost:8000/placeOrder", {
         method: "POST",
@@ -175,7 +199,7 @@ const instrumentTokenRef = useRef(instrumentToken);
           symbol: format,
           qty: selectedOption6,
           transaction_type: orderType,
-          product: selectedOption7.name,
+          product: "MIS",
           variety: "regular"
         }),
       })
@@ -273,12 +297,39 @@ const instrumentTokenRef = useRef(instrumentToken);
    
 
     socket.onmessage = (event) => {
+      
+      
       const ticks = JSON.parse(event.data);
-      // console.log(ticks,'TICKS')
+      // console.log(tradebookRef)
+      console.log(ticks,'TICKS')
       setTicksData(ticks)
       // console.log(instrumentTokenRef.current, "frontend");
       const watchList=arrayOfTokens
       ticks.map((tick) => {
+        let buy=0, sell=0, temp=0
+
+        
+        tradebookRef.current&&tradebookRef.current.map(trade=>{
+          if(trade.transaction_type==='BUY'){
+            buy+=trade.average_price*trade.quantity
+          }else{
+            sell+=trade.average_price*trade.quantity
+          }
+        })
+        fetchedPositionsRef.current&&fetchedPositionsRef.current['day'].map(p=>{
+          if(String(p.instrument_token)===String(tick.instrument_token)){
+            console.log("sell=", sell)
+            console.log("buy=", buy)
+            // console.log((tick.last_price*p.quantity*p.multiplier))
+            // console.log("temp=",temp)
+            temp+=tick.last_price*p.quantity
+            console.log(p.quantity, tick.last_price, temp )
+            console.log(sell-buy+temp)
+            setPnl(sell-buy+temp)
+          }
+        })
+      
+        
         arrayOfTokens.map((item,index)=>{
           if (String(tick.instrument_token) === String(item.token)){
             watchList[index].ltp=tick.last_price
@@ -449,6 +500,10 @@ const instrumentTokenRef = useRef(instrumentToken);
           onSelect={setSelectedOption7}
         /> */}
         <CustomCombobox options={products} onChange={setSelectedOption7} />
+        <div className= "flex">
+          <div>PNL: </div>
+          {pnl}
+        </div>
       </div>
       <button
         className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"

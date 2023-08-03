@@ -112,7 +112,9 @@ router.post("/getInstruments", async (req, res) => {
       kite.setAccessToken(access_token);
 
       const orderbook = await kite.getOrders();
-      console.log(orderbook, "orderbook");
+      const tradebook= await kite.getTrades()
+      const positions= await kite.getPositions()
+      console.log(tradebook, "tradebook");
 
       // Perform any kite operations here
       const instruments = await kite.getInstruments(["NFO"]);
@@ -140,7 +142,7 @@ router.post("/getInstruments", async (req, res) => {
 
 
       // Send the response to the client
-      res.send({ uniqueExpiryDates, instruments, uniqueStrikes, orderbook, accountName: jsonData.BrokerList[0].accountName });
+      res.send({ uniqueExpiryDates, instruments, uniqueStrikes, orderbook,tradebook, positions, accountName: jsonData.BrokerList[0].accountName });
     };
 
     a();
@@ -154,49 +156,6 @@ const wss = new WebSocket.Server({ server });
 
 // Store the WebSocket connection and ticker mapping for each client
 const clientTickerMap = new Map();
-
-// Function to set up the WebSocket connection and ticker
-const setupWebSocket = (ws, api_key, access_token, instrumentToken) => {
-  const ticker = new KiteTicker({ api_key, access_token });
-
-  function onTicks(ticks) {
-    // Check if the WebSocket connection is still open before sending data
-    // console.log(ticks)
-    if (ws.readyState === WebSocket.OPEN) {
-      // Send the ticks data to the current client
-//       ws.send(JSON.stringify(ticks));
-    }
-  }
-
-  function subscribe() {
-    var items = [Number(instrumentToken)];
-    ticker.subscribe(items);
-    instoken = ticker.subscribe(items);
-    console.log(ticker.subscribe(items), "hello");
-
-    ticker.setMode(ticker.modeQuote, items);
-  }
-
-  function unsubscribe() {
-    if (instoken) {
-      ticker.unsubscribe(instoken);
-      console.log("Unsubscribed from instrument token:", instoken);
-      instoken = null;
-    }
-  }
-
-  // Close the previous ticker instance for this client, if any
-  unsubscribe();
-
-  ticker.connect();
-  ticker.on("connect", () => {
-    subscribe(); // Subscribe to the selected instrument token
-  });
-  ticker.on("ticks", onTicks);
-
-  // Save the current ticker instance in the map for this client
-  clientTickerMap.set(ws, ticker);
-};
 
 wss.on('connection', (ws) => {
   const subscribedInstruments = [];
@@ -223,6 +182,7 @@ wss.on('connection', (ws) => {
       console.log("access_token",access_token)
 
       const a = async () => {
+        
         const ticker = new KiteTicker({ api_key, access_token });
         
         function onTicks(ticks) {
