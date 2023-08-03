@@ -8,7 +8,7 @@ const api_key = "elrfps73mpn9aou4";
 const a = async () => {
   const kc = new KiteConnect({ api_key });
   kc.setAccessToken(access_token);
-  const positions=await kc.getOrders()
+  const positions=await kc.getPositions()
   console.log(positions)
   // const tradeBook=kc.getTrades()
   // let buy=0, sell=0
