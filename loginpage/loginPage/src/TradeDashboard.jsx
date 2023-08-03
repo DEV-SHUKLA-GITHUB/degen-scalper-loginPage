@@ -4,6 +4,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomCombobox from './basic components/AutoCompleteInput';
 import WatchList from './watchList';
+import Orderbook from './tradeDashboard/Orderbook'
+import Positions from './tradeDashboard/Positions'
 import maindata from '../../backend/routes/data/instrument.json';
 
 
@@ -15,9 +17,10 @@ const instrumentTokenRef = useRef(instrumentToken);
     useEffect(() => {
       // Whenever instrumentToken changes, update instrumentTokenRef.current
       instrumentTokenRef.current = instrumentToken;
-    }, [instrumentToken]);const [ticksData,setTicksData]=useState()
+    }, [instrumentToken]);
+  const [ticksData,setTicksData]=useState()
   const [tickData, setTickData] =useState()
-
+  const [pnl, setPnl] = useState("0")
   const option = ['option1', 'option2', 'option3', 'option4'];
   const product = ['MIS','normal'];
   const optionList = option.map((value) => ({ value, text: value }));
@@ -37,7 +40,22 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [orderBook,setOrderBook] = useState(false)
   const [TradeBook,setTradeBook] = useState(false)
   const [customize,setCustomize] = useState(false)
+  // const instrumentTokenRef = useRef(instrumentToken);
+  //   useEffect(() => {
+  //     // Whenever instrumentToken changes, update instrumentTokenRef.current
+  //     instrumentTokenRef.current = instrumentToken;
+  //   }, [instrumentToken]);
   const [orderbook,setOrderbook]=useState()
+  const [tradebook, setTradebook]=useState()
+  const [fetchedPositions, setFetchedPositions]=useState()
+  const orderbookRef=useRef(orderbook)
+  const tradebookRef=useRef(tradebook)
+  const fetchedPositionsRef=useRef(fetchedPositions)
+  useEffect(()=>{
+    orderbookRef.current=orderBook
+    tradebookRef.current=tradebook
+    fetchedPositionsRef.current=fetchedPositions
+  },[orderBook, tradebook, fetchedPositions])
   const [accountName,setAccountName]=useState("")
   const [customBuyCallKey, setCustomBuyCallKey] = useState(
     localStorage.getItem('customBuyCallKey') || ''
@@ -74,6 +92,10 @@ const instrumentTokenRef = useRef(instrumentToken);
     console.log(arrayOfTokens)
     console.log(newArray)
     // addToken(newarray[-1]);
+  }
+
+  const totalPnl=function( orderBook, ){
+    return pnl
   }
 
   // useEffect(() => {
@@ -131,7 +153,13 @@ const instrumentTokenRef = useRef(instrumentToken);
         }    
         console.log(data,"data 133");
         setOrderbook(data.orderbook)
-        console.log(orderbook,"orderbook")
+        setTradebook(data.tradebook)
+        setFetchedPositions(data.positions)
+        console.log(fetchedPositions)
+        console.log(orderbook)
+        console.log(data.positions)
+        // console.log(data.tradebook,"trade  book")
+        // console.log(data.positions, "positions")
         setAccountName(data.accountName)
         if (data.uniqueExpiryDates && data.uniqueExpiryDates.length > 0) {
           setExpiryList(
@@ -165,6 +193,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     }, []);
 
     const placeOrder = (orderType)=> {
+      console.log(selectedOption7,"test")
       console.log("placedorder:",orderType);
       try{fetch("http://localhost:8000/placeOrder", {
         method: "POST",
@@ -176,7 +205,7 @@ const instrumentTokenRef = useRef(instrumentToken);
           symbol: format,
           qty: selectedOption6,
           transaction_type: orderType,
-          product: selectedOption7.name,
+          product: "MIS",
           variety: "regular"
         }),
       })
@@ -274,6 +303,8 @@ const instrumentTokenRef = useRef(instrumentToken);
    
 
     socket.onmessage = (event) => {
+      
+      
       const ticks = JSON.parse(event.data);
     
       setArrayOfToken((prevArrayOfTokens) => {
@@ -289,11 +320,37 @@ const instrumentTokenRef = useRef(instrumentToken);
             }
           });
         });
-        return watchList; 
+      // console.log(tradebookRef)
+      console.log(ticks,'TICKS')
+      setTicksData(ticks)
+      // console.log(instrumentTokenRef.current, "frontend");
+      ticks.map((tick) => {
+        let buy=0, sell=0, temp=0
+
+        
+        tradebookRef.current&&tradebookRef.current.map(trade=>{
+          if(trade.transaction_type==='BUY'){
+            buy+=trade.average_price*trade.quantity
+          }else{
+            sell+=trade.average_price*trade.quantity
+          }
+        })
+        fetchedPositionsRef.current&&fetchedPositionsRef.current['day'].map(p=>{
+          if(String(p.instrument_token)===String(tick.instrument_token)){
+            console.log("sell=", sell)
+            console.log("buy=", buy)
+            // console.log((tick.last_price*p.quantity*p.multiplier))
+            // console.log("temp=",temp)
+            temp+=tick.last_price*p.quantity
+            console.log(p.quantity, tick.last_price, temp )
+            console.log(sell-buy+temp)
+            setPnl(sell-buy+temp)
+          }
+        })
       });
-    
-    };
-    
+      return watchList; 
+    });
+  }
 
     socket.onclose = () => {
       console.log('WebSocket disconnected');
@@ -306,7 +363,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     };
   }, []);
 
-
+console.log(fetchedPositions)
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -449,6 +506,10 @@ const instrumentTokenRef = useRef(instrumentToken);
           onSelect={setSelectedOption7}
         /> */}
         <CustomCombobox options={products} onChange={setSelectedOption7} />
+        <div className= "flex">
+          <div>PNL: </div>
+          {pnl}
+        </div>
       </div>
       <button
         className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
@@ -573,286 +634,11 @@ const instrumentTokenRef = useRef(instrumentToken);
       </button>
     </div>
 {orderBook && 
-              <div className="flex flex-col gap-4 bg-[#101013] text-white w-full h-full">
-              {/* header - nifty time  */}
-        
-              <h2 className="font-bold text-2xl">{accountName}</h2>
-        
-              {/* main area displays cards */}
-              <div className="overflow-x-auto">
-                <table className="table w-full text-white">
-                  {/* head */}
-                  <thead className="bg[#0A0A0C]">
-                    <tr className=" text-[#BABABA] text-lg">
-                      <th className="font-normal">Symbol</th>
-                      {/* <th className="font-normal">LTP</th> */}
-                      <th className="font-normal">Time Stamp</th>
-                      <th className="font-normal">Qty</th>
-                      <th className="font-normal">Order Type</th>
-                      <th className="font-normal">Transaction Type</th>
-        
-                      <th className="font-normal">Status</th>
-                      {/* <th className="font-normal">Sell</th> */}
-                    </tr>
-                  </thead>
-                  <tbody className="">
-                    {/* use map here  */}
-                    {orderbook&&orderbook.map((item,index)=>{
-                      return (
-                        <tr  className="bg-[#262832]  border-2 border-[#212126] w-screen" >
-                        <th className='mr-10 p-10'>{item.tradingsymbol}</th>
-                        <td className='mr-10 p-10'>{item.order_timestamp.split('T')[0]}</td>
-                        <td className='mr-10 p-10'>{item.quantity}</td>
-                        <td className='mr-10 p-10'>{item.order_type}</td>
-                        <td className='mr-10 p-10'>{item.transaction_type}</td>
-                        <td className='mr-10 p-10'>{item.status}</td>
-                      </tr>        
-                      )
-                    })}
-                  </tbody>
-                </table>
-                
-              </div>
-            </div>
-
+<Orderbook orderbook={orderbook}  />
             }
-{positions &&   <div>
-  <div className='flex justify-around mt-2'>
-            <h2 className='font-bold'>Net Qty: 0</h2>
-            <h2 className='font-bold'>MTM: 32055.50</h2>
-        </div>
-      <div className=' w-screen border-black '>
-      <div className='w-screen'>
-  <table className="w-screen ">
-    <thead className='bg-blue-100 border-2 border-black w-screen'>
-      <tr className=''>
-        <th className="text-center border-2 border-black">Symbol Name</th>
-        <th className="text-center border-2 border-black">Product</th>
-        <th className="text-center border-2 border-black">Side</th>
-        <th className="text-center border-2 border-black">NET Qty</th>
-        <th className="text-center border-2 border-black">LTF</th>
-        <th className="text-center border-2 border-black">SL</th>
-        <th className="text-center border-2 border-black">SL Button</th>
-        <th className="text-center border-2 border-black">UR. P&L</th>
-        <th className="text-center border-2 border-black">P&L</th>
-        <th className="text-center border-2 border-black">Action</th>
-        <th className="text-center border-2 border-black">Avg Price</th>
-        <th className="text-center border-2 border-black">Buy Qty</th>
-        <th className="text-center border-2 border-black">Buy Price</th>
-        <th className="text-center border-2 border-black">Sell Price</th>
-        <th className="text-center border-2 border-black">Sell Qty</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-      <tr>
-        <td className="text-center">BANKNIFTY0495030</td>
-        <td className="text-center">MARGIN</td>
-        <td className="text-center">BUY</td>
-        <td className="text-center">100</td>
-        <td className="text-center">100307.5</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">0.00</td>
-        <td className="text-center">76.00</td>
-        <td className="text-center">76</td>
-        <td className="text-center">-</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">100</td>
-        <td className="text-center">307...</td>
-        <td className="text-center">0.00</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-  </div>
-  </div>}
+{positions &&   
+<Positions Positions={fetchedPositions&&fetchedPositions} />
+}
    </div>
 </div>
     </div>
