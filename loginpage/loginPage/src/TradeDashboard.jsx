@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import CustomCombobox from './basic components/AutoCompleteInput';
 import WatchList from './watchList';
 import Orderbook from './tradeDashboard/Orderbook'
+import Tradebook from './tradeDashboard/Tradebook'
 import Positions from './tradeDashboard/Positions'
 import maindata from '../../backend/routes/data/instrument.json';
 import { ToastContainer, toast } from "react-toastify";
@@ -32,6 +33,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [sellltp, setSellltp] = useState();
   const [expiryList ,setExpiryList] = useState();
   const [strikeList ,setStrikeList] = useState();
+  const [callType ,setCallType] = useState();
   const [selectedOption3, setSelectedOption3] = useState();
   const [selectedOption4, setSelectedOption4] = useState(optionList[0]);
   const [selectedOption5, setSelectedOption5] = useState(optionList[0]);
@@ -194,9 +196,10 @@ const instrumentTokenRef = useRef(instrumentToken);
       handleClick("NIFTY");      
     }, []);
 
-    const placeOrder = (orderType)=> {
+    const placeOrder = (orderType , callType)=> {
       console.log(selectedOption7,"test")
       console.log("placedorder:",orderType);
+      console.log(selectedOption7.name)
       try{fetch("http://localhost:8000/placeOrder", {
         method: "POST",
         headers: {
@@ -207,7 +210,7 @@ const instrumentTokenRef = useRef(instrumentToken);
           symbol: format,
           qty: selectedOption6,
           transaction_type: orderType,
-          product: "MIS",
+          product: selectedOption7.name,
           variety: "regular"
         }),
       })
@@ -255,7 +258,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const date=selectedOption3?selectedOption3:""
   const name=selectedOption1||""
   const price=selectedOption4
-  const type="CE"
+  const type=callType
   function formater(name, price, dateList, date, type){
   
       let formatedName;
@@ -611,11 +614,11 @@ console.log(fetchedPositions)
       <div className='mt-4 mr-4 flex justify-between'>
         <div>
         <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" 
-         onClick={()=>{placeOrder("SELL")}}>
+         onClick={()=>{placeOrder("SELL","CE"),setCallType("CE")}}>
         Sell Call  
       </button>
       <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
-       onClick={()=>{placeOrder("BUY")}}>
+       onClick={()=>{placeOrder("BUY","CE"),setCallType("CE")}}>
         Buy Call
       </button>
         </div>
@@ -628,10 +631,12 @@ console.log(fetchedPositions)
       </button>
         </div>
         <div>
-        <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded " >
+        <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
+        onClick={()=>{placeOrder("BUY","PE"),setCallType("PE")}} >
         Buy Put
       </button>
-      <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" > 
+      <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
+      onClick={()=>{placeOrder("BUY","PE"),setCallType("PE")}} > 
         Sell Put
       </button>
         </div>
@@ -659,6 +664,9 @@ console.log(fetchedPositions)
     </div>
 {orderBook && 
 <Orderbook orderbook={orderbook}  />
+            }
+{TradeBook && 
+<Tradebook tradebook={tradebook}  />
             }
 {positions &&   
 <Positions Positions={fetchedPositions&&fetchedPositions} />
