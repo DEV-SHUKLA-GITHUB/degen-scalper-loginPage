@@ -190,7 +190,7 @@ wss.on('connection', (ws) => {
         const ticker = new KiteTicker({ api_key, access_token });
         
         function onTicks(ticks) {
-          console.log("Ticks", ticks.length);
+          // console.log("Ticks", ticks.length);
           ws.send(JSON.stringify(ticks));
           // const instrumentTokens = clientInstrumentMap.get(ws);
           // if (instrumentTokens && instrumentTokens.includes(ticks[0].instrument_token)) {

@@ -345,7 +345,7 @@ const instrumentTokenRef = useRef(instrumentToken);
           });
         });
       // console.log(tradebookRef)
-      console.log(ticks,'TICKS')
+      // console.log(ticks,'TICKS')
       setTicksData(ticks)
       // console.log(instrumentTokenRef.current, "frontend");
       ticks.map((tick) => {
@@ -361,13 +361,13 @@ const instrumentTokenRef = useRef(instrumentToken);
         })
         fetchedPositionsRef.current&&fetchedPositionsRef.current['day'].map(p=>{
           if(String(p.instrument_token)===String(tick.instrument_token)){
-            console.log("sell=", sell)
-            console.log("buy=", buy)
+            // console.log("sell=", sell)
+            // console.log("buy=", buy)
             // console.log((tick.last_price*p.quantity*p.multiplier))
             // console.log("temp=",temp)
             temp+=tick.last_price*p.quantity
-            console.log(p.quantity, tick.last_price, temp )
-            console.log(sell-buy+temp)
+            // console.log(p.quantity, tick.last_price, temp )
+            // console.log(sell-buy+temp)
             setPnl(sell-buy+temp)
           }
         })
@@ -387,7 +387,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     };
   }, []);
 
-console.log(fetchedPositions)
+// console.log(fetchedPositions)
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -661,7 +661,7 @@ console.log(fetchedPositions)
 <Orderbook orderbook={orderbook}  />
             }
 {positions &&   
-<Positions Positions={fetchedPositions&&fetchedPositions} />
+<Positions orderbook Positions={fetchedPositions&&fetchedPositions} />
 }
    </div>
 </div>
