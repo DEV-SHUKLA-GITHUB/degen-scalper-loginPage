@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
         const kite = new KiteConnect({ api_key });
         kite.setAccessToken(access_token);
         function regularOrderPlace(variety) {
-            kite.placeOrder(variety, {
+            return kite.placeOrder(variety, {
                     "exchange": "NFO",
                     "tradingsymbol": symbol,
                     "transaction_type": transaction_type,

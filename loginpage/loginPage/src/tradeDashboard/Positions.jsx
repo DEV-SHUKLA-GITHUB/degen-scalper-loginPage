@@ -1,6 +1,63 @@
 import React from 'react'
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Positions = (props) => {
+
+  function exitHandler(symbol){
+    console.log(symbol)
+    // props.orderbook&&props.orderbook.map(order=>{
+    //   if(order.tradingsymbol===Symbol){
+      try{fetch("http://localhost:8000/exit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: window.localStorage.getItem("token"),
+          symbol
+        }),
+      }).then(data=>{
+        // if(resp.status){
+        //     console.log("position squared off")
+            
+        //   }
+        //   else{
+        //     console.log("error in closing the position")
+        //   }
+        // })
+        console.log(data)
+        if(data.status){
+            toast.success("position squared off", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+          }else{
+            toast.error("error in closing the position", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+          }
+      })
+    }
+    catch(err){
+      console.log(err)
+    }
+    props.exit
+    //   }
+    // })
+  }
   return (
     <div>
   <div className='flex justify-around mt-2'>
@@ -24,17 +81,18 @@ const Positions = (props) => {
     <tbody>
 {console.log(props.Positions)}
 
-    {props.Positions&&props.Positions.day.map((item,index)=>{
-            return (
-            <tr>
+    {props.Positions&&props.Positions['day'].map((item,index)=>{
+            if(item.quantity!=0){return (
+            <tr key={index}>
                 <td className="text-center">{item.tradingsymbol}</td>
                 <td className="text-center">{item.product}</td>
-                <td className="text-center">{item.qty}</td>
+                <td className="text-center">{item.quantity}</td>
                 <td className="text-center">{item.last_price}</td>
                 <td className="text-center">{item.pnl}</td>
                 <td className="text-center">{item.average_price}</td>
+                <td className='text-center'><button onClick={()=>{exitHandler(item.tradingsymbol)}}>exit</button></td>
             </tr>  
-            )
+            )}
           })}
 
     </tbody>

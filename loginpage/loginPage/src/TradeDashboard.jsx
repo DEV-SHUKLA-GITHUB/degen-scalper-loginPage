@@ -341,7 +341,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     };
   }, []);
 
-console.log(fetchedPositions)
+// console.log(fetchedPositions)
   const handlePositionClick = () => {
     setPositionButtonClicked(true);
     setOrderBookButtonClicked(false);
@@ -586,7 +586,7 @@ console.log(fetchedPositions)
 <Tradebook tradebook={tradebook}  />
             }
 {positions &&   
-<Positions Positions={fetchedPositions&&fetchedPositions} />
+<Positions exit={handleClick} Positions={fetchedPositions&&fetchedPositions} />
 }
    </div>
 </div>
