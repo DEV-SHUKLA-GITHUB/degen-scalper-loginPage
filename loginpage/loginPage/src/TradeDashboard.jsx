@@ -114,6 +114,30 @@ const instrumentTokenRef = useRef(instrumentToken);
   // }, []);
   // console.log(window.localStorage.getItem("token"))
 
+
+  function closeAllHandler(){
+    try{fetch("http://localhost:8000/exitAll", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: window.localStorage.getItem("token")
+        }),
+      }).then(resp=>{
+        if(resp.status){
+          console.log("all position squared off")
+        }
+        else{
+          console.log("error in closing the position")
+        }
+      })
+    }
+    catch(err){
+      console.log(err)
+    }
+  }
+
   
   const handleClick = (selected) => {
     console.log("selected", selected)
@@ -620,7 +644,7 @@ const instrumentTokenRef = useRef(instrumentToken);
       </button>
         </div>
         <div>
-        <button className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
+        <button onClick={closeAllHandler} className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
         Close all Positions
       </button>
       <button className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
