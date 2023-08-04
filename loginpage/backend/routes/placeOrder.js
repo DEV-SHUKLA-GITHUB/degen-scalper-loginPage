@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
                 });
         }
         const orderId = await regularOrderPlace(variety);
-        if(true){
+        if(orderId){
             res.send({status:true,orderId:orderId});
         }else{
             res.send({status:false});

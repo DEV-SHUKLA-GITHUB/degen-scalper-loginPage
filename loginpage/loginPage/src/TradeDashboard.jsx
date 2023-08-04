@@ -7,6 +7,8 @@ import WatchList from './watchList';
 import Orderbook from './tradeDashboard/Orderbook'
 import Positions from './tradeDashboard/Positions'
 import maindata from '../../backend/routes/data/instrument.json';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 const TradeDashboard = () => {
@@ -211,7 +213,29 @@ const instrumentTokenRef = useRef(instrumentToken);
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data,"data")
+          if(data.status == true){
+            toast.success("Order Placed", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+          }else{
+            toast.error("Error", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+          }
     })}
     catch(err) {
       console.log("request error: " + err)
