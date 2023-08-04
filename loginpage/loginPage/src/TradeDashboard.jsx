@@ -33,7 +33,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [sellltp, setSellltp] = useState();
   const [expiryList ,setExpiryList] = useState();
   const [strikeList ,setStrikeList] = useState();
-  const [callType ,setCallType] = useState();
+  const [callType ,setCallType] = useState("CE");
   const [selectedOption3, setSelectedOption3] = useState();
   const [selectedOption4, setSelectedOption4] = useState(optionList[0]);
   const [selectedOption5, setSelectedOption5] = useState(optionList[0]);
@@ -44,11 +44,6 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [orderBook,setOrderBook] = useState(false)
   const [TradeBook,setTradeBook] = useState(false)
   const [customize,setCustomize] = useState(false)
-  // const instrumentTokenRef = useRef(instrumentToken);
-  //   useEffect(() => {
-  //     // Whenever instrumentToken changes, update instrumentTokenRef.current
-  //     instrumentTokenRef.current = instrumentToken;
-  //   }, [instrumentToken]);
   const [orderbook,setOrderbook]=useState()
   const [tradebook, setTradebook]=useState()
   const [fetchedPositions, setFetchedPositions]=useState()
@@ -76,13 +71,10 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [positionButtonClicked, setPositionButtonClicked] = useState(false);
   const [orderBookButtonClicked, setOrderBookButtonClicked] = useState(false);
   const [tradeBookButtonClicked, setTradeBookButtonClicked] = useState(false);
-  // const [selected, setSelected] = useState(people[0]);
-  // const [query, setQuery] = useState("");
   const options = [
     { id: 1, name: "NIFTY" },
     { id: 2, name: "BANKNIFTY" },
     { id: 3, name: "FINNIFTY" },
-    // Add more options as needed
   ];
   const products = [
     { id: 1, name: "MIS" },
@@ -95,34 +87,17 @@ const instrumentTokenRef = useRef(instrumentToken);
     setArrayOfToken(newArray)
     console.log(arrayOfTokens)
     console.log(newArray)
-    // addToken(newarray[-1]);
   }
 
   const totalPnl=function( orderBook, ){
     return pnl
   }
-
-  // useEffect(() => {
-    // const socket = new WebSocket('ws://localhost:7000/instruments');
-    
-    
-
-  //   return () => {
-  //     // Clean up the WebSocket connection when the component unmounts
-  //     socket.close();
-  //   };
-
-  
-  // }, []);
-  // console.log(window.localStorage.getItem("token"))
-
   
   const handleClick = (selected) => {
     console.log("selected", selected)
     setSelectedOption1(selected.name || selected);
     console.log(selectedOption1)
   
-    // console.log(window.localStorage.getItem("email"));
     fetch("http://localhost:8000/instruments/getInstruments", {
       method: "POST",
       headers: {
@@ -137,19 +112,8 @@ const instrumentTokenRef = useRef(instrumentToken);
       .then((data) => {
         for (const instrument of data.instruments) {
           if ((selected.name || selected) === instrument.name) {
-            // Set the selected instrument token in state
-            // setSelectedOption2(null); // Clear the state when changing instruments
             console.log("This is my instrument token : ",instrumentToken)
             setInstrumentToken(instrument.instrument_token);
-            // ticksData.map(tick=>{
-            //   // setTicksData(ticks)
-            //   // console.log(String(tick.instrument_token),String(instrument.instrument_token))
-            //   if (String(tick.instrument_token) === String(instrument.instrument_token)){
-              
-              //     setSelectedOption2(tick.last_price);
-            //   }
-            // })
-           
             break;
           } else {
             console.log("failed");
@@ -245,15 +209,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     }
   }
 
-  //   const dateList=[
-  //     {value:"2023-07-04T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
-  //     {value:"2023-07-11T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
-  //     {value:"2023-07-15T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
-  //     {value:"2023-07-21T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
-  //     {value:"2023-07-27T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
-  //     {value:"2023-08-27T00:00:00.000Z", item: "2023-07-27T00:00:00.000Z"},
-  
-  // ]
+
   const dateList=expiryList||[{}]
   const date=selectedOption3?selectedOption3:""
   const name=selectedOption1||""
@@ -314,7 +270,6 @@ const instrumentTokenRef = useRef(instrumentToken);
 
 
   useEffect(() => {
-    // Set up the WebSocket connection and event listeners only once
     const socket = new WebSocket('ws://localhost:7000/instruments');
 
     socket.onopen = () => {
@@ -347,10 +302,9 @@ const instrumentTokenRef = useRef(instrumentToken);
             }
           });
         });
-      // console.log(tradebookRef)
-      console.log(ticks,'TICKS')
+      // console.log(ticks,'TICKS')
+      console.log(arrayOfTokens,"array")
       setTicksData(ticks)
-      // console.log(instrumentTokenRef.current, "frontend");
       ticks.map((tick) => {
         let buy=0, sell=0, temp=0
 
@@ -364,13 +318,11 @@ const instrumentTokenRef = useRef(instrumentToken);
         })
         fetchedPositionsRef.current&&fetchedPositionsRef.current['day'].map(p=>{
           if(String(p.instrument_token)===String(tick.instrument_token)){
-            console.log("sell=", sell)
-            console.log("buy=", buy)
-            // console.log((tick.last_price*p.quantity*p.multiplier))
-            // console.log("temp=",temp)
+            // console.log("sell=", sell)
+            // console.log("buy=", buy)
             temp+=tick.last_price*p.quantity
-            console.log(p.quantity, tick.last_price, temp )
-            console.log(sell-buy+temp)
+            // console.log(p.quantity, tick.last_price, temp )
+            // console.log(sell-buy+temp)
             setPnl(sell-buy+temp)
           }
         })
@@ -383,7 +335,6 @@ const instrumentTokenRef = useRef(instrumentToken);
       console.log('WebSocket disconnected');
     };
 
-    // Clean up the WebSocket connection when the component unmounts
     return () => {
       console.log("useEffect has been deprecated")
       socket.close();
@@ -418,9 +369,7 @@ console.log(fetchedPositions)
     setPositions(false);
   };
   const handleKeyDown = (event) => {
-    // ... (existing code)
 
-    // Step 4: Check against customized keys for each button
     if (event.key === (customSellCallKey || 'ArrowLeft')) {
       console.log('sell call');
     }
@@ -440,7 +389,6 @@ console.log(fetchedPositions)
   };
 
   const handleCustomizeClickSave = () => {
-    // Step 1: Save the customized keys in local storage
     localStorage.setItem('customBuyCallKey', customBuyCallKey);
     localStorage.setItem('customSellCallKey', customSellCallKey);
     localStorage.setItem('customBuyPutKey', customBuyPutKey);
@@ -468,7 +416,6 @@ console.log(fetchedPositions)
     }
   }, []);
 
-  // console.log(ticksData,"ticksdata")
   return (
     <div className='flex'>
       <div className='h-screen w-1/5'>
@@ -505,15 +452,6 @@ console.log(fetchedPositions)
           value={selectedOption5}
           onSelect={setSelectedOption5}
         />
-        {/* <Dropdown
-          label="Qty"
-          heading="Select options"
-          itemList={optionList}
-          value={selectedOption6.value}
-          onSelect={setSelectedOption6}
-        /> */}
-{/* <div className='qty-container flex'> */}
-  {/* <label htmlFor="input" className="text-xs inline">QTY</label> */}
   <input
     type="number"
     placeholder='QTY 1 to 36' 
@@ -524,14 +462,6 @@ console.log(fetchedPositions)
       console.log(selectedOption6);
     }}
   />
-{/* </div> */}
-        {/* <Dropdown
-          label="Product"
-          heading="Select options"
-          itemList={productList}
-          value={selectedOption7}
-          onSelect={setSelectedOption7}
-        /> */}
         <CustomCombobox options={products} onChange={setSelectedOption7} />
         <div className= "flex">
           <div>PNL: </div>
@@ -550,20 +480,8 @@ console.log(fetchedPositions)
       >
         Customize click
       </button>
-      {/* <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" onKeyDown={handleKeyDown}> Enable click</button>
-      <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleCustomizeClick}> Customize click</button> */}
-      {/* {customize && 
-        <div>
-        <input type="text" onKeyDown={handleInput1} className='m-2 p-2 border-2 rounded border-black' placeholder='customize key for Buy call' />
-        <input type="text" onKeyDown={handleInput2} className='m-2 p-2 border-2 rounded border-black' placeholder='customize key for sell call' />
-        <input type="text" onKeyDown={handleInput3} className='m-2 p-2 border-2 rounded border-black' placeholder='customize key for Buy put' />
-        <input type="text" onKeyDown={handleInput4} className='m-2 p-2 border-2 rounded border-black' placeholder='customize key for sell put' />
-        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" onClick={handleCustomizeClickSave}> save</button>
-        </div>
-      } */}
             {customize && (
         <div>
-          {/* Step 2: Show input fields for customized keys */}
           <input
             type="text"
             value={customBuyCallKey}
@@ -592,7 +510,6 @@ console.log(fetchedPositions)
             className="m-2 p-2 border-2 rounded border-black"
             placeholder="customize key for sell put"
           />
-          {/* Step 3: Save button to save the customized keys */}
           <button
             className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
             onClick={handleCustomizeClickSave}
