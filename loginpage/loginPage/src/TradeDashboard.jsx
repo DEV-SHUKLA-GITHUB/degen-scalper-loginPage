@@ -171,7 +171,7 @@ const instrumentTokenRef = useRef(instrumentToken);
         },
         body: JSON.stringify({
           token: window.localStorage.getItem("token"),
-          symbol: format,
+          symbol: callType=="CE"&&formatCE||callType=="PE"&&formatPE,
           qty: selectedOption6,
           transaction_type: orderType,
           product: selectedOption7.name,
@@ -266,7 +266,8 @@ const instrumentTokenRef = useRef(instrumentToken);
   
   return formatedName
   }
-  const format = formater(name,price,dateList,date,type)
+  const formatCE = formater(name,price,dateList,date,type)
+  const formatPE = formater(name,selectedOption5,dateList,date,"PE")
 
 
   useEffect(() => {
@@ -519,9 +520,9 @@ const instrumentTokenRef = useRef(instrumentToken);
         </div>
       )}
       <div className='mt-8 ml-4 mr-4 flex justify-between'>
-        <h3>strike: {format}</h3>
+        <h3>strike: {formatCE}</h3>
         <h3>{selectedOption1}</h3>
-        <h3>strike: BANKNIFTY84340929</h3>
+        <h3>strike: {formatPE}</h3>
       </div>
       <div className='mt-2 ml-4 mr-4 flex justify-between'>
         <h3>LTP: {sellltp}</h3>
