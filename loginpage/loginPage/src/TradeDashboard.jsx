@@ -110,6 +110,17 @@ const instrumentTokenRef = useRef(instrumentToken);
     { id: 1, name: "MIS" },
     { id: 2, name: "NORMAL" },
   ];
+  const [lotSize, setLotSize]=useState(50)
+
+  useEffect(()=>{
+    for (let i = 0; i < maindata.length; i++) {
+      const instrument = maindata[i];
+      if (String(instrument.name) === String(selectedOption1)) {
+        setLotSize(instrument.lot_size)
+        break
+      }
+  }
+  }, [selectedOption1])
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
   const [arrayOfTokens,setArrayOfToken]=useState([{token:8963586, ltp:0,name:"BANKNIFTY"},{token:8963842, ltp:0,name:"NIFTY"},{token:10227202, ltp:0,name:"FINNIFTY"}]);
@@ -231,15 +242,17 @@ const instrumentTokenRef = useRef(instrumentToken);
 
     const placeOrder = (orderType , callType)=> {
 
-      console.log(selectedOption7,"test")
-      console.log("placedorder:",orderType);
-      console.log(selectedOption7.name)
+      // console.log(selectedOption7,"test")
+      // console.log("placedorder:",orderType);
+      // console.log(selectedOption7.name)
+      console.log(lotSize)
       try{fetch("http://localhost:8000/placeOrder", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          lotSize,
           token: window.localStorage.getItem("token"),
           symbol: callType=="CE"&&callSymbol||callType=="PE"&&putSymbol,
           qty: selectedOption6,
@@ -250,7 +263,9 @@ const instrumentTokenRef = useRef(instrumentToken);
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log(data)
           if(data.status == true){
+            console.log("order placed")
             toast.success("Order Placed", {
               position: "top-right",
               autoClose: 3000,

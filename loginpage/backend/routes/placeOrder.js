@@ -8,7 +8,7 @@ const KiteConnect = require("kiteconnect").KiteConnect;
 const {checkAuth}=require("../modules/auth")
 
 router.post("/", async (req, res) => {
-    const {symbol, qty, transaction_type,product,variety, token, } = req.body;
+    const {lotSize, symbol, qty, transaction_type,product,variety, token, } = req.body;
     console.log({symbol, qty, transaction_type,product,variety, token, } )
     try {
         const checkAuthResponse = await checkAuth(token)
@@ -22,25 +22,27 @@ router.post("/", async (req, res) => {
         const kite = new KiteConnect({ api_key });
         kite.setAccessToken(access_token);
         function regularOrderPlace(variety) {
-            return kite.placeOrder(variety, {
+            kite.placeOrder(variety, {
                     "exchange": "NFO",
                     "tradingsymbol": symbol,
                     "transaction_type": transaction_type,
-                    "quantity": qty*50,
+                    "quantity": qty*lotSize,
                     "product": product,
                     "order_type": "MARKET"
-                }).then(function(resp) {
-                    console.log(resp);
-                }).catch(function(err) {
-                    console.log(err,"error");
-                });
+                }).then(async function(resp) {
+                    console.log("33",resp);
+                    const orderbook=await kite.getOrders()
+                    if(orderbook[orderbook.length-1].status==="COMPLETE"){
+
+                        res.send({status:true,data:resp});
+                    }
+                    else{
+                        res.send({status:false});
+
+                    }
+                })
         }
-        const orderId = await regularOrderPlace(variety);
-        if(orderId){
-            res.send({status:true,orderId:orderId});
-        }else{
-            res.send({status:false});
-        }
+       regularOrderPlace(variety);
 
     
     }

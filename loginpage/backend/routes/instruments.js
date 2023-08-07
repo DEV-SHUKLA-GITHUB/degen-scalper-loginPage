@@ -34,7 +34,7 @@ const downloadInstrumentsData = async () => {
     const url = 'https://api.kite.trade/instruments';
     const response = await axios.get(url);
     const jsonData = await csvtojson().fromString(response.data);
-    console.log(jsonData, "json data");
+    // console.log(jsonData, "json data");
 
     // Filter the jsonData array based on the given conditions
     const filteredData = jsonData.filter(item => {
@@ -114,8 +114,8 @@ router.post("/getInstruments", async (req, res) => {
       const orderbook = await kite.getOrders();
       const tradebook= await kite.getTrades()
       const positions= await kite.getPositions()
-      console.log(tradebook, "tradebook");
-      console.log(positions, "positions");
+      // console.log(tradebook, "tradebook");
+      // console.log(positions, "positions");
 
       // Perform any kite operations here
       const instruments = await kite.getInstruments(["NFO"]);
