@@ -216,7 +216,7 @@ const instrumentTokenRef = useRef(instrumentToken);
         },
         body: JSON.stringify({
           token: window.localStorage.getItem("token"),
-          symbol: callType=="CE"&&formatCE||callType=="PE"&&formatPE,
+          symbol: callType=="CE"&&callSymbol||callType=="PE"&&putSymbol,
           qty: selectedOption6,
           transaction_type: orderType,
           product: selectedOption7.name,
