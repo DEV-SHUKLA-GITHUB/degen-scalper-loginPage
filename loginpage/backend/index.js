@@ -16,6 +16,7 @@ const instruments=require("./routes/instruments")
 const placeOrder=require("./routes/placeOrder")
 const exitRouter=require("./routes/exit")
 const exitAllRouter=require("./routes/exitAll")
+const updatePositionsRouter=require("./routes/updatePositions")
 
 
 const User = require("./models/userDetails"); // Import the user schema from userDetails.js
@@ -26,6 +27,7 @@ app.use(cors());
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { generateToken } = require("fyers-api-v2/helper/helper");
+const { get_positions } = require("fyers-api-v2");
 const JWT_SECRET = "slkdfjlasdfkajsdlkfaksdflaksdjfoajsdofjodsf";
 
 
@@ -54,6 +56,8 @@ mongoose
   app.use("/placeOrder",placeOrder)
   app.use("/exit", exitRouter)
   app.use("/exitAll", exitAllRouter)
+  app.use("/updatePositions", updatePositionsRouter)
+
 
   
 
