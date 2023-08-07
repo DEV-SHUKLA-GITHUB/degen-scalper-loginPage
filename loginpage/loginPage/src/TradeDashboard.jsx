@@ -11,7 +11,6 @@ import maindata from '../../backend/routes/data/instrument.json';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const TradeDashboard = () => {
 
 // var instrumentToken;
@@ -47,6 +46,36 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [orderbook,setOrderbook]=useState()
   const [tradebook, setTradebook]=useState()
   const [fetchedPositions, setFetchedPositions]=useState()
+
+  const [callSymbol, setCallSymbol]=useState()
+    const callSymbolRef=useRef(callSymbol)
+  const [callLTP, setCallLTP]=useState()
+  const [putSymbol, setPutSymbol]=useState()
+  const putSymbolRef=useRef(putSymbol)
+  const [putLTP, setPutLTP]=useState()
+  const [putToken, setPutToken]=useState()
+  const [callToken, setCallToken]=useState()
+  const putTokenRef=useRef(putToken)
+  const callTokenRef=useRef(callToken)
+  useEffect(()=>{
+    callSymbolRef.current=callSymbol
+    putSymbolRef.current=putSymbol
+    maindata.map(item=>{
+      if(String(item.tradingsymbol)===String(callSymbol)){
+        setCallToken(item.instrument_token)
+      }
+      if(String(item.tradingsymbol)===String(putSymbol)){
+        setPutToken(item.instrument_token)
+      }
+      
+    })
+  },[callSymbol, putSymbol])
+  useEffect(()=>{
+    callTokenRef.current=callToken
+    putTokenRef.current=putToken
+  },[callToken,putToken])
+  
+
   const orderbookRef=useRef(orderbook)
   const tradebookRef=useRef(tradebook)
   const fetchedPositionsRef=useRef(fetchedPositions)
@@ -282,9 +311,10 @@ const instrumentTokenRef = useRef(instrumentToken);
   
   return formatedName
   }
-  const formatCE = formater(name,price,dateList,date,type)
-  const formatPE = formater(name,selectedOption5,dateList,date,"PE")
-
+useEffect(()=>{
+  setCallSymbol(formater(name,price,dateList,date,type))
+  setPutSymbol(formater(name,selectedOption5,dateList,date,"PE"))
+},[selectedOption1,selectedOption4,selectedOption5,selectedOption3])
 
   useEffect(() => {
     const socket = new WebSocket('ws://localhost:7000/instruments');
@@ -305,10 +335,19 @@ const instrumentTokenRef = useRef(instrumentToken);
       
       
       const ticks = JSON.parse(event.data);
-    
+
+    console.log(ticks,"ticks")
       setArrayOfToken((prevArrayOfTokens) => {
+
         const watchList = [...prevArrayOfTokens]; 
         ticks.forEach((tick) => {
+          if(String(tick.instrument_token)===String(callTokenRef.current)){
+            setCallLTP(tick.last_price)
+
+          }
+          if(String(tick.instrument_token)===String(putTokenRef.current)){
+            setPutLTP(tick.last_price)
+          }
           watchList.forEach((item, index) => {
             if (String(tick.instrument_token) === String(item.token)) {
               watchList[index].ltp = tick.last_price;
@@ -320,7 +359,7 @@ const instrumentTokenRef = useRef(instrumentToken);
           });
         });
       // console.log(ticks,'TICKS')
-      console.log(arrayOfTokens,"array")
+      // console.log(arrayOfTokens,"array")
       setTicksData(ticks)
       ticks.map((tick) => {
         let buy=0, sell=0, temp=0
@@ -536,14 +575,14 @@ const instrumentTokenRef = useRef(instrumentToken);
         </div>
       )}
       <div className='mt-8 ml-4 mr-4 flex justify-between'>
-        <h3>strike: {formatCE}</h3>
+        <h3>strike: {callSymbol}</h3>
         <h3>{selectedOption1}</h3>
-        <h3>strike: {formatPE}</h3>
+        <h3>strike: {putSymbol}</h3>
       </div>
       <div className='mt-2 ml-4 mr-4 flex justify-between'>
-        <h3>LTP: {sellltp}</h3>
+        <h3>LTP: {callLTP}</h3>
         <h3>LTP: {selectedOption2}</h3>
-        <h3>279.3 :LTP</h3>
+        <h3>{putLTP} :LTP</h3>
       </div>
       <div className='mt-4 mr-4 flex justify-between'>
         <div>
