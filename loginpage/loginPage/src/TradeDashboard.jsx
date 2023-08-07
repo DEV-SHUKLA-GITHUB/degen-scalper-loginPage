@@ -89,6 +89,22 @@ const instrumentTokenRef = useRef(instrumentToken);
     console.log(newArray)
   }
 
+
+  const exitAllHandler=()=>{
+    fetch("http://localhost:8000/exitAll", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: window.localStorage.getItem("token"),
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) =>{
+        console.log("closed all positions")
+      })
+  }
   const totalPnl=function( orderBook, ){
     return pnl
   }
@@ -541,7 +557,7 @@ const instrumentTokenRef = useRef(instrumentToken);
       </button>
         </div>
         <div>
-        <button className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
+        <button onClick={exitAllHandler} className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
         Close all Positions
       </button>
       <button className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
@@ -554,7 +570,7 @@ const instrumentTokenRef = useRef(instrumentToken);
         Buy Put
       </button>
       <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
-      onClick={()=>{placeOrder("BUY","PE"),setCallType("PE")}} > 
+      onClick={()=>{placeOrder("SELL","PE"),setCallType("PE")}} > 
         Sell Put
       </button>
         </div>

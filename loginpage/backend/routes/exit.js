@@ -1,4 +1,3 @@
-
 const KiteConnect = require("kiteconnect").KiteConnect;
 const express = require('express');
 const router = express.Router();
@@ -18,20 +17,22 @@ router.post("/", async(req,res)=>{
     // console.log(api_key, access_token)
     const kite = new KiteConnect({ api_key });
     kite.setAccessToken(access_token)
-    const tradebook=await kite.getTrades()
-    // console.log(tradebook)
-    tradebook.map(trade=>{
-        // console.log(trade)
-        if(trade.tradingsymbol===symbol){
-        if(trade.transaction_type==='BUY'){
-            console.log(trade)
+    const positions=await kite.getPositions()
+    console.log(positions['day'])
+    positions['day'].map(position=>{
+        // console.log(position)
+        if(position.tradingsymbol===symbol){
+        if(position.quantity>0){
+            console.log(Math.abs(position.quantity))
+            // const quantity=if(position.quantity>0)
             const variety="regular"
+            console.log("SELL", Math.abs(position.quantity))
             kite.placeOrder(variety,{
-                "exchange": trade.exchange,
+                "exchange": position.exchange,
                 "tradingsymbol": symbol,
                 "transaction_type": "SELL",
-                "quantity": trade.quantity,
-                "product": trade.product,
+                "quantity": Math.abs(position.quantity),
+                "product": position.product,
                 "order_type": "MARKET"
             })
                 .then(function(resp) {
@@ -42,14 +43,14 @@ router.post("/", async(req,res)=>{
                     res.send({status:false, error:err})
                 });}else{
                     
-            console.log(trade)
+            console.log("BUY", Math.abs(position.quantity))
             const variety="regular"
             kite.placeOrder(variety,{
-                "exchange": trade.exchange,
-                "tradingsymbol": symbol,
+                "exchange": position.exchange,
+                "tradingsymbol": position.tradingsymbol,
                 "transaction_type": "BUY",
-                "quantity": trade.quantity,
-                "product": trade.product,
+                "quantity": Math.abs(position.quantity),
+                "product": position.product,
                 "order_type": "MARKET"
             })
                 .then(function(resp) {
@@ -64,9 +65,6 @@ router.post("/", async(req,res)=>{
     })}catch(err){
         console.log(err)
     }
-
-
-    
 })
 
 module.exports=router
