@@ -21,12 +21,14 @@ const WatchList = (props) => {
       // Update the data state only when tokendata is updated
       setData([...data, { token: tokendata, ltp: 0 ,name:name}]);
       props.add([...data, { token: tokendata, ltp: 0 ,name:name}]);
+      console.log(tokendata,name)
     }
   }, [tokendata]); // This effect will run whenever tokendata changes
 
   const token = (selected) => {
+    console.log(selected.replace(/\s/g, ''))
     instruments.forEach((item) => {
-      if (item.tradingsymbol === selected) {
+      if (item.tradingsymbol === selected.replace(/\s/g, '')) {
         console.log(item.tradingsymbol, "tradingsymbol");
         console.log(item.instrument_token, "tradingsymbol");
         console.log(typeof Number(item.instrument_token));
@@ -39,6 +41,8 @@ const WatchList = (props) => {
   const handleClick = (selected) => {
     token(selected.name);
     setName(selected.name)
+    console.log(selected.name);
+    console.log(instruments)
     // Removed the data update here, it will be handled in useEffect
   };
 // console.log(props.ticks,"ticks")

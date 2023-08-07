@@ -1,5 +1,6 @@
 import React from 'react'
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Positions = (props) => {
 
   function exitHandler(symbol){
@@ -15,18 +16,45 @@ const Positions = (props) => {
           token: window.localStorage.getItem("token"),
           symbol
         }),
-      }).then(resp=>{
-        if(resp.status){
-          console.log("position squared off")
-        }
-        else{
-          console.log("error in closing the position")
-        }
+      }).then(data=>{
+        // if(resp.status){
+        //     console.log("position squared off")
+            
+        //   }
+        //   else{
+        //     console.log("error in closing the position")
+        //   }
+        // })
+        console.log(data)
+        if(data.status){
+            toast.success("position squared off", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+          }else{
+            toast.error("error in closing the position", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+          }
       })
     }
     catch(err){
       console.log(err)
     }
+    props.exit
     //   }
     // })
   }

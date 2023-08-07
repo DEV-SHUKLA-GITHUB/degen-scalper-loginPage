@@ -44,41 +44,38 @@ const downloadInstrumentsData = async () => {
         item.name === "FINNIFTY"
       );
     });
-console.log(filteredData,"filtered data");
- tokenData = filteredData.map(item=>{
-return(
-  item.instrument_token
-  )
-})
-const tradingSymbolData = filteredData.map((item, index) => ({
-  id: index + 1,
-  name: item.tradingsymbol.replace(/Y/g, "Y ").replace(/(FUT|CE|PE)/g, " $1"),
-}));
 
+    const tokenData = filteredData.map(item => item.instrument_token);
+
+    const tradingSymbolData = filteredData.map((item, index) => ({
+      id: index + 1,
+      name: item.tradingsymbol.replace(/Y/g, "Y ").replace(/(FUT|CE|PE)/g, " $1"),
+    }));
 
     // Store the filtered instruments data in instrument.json
     fs.writeFileSync(
       path.join(dataDir, 'instrument.json'),
       JSON.stringify(filteredData, null, 2)
     );
+
     fs.writeFileSync(
       path.join(dataDir, 'instrumentToken.json'),
-      JSON.stringify(tokenData, null, 2))
+      JSON.stringify(tokenData, null, 2)
+    );
 
     fs.writeFileSync(
       path.join(dataDir, 'instrumentTradingSymbol.json'),
-      JSON.stringify(tradingSymbolData, null, 2))
-      
-      
-      
-      console.log('Instruments data downloaded, filtered, and stored in instrument.json.');
-      // console.log(tokenData)
-      
-     
+      JSON.stringify(tradingSymbolData, null, 2)
+    );
+
+    console.log('Instruments data downloaded, filtered, and stored in instrument.json.');
+    // console.log(tokenData);
+
   } catch (error) {
     console.error('Error downloading or converting instruments data:', error);
   }
 };
+
 // downloadInstrumentsData()
 // Read instruments data from instrument.json on server start
 const instrumentDataPath = path.join(dataDir, 'instrument.json');
