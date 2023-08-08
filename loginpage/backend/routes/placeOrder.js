@@ -37,7 +37,8 @@ router.post("/", async (req, res) => {
                         res.send({status:true,data:resp});
                     }
                     else{
-                        res.send({status:false});
+                        
+                        res.send({status:false, data:{message:"Maybe due to insufficient funds. Check your balance and all the input fields again. ;)"}});
 
                     }
                 }).catch(err=>{

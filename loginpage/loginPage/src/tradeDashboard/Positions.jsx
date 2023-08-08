@@ -79,7 +79,7 @@ const Positions = (props) => {
       </tr>
     </thead>
     <tbody>
-{console.log(props.Positions)}
+{/* {console.log(props.Positions)} */}
 
     {props.Positions&&props.Positions['day'].map((item,index)=>{
             if(item.quantity!=0){return (

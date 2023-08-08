@@ -278,7 +278,7 @@ const instrumentTokenRef = useRef(instrumentToken);
               theme: "dark",
             });
           }else{
-            toast.error("Error", {
+            toast.error(data.data.message, {
               position: "top-right",
               autoClose: 3000,
               hideProgressBar: false,
