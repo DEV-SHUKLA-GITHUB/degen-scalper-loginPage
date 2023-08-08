@@ -46,7 +46,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [orderbook,setOrderbook]=useState()
   const [tradebook, setTradebook]=useState()
   const [fetchedPositions, setFetchedPositions]=useState()
-
+  const [enableClick, setEnableClick] = useState(false);
   const [callSymbol, setCallSymbol]=useState()
     const callSymbolRef=useRef(callSymbol)
   const [callLTP, setCallLTP]=useState()
@@ -237,7 +237,8 @@ const instrumentTokenRef = useRef(instrumentToken);
       });
   };
   useEffect(() => {
-      handleClick("NIFTY");      
+      handleClick("NIFTY");   
+      setSelectedOption7(products[0])   
     }, []);
 
     const placeOrder = (orderType , callType)=> {
@@ -466,21 +467,36 @@ useEffect(()=>{
     setOrderBook(false);
     setPositions(false);
   };
-  const handleKeyDown = (event) => {
 
-    if (event.key === (customSellCallKey || 'ArrowLeft')) {
-      console.log('sell call');
-    }
-    if (event.key === (customBuyCallKey || 'ArrowUp')) {
-      console.log('Buy call');
-    }
-    if (event.key === (customBuyPutKey || 'ArrowDown')) {
-      console.log('buy put');
-    }
-    if (event.key === (customSellPutKey || 'ArrowRight')) {
-      console.log('sell put');
-    }
-  };
+
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (enableClick) {
+        if (event.key === (customSellCallKey || 'ArrowLeft')) {
+          placeOrder("SELL","CE"),setCallType("CE")
+        }
+        if (event.key === (customBuyCallKey || 'ArrowUp')) {
+          console.log('Buy call');
+          placeOrder("BUY","CE"),setCallType("CE")
+        }
+        if (event.key === (customBuyPutKey || 'ArrowDown')) {
+          console.log('buy put');
+          placeOrder("BUY","PE"),setCallType("PE")
+        }
+        if (event.key === (customSellPutKey || 'ArrowRight')) {
+          console.log('sell put');
+          placeOrder("SELL","PE"),setCallType("PE")
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [enableClick]);
 
   const handleCustomizeClick = () => {
     setCustomize(true);
@@ -566,12 +582,21 @@ useEffect(()=>{
           {pnl}
         </div>
       </div>
-      <button
+     <div className="flex items-center mt-4">
+        <label className="mr-2">Enable Click:</label>
+        <input
+          type="checkbox"
+          checked={enableClick}
+          onChange={(e) => setEnableClick(e.target.checked)}
+          // onKeyDown={handleKeyDown}
+        />
+      </div>
+      {/* <button
         className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
         onKeyDown={handleKeyDown}
       >
         Enable click
-      </button>
+      </button> */}
       <button
         className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
         onClick={handleCustomizeClick}

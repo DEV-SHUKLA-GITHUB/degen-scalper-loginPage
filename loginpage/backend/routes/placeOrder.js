@@ -40,13 +40,16 @@ router.post("/", async (req, res) => {
                         res.send({status:false});
 
                     }
+                }).catch(err=>{
+                    res.send({status:false,data:err})
                 })
         }
        regularOrderPlace(variety);
 
     
     }
-    catch{
+    catch(err){
+        console.log(err)
         res.send({status:false});
     }
 })
