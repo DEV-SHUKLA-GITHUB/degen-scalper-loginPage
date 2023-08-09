@@ -6,7 +6,7 @@ import "./login.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const isVibrationSupported = "vibrate" in navigator;
-
+import { API_URL } from './environmentVariables';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +24,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:8000/login-user", {
+    fetch(`${API_URL}/login-user`, {
       method: "POST",
       crossDomain: true,
       headers: {

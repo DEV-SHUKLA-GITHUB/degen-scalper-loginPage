@@ -5,7 +5,7 @@ import { Dna } from "react-loader-spinner";
 import { ColorRing } from "react-loader-spinner";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { API_URL } from './environmentVariables';
 export default function UserDetails() {
   const [userData, setUserData] = useState("");
   const [mainData, setMainData] = useState({
@@ -48,7 +48,7 @@ export default function UserDetails() {
     const username = window.localStorage.getItem("username");
     if (token) {
       // User is logged in, fetch user data
-      fetch("http://localhost:8000/checkAuth", {
+      fetch(`${API_URL}/checkAuth`, {
         method: "POST",
         crossDomain: true,
         headers: {
@@ -121,7 +121,7 @@ export default function UserDetails() {
     // const formDataString = JSON.stringify(updatedMainData, null, 2);
 
     // Send the updated form data string to the backend
-    fetch("http://localhost:8000/userData", {
+    fetch(`${API_URL}/userData`, {
       method: "POST",
       crossDomain: true,
       headers: {
@@ -167,7 +167,7 @@ export default function UserDetails() {
   };
   function handleButtonClick(brokerName) {
     setIsGeneratingToken(true);
-    fetch("http://localhost:8000/generateToken", {
+    fetch(`${API_URL}/generateToken`, {
       method: "POST",
       crossDomain: true,
       headers: {

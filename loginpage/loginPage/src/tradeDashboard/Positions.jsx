@@ -1,13 +1,14 @@
 import React from 'react'
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { API_URL } from '../environmentVariables';
 const Positions = (props) => {
 
   function exitHandler(symbol){
     console.log(symbol)
     // props.orderbook&&props.orderbook.map(order=>{
     //   if(order.tradingsymbol===Symbol){
-      try{fetch("http://localhost:8000/exit", {
+      try{fetch(`${API_URL}/exit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

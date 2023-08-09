@@ -10,7 +10,7 @@ import Positions from './tradeDashboard/Positions'
 import maindata from '../../backend/routes/data/instrument.json';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { API_URL,SOCKET_API_URL } from './environmentVariables';
 const TradeDashboard = () => {
 
 // var instrumentToken;
@@ -131,7 +131,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   }
 
   const updatePositions=()=>{
-    fetch("http://localhost:8000/updatePositions", {
+    fetch(`${API_URL}/updatePositions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -151,7 +151,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   }
 
   const exitAllHandler=()=>{
-    fetch("http://localhost:8000/exitAll", {
+    fetch(`${API_URL}/exitAll`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -178,7 +178,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     setSelectedOption1(selected.name || selected);
     console.log(selectedOption1)
   
-    fetch("http://localhost:8000/instruments/getInstruments", {
+    fetch(`${API_URL}/instruments/getInstruments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -247,7 +247,7 @@ const instrumentTokenRef = useRef(instrumentToken);
       // console.log("placedorder:",orderType);
       // console.log(selectedOption7.name)
       console.log(lotSize)
-      try{fetch("http://localhost:8000/placeOrder", {
+      try{fetch(`${API_URL}/placeOrder`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -360,7 +360,7 @@ useEffect(()=>{
 },[selectedOption1,selectedOption4,selectedOption5,selectedOption3])
 
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:7000/instruments');
+    const socket = new WebSocket(`${SOCKET_API_URL}/instruments`);
 
     socket.onopen = () => {
       console.log('WebSocket connected test');

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import bg from "./assets/mainBg.mp4";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { API_URL } from './environmentVariables';
 const RegistrationForm = () => {
   const [fields, setFields] = useState([
     { label: "FullName", value: "", error: "" },
@@ -98,7 +98,7 @@ const RegistrationForm = () => {
         );
 
         // Check email and username existence before submitting
-        fetch("http://localhost:8000/check", {
+        fetch(`${API_URL}/check`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -114,7 +114,7 @@ const RegistrationForm = () => {
               setIsUsernameExists(true);
               setTimeout(() => setIsUsernameExists(false), 2000); // Clear username error after 2 seconds
             } else {
-              fetch("http://localhost:8000/register", {
+              fetch(`${API_URL}/register`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
