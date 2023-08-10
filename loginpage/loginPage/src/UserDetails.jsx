@@ -5,7 +5,7 @@ import { Dna } from "react-loader-spinner";
 import { ColorRing } from "react-loader-spinner";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { API_URL } from './environmentVariables';
+import { API_URL } from './dynamicRoutes';
 export default function UserDetails() {
   const [userData, setUserData] = useState("");
   const [mainData, setMainData] = useState({

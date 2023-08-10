@@ -10,7 +10,7 @@ import Positions from './tradeDashboard/Positions'
 import maindata from '../../backend/routes/data/instrument.json';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { API_URL,SOCKET_API_URL } from './environmentVariables';
+import { API_URL,SOCKET_API_URL } from './dynamicRoutes';
 const TradeDashboard = () => {
 
 // var instrumentToken;
@@ -29,6 +29,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const productList = product.map((value) => ({ value, text: value }));
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
+  const [errorMessage, setErrorMessage] = useState('');
   const [sellltp, setSellltp] = useState();
   const [expiryList ,setExpiryList] = useState();
   const [strikeList ,setStrikeList] = useState();
@@ -117,12 +118,13 @@ const instrumentTokenRef = useRef(instrumentToken);
       const instrument = maindata[i];
       if (String(instrument.name) === String(selectedOption1)) {
         setLotSize(instrument.lot_size)
+        console.log(selectedOption1,"hello")
         break
       }
-  }
+    }
   }, [selectedOption1])
+  // console.log(lotSize,"lotsize")
 
-  const [selectedOption, setSelectedOption] = useState(options[0]);
   const [arrayOfTokens,setArrayOfToken]=useState([{token:8963586, ltp:0,name:"BANKNIFTY"},{token:8963842, ltp:0,name:"NIFTY"},{token:10227202, ltp:0,name:"FINNIFTY"}]);
   const changeArrayOfToken=(newArray)=>{
     setArrayOfToken(newArray)
@@ -386,7 +388,6 @@ useEffect(()=>{
         ticks.forEach((tick) => {
           if(String(tick.instrument_token)===String(callTokenRef.current)){
             setCallLTP(tick.last_price)
-
           }
           if(String(tick.instrument_token)===String(putTokenRef.current)){
             setPutLTP(tick.last_price)
@@ -529,6 +530,25 @@ useEffect(()=>{
       setCustomSellPutKey(customSellPutKeyFromStorage);
     }
   }, []);
+  const handleInputChange = (e) => {
+    setSelectedOption6(e.target.value);
+
+    const inputValue = e.target.value.trim(); 
+
+    if (inputValue !== '') {
+      const intValue = parseInt(inputValue);
+      const isMultiple = intValue % lotSize === 0;
+      const isInRange = intValue >= lotSize && intValue <= lotSize * 36;
+
+      if (!(isMultiple && isInRange)) {
+        setErrorMessage('Please provide a valid quantity.');
+      } else {
+        setErrorMessage('');
+      }
+    } else {
+      setErrorMessage('');
+    }
+  };
 
   return (
     <div className='flex'>
@@ -566,17 +586,17 @@ useEffect(()=>{
           value={selectedOption5}
           onSelect={setSelectedOption5}
         />
-  <input
-    type="number"
-    placeholder='QTY 1 to 36' 
-    className="h-10 border-2 m-4 rounded border-black"
-    value={selectedOption6}
-    onChange={(e) => {
-      setSelectedOption6(e.target.value);
-      console.log(selectedOption6);
-    }}
-  />
-        <CustomCombobox options={products} onChange={setSelectedOption7} />
+    <div>
+      <input
+        type="number"
+        placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
+        className="h-10 border-2 m-4 rounded border-black"
+        value={selectedOption6}
+        onChange={handleInputChange}
+      />
+      {errorMessage && <div>{errorMessage}</div>}
+    </div>
+    <CustomCombobox options={products} onChange={setSelectedOption7} />
         <div className= "flex">
           <div>PNL: </div>
           {pnl}

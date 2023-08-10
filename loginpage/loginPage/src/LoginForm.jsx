@@ -6,7 +6,7 @@ import "./login.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const isVibrationSupported = "vibrate" in navigator;
-import { API_URL } from './environmentVariables';
+import { API_URL } from './dynamicRoutes';
 
 const Login = () => {
   const [email, setEmail] = useState("");

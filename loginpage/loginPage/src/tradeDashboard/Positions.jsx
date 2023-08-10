@@ -1,7 +1,7 @@
 import React from 'react'
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { API_URL } from '../environmentVariables';
+import { API_URL } from '../dynamicRoutes';
 const Positions = (props) => {
 
   function exitHandler(symbol){

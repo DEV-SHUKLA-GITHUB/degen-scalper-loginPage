@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import bg from "./assets/mainBg.mp4";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { API_URL } from './environmentVariables';
+import { API_URL } from './dynamicRoutes';
 const RegistrationForm = () => {
   const [fields, setFields] = useState([
     { label: "FullName", value: "", error: "" },
