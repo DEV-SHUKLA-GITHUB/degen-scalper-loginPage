@@ -24,6 +24,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [ticksData,setTicksData]=useState()
   const [tickData, setTickData] =useState()
   const [pnl, setPnl] = useState("0")
+  const [margin,setMargin]=useState()
   const option = ['option1', 'option2', 'option3', 'option4'];
   const product = ['MIS','normal'];
   const optionList = option.map((value) => ({ value, text: value }));
@@ -81,7 +82,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const tradebookRef=useRef(tradebook)
   const fetchedPositionsRef=useRef(fetchedPositions)
   useEffect(()=>{
-    console.log(tradebookRef.current)
+    console.log(fetchedPositionsRef.current)
     orderbookRef.current=orderBook
     tradebookRef.current=tradebook
     fetchedPositionsRef.current=fetchedPositions
@@ -278,7 +279,8 @@ const instrumentTokenRef = useRef(instrumentToken);
             console.log("failed");
           }
         }    
-        console.log(data,"data 133");
+        console.log(data.margins,"data 133");
+        setMargin(data.margins.equity.net)
         setOrderbook(data.orderbook)
         setTradebook(data.tradebook)
         setFetchedPositions(data.positions)
@@ -495,7 +497,7 @@ useEffect(()=>{
               }
               return p;
             })}
-            // console.log(obj)
+            console.log(obj)
           setFetchedPositions(obj)
         }
       //   if(fetchedPositionsRef.current!=undefined){
@@ -706,6 +708,10 @@ useEffect(()=>{
         <div className= "flex">
           <div>PNL: </div>
           {pnl}
+        </div>
+        <div className= "flex">
+          <div>Margin: </div>
+          {margin}
         </div>
       </div>
      <div className="flex items-center mt-4">

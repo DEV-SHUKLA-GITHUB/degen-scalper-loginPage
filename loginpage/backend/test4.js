@@ -2,13 +2,13 @@ const KiteConnect = require("kiteconnect").KiteConnect;
 const fs = require('fs');
 const path = require('path');
 
-const access_token = "H9UChv2MNZtOMrnl2j10C6qI6Yr5X2QY";
+const access_token = "IbojHmMAiysCIWfKsCeRoSuJePHl39Cy";
 const api_key = "elrfps73mpn9aou4";
 
 const a = async () => {
   const kc = new KiteConnect({ api_key });
   kc.setAccessToken(access_token);
-  const positions=await kc.getPositions()
+  const positions=await kc.getMargins()
   console.log(positions)
   // const tradeBook=kc.getTrades()
   // let buy=0, sell=0
