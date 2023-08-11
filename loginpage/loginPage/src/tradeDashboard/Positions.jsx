@@ -6,8 +6,6 @@ const Positions = (props) => {
 
   function exitHandler(symbol){
     console.log(symbol)
-    // props.orderbook&&props.orderbook.map(order=>{
-    //   if(order.tradingsymbol===Symbol){
       try{fetch(`${API_URL}/exit`, {
         method: "POST",
         headers: {
@@ -18,14 +16,6 @@ const Positions = (props) => {
           symbol
         }),
       }).then(data=>{
-        // if(resp.status){
-        //     console.log("position squared off")
-            
-        //   }
-        //   else{
-        //     console.log("error in closing the position")
-        //   }
-        // })
         console.log(data)
         if(data.status){
             toast.success("position squared off", {

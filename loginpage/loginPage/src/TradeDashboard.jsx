@@ -112,7 +112,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     { id: 2, name: "NORMAL" },
   ];
   const [lotSize, setLotSize]=useState(50)
-  const [stopLoss, setStopLoss]=useState()
+  const [stopLoss, setStopLoss]=useState({})
 
   useEffect(()=>{
     for (let i = 0; i < maindata.length; i++) {
@@ -144,6 +144,51 @@ const instrumentTokenRef = useRef(instrumentToken);
   //     })}
   //   })
   // }
+
+  function exit(symbol){
+    console.log(symbol)
+      try{fetch(`${API_URL}/exit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: window.localStorage.getItem("token"),
+          symbol
+        }),
+      }).then(data=>{
+        console.log(data)
+        if(data.status){
+            toast.success("position squared off", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+          }else{
+            toast.error("error in closing the position", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+          }
+      })
+    }
+    catch(err){
+      console.log(err)
+    }
+    handleClick(selectedOption1)
+  }
+
   const handleInputChange = (e) => {
     setSelectedOption6(e.target.value);
 
@@ -418,19 +463,46 @@ useEffect(()=>{
 
         const watchList = [...prevArrayOfTokens]; 
         ticks.forEach((tick) => {
+          //stop loss 
+          
+          fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
+            if(Object.prototype.hasOwnProperty.call(stopLoss, p.instrument_token)){if(String(p.instrument_token)===String(tick.instrument_token)){
+              if(p.quantity>0){
+                if(Number(tick.last_price)<=Number(stopLoss[`${p.instrument_token}`])){
+                  exit(p.tradingsymbol)
+                }
+              }
+            else if(p.quantity<0){
+              if(Number(tick.last_price)>=Number(stopLoss[`${p.instrument_token}`])){
+                //place order
+                exit(p.tradingsymbol)
+
+              }
+            }
+            }}
+          })
 
           //ltp and pnl of positions
-          if(fetchedPositionsRef!=undefined){
+          if(fetchedPositionsRef.current!=undefined){
             console.log(fetchedPositionsRef)
-            setFetchedPositions(prev=>{
-            return {...prev, day:prev.day.map(p=>{
-              if(String(p.instrument_token)===String(tick.instrument_token)){
-                return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
-              }
-              return p;
-            })}
-          })}
-          // console.log(fetchedPositionsRef.current.day[0].last_price)
+          setFetchedPositions({...fetchedPositionsRef.current, day:fetchedPositionsRef.current.day.map(p=>{
+            if(String(p.instrument_token)===String(tick.instrument_token)){
+              return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
+            }
+            return p;
+          })})
+        }
+      //   if(fetchedPositionsRef.current!=undefined){
+      //     console.log(fetchedPositionsRef)
+      //     setFetchedPositions(prev=>{
+      //     return {...prev, day:prev.day.map(p=>{
+      //       if(String(p.instrument_token)===String(tick.instrument_token)){
+      //         return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
+      //       }
+      //       return p;
+      //     })}
+      //   })
+      // }
 
           if(String(tick.instrument_token)===String(callTokenRef.current)){
             setCallLTP(tick.last_price)
