@@ -463,6 +463,9 @@ useEffect(()=>{
 
         const watchList = [...prevArrayOfTokens]; 
         ticks.forEach((tick) => {
+          // if(tick.instrument_token=="13408770"){
+          //   console.log(tick)
+          // }
           //stop loss 
           
           fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
@@ -484,13 +487,16 @@ useEffect(()=>{
 
           //ltp and pnl of positions
           if(fetchedPositionsRef.current!=undefined){
-            console.log(fetchedPositionsRef)
-          setFetchedPositions({...fetchedPositionsRef.current, day:fetchedPositionsRef.current.day.map(p=>{
-            if(String(p.instrument_token)===String(tick.instrument_token)){
-              return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
-            }
-            return p;
-          })})
+            const obj={...fetchedPositionsRef.current, day:fetchedPositionsRef.current.day.map(p=>{
+              // console.log(p.instrument_token)
+              if(String(p.instrument_token)===String(tick.instrument_token)){
+                console.log(fetchedPositionsRef.current.day[0].last_price, tick.last_price)
+                return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
+              }
+              return p;
+            })}
+            // console.log(obj)
+          setFetchedPositions(obj)
         }
       //   if(fetchedPositionsRef.current!=undefined){
       //     console.log(fetchedPositionsRef)
