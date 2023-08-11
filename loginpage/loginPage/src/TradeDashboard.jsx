@@ -14,6 +14,7 @@ import { API_URL,SOCKET_API_URL } from './dynamicRoutes';
 const TradeDashboard = () => {
 
 // var instrumentToken;
+const [errorMessage, setErrorMessage]=useState()
 const [instrumentToken,setInstrumentToken] = useState()
 const instrumentTokenRef = useRef(instrumentToken);
     useEffect(() => {
@@ -29,7 +30,6 @@ const instrumentTokenRef = useRef(instrumentToken);
   const productList = product.map((value) => ({ value, text: value }));
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
-  const [errorMessage, setErrorMessage] = useState('');
   const [sellltp, setSellltp] = useState();
   const [expiryList ,setExpiryList] = useState();
   const [strikeList ,setStrikeList] = useState();
@@ -112,6 +112,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     { id: 2, name: "NORMAL" },
   ];
   const [lotSize, setLotSize]=useState(50)
+  const [stopLoss, setStopLoss]=useState()
 
   useEffect(()=>{
     for (let i = 0; i < maindata.length; i++) {
@@ -131,6 +132,38 @@ const instrumentTokenRef = useRef(instrumentToken);
     console.log(arrayOfTokens)
     console.log(newArray)
   }
+
+
+  // either change the fetchedPositions state itself or store the stoplosses of instruments into saperate state stopLoss
+
+  // const stopLossHandler=(token,stoploss)=>{
+  //   setFetchedPositions(prev=>{
+  //     return {...prev,"day":fetchedPositions["day"].map(p=>{
+  //       if(String(token)===String(p.instrument_token)){
+  //         return 
+  //       }
+  //     })}
+  //   })
+  // }
+  const handleInputChange = (e) => {
+    setSelectedOption6(e.target.value);
+
+    const inputValue = e.target.value.trim(); 
+
+    if (inputValue !== '') {
+      const intValue = parseInt(inputValue);
+      const isMultiple = intValue % lotSize === 0;
+      const isInRange = intValue >= lotSize && intValue <= lotSize * 36;
+
+      if (!(isMultiple && isInRange)) {
+        setErrorMessage('Please provide a valid quantity.');
+      } else {
+        setErrorMessage('');
+      }
+    } else {
+      setErrorMessage('');
+    }
+  };
 
   const updatePositions=()=>{
     fetch(`${API_URL}/updatePositions`, {
@@ -171,9 +204,9 @@ const instrumentTokenRef = useRef(instrumentToken);
 
       })
   }
-  const totalPnl=function( orderBook, ){
-    return pnl
-  }
+  // const totalPnl=function( orderBook, ){
+  //   return pnl
+  // }
   
   const handleClick = (selected) => {
     console.log("selected", selected)
@@ -386,6 +419,18 @@ useEffect(()=>{
 
         const watchList = [...prevArrayOfTokens]; 
         ticks.forEach((tick) => {
+
+          //ltp and pnl of positions
+          if(fetchedPositionsRef.current!=undefined){
+            console.log(fetchedPositionsRef)
+          setFetchedPositions({...fetchedPositionsRef.current, day:fetchedPositionsRef.current.day.map(p=>{
+            if(String(p.instrument_token)===String(tick.instrument_token)){
+              return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
+            }
+            return p;
+      })})}
+          // console.log(fetchedPositionsRef.current.day[0].last_price)
+
           if(String(tick.instrument_token)===String(callTokenRef.current)){
             setCallLTP(tick.last_price)
           }
@@ -530,26 +575,6 @@ useEffect(()=>{
       setCustomSellPutKey(customSellPutKeyFromStorage);
     }
   }, []);
-  const handleInputChange = (e) => {
-    setSelectedOption6(e.target.value);
-
-    const inputValue = e.target.value.trim(); 
-
-    if (inputValue !== '') {
-      const intValue = parseInt(inputValue);
-      const isMultiple = intValue % lotSize === 0;
-      const isInRange = intValue >= lotSize && intValue <= lotSize * 36;
-
-      if (!(isMultiple && isInRange)) {
-        setErrorMessage('Please provide a valid quantity.');
-      } else {
-        setErrorMessage('');
-      }
-    } else {
-      setErrorMessage('');
-    }
-  };
-
   return (
     <div className='flex'>
       <div className='h-screen w-1/5'>
@@ -586,8 +611,8 @@ useEffect(()=>{
           value={selectedOption5}
           onSelect={setSelectedOption5}
         />
-    <div>
-      <input
+  <div>
+     <input
         type="number"
         placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
         className="h-10 border-2 m-4 rounded border-black"
@@ -596,7 +621,7 @@ useEffect(()=>{
       />
       {errorMessage && <div>{errorMessage}</div>}
     </div>
-    <CustomCombobox options={products} onChange={setSelectedOption7} />
+        <CustomCombobox options={products} onChange={setSelectedOption7} />
         <div className= "flex">
           <div>PNL: </div>
           {pnl}
