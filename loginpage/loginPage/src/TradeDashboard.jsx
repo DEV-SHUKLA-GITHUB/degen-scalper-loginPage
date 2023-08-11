@@ -486,29 +486,29 @@ useEffect(()=>{
           })
 
           //ltp and pnl of positions
-          if(fetchedPositionsRef.current!=undefined){
-            const obj={...fetchedPositionsRef.current, day:fetchedPositionsRef.current.day.map(p=>{
-              // console.log(p.instrument_token)
-              if(String(p.instrument_token)===String(tick.instrument_token)){
-                console.log(fetchedPositionsRef.current.day[0].last_price, tick.last_price)
-                return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
-              }
-              return p;
-            })}
-            // console.log(obj)
-          setFetchedPositions(obj)
-        }
-      //   if(fetchedPositionsRef.current!=undefined){
-      //     console.log(fetchedPositionsRef)
-      //     setFetchedPositions(prev=>{
-      //     return {...prev, day:prev.day.map(p=>{
-      //       if(String(p.instrument_token)===String(tick.instrument_token)){
-      //         return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
-      //       }
-      //       return p;
-      //     })}
-      //   })
-      // }
+        //   if(fetchedPositionsRef.current!=undefined){
+        //     const obj={...fetchedPositionsRef.current, day:fetchedPositionsRef.current.day.map(p=>{
+        //       // console.log(p.instrument_token)
+        //       if(String(p.instrument_token)===String(tick.instrument_token)){
+        //         console.log(fetchedPositionsRef.current.day[0].last_price, tick.last_price)
+        //         return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
+        //       }
+        //       return p;
+        //     })}
+        //     // console.log(obj)
+        //   setFetchedPositions(obj)
+        // }
+        if(fetchedPositionsRef.current!=undefined){
+          console.log(fetchedPositionsRef)
+          setFetchedPositions(prev=>{
+          return {...prev, day:prev.day.map(p=>{
+            if(String(p.instrument_token)===String(tick.instrument_token)){
+              return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
+            }
+            return p;
+          })}
+        })
+      }
 
           if(String(tick.instrument_token)===String(callTokenRef.current)){
             setCallLTP(tick.last_price)
