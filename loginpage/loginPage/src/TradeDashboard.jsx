@@ -111,6 +111,7 @@ const instrumentTokenRef = useRef(instrumentToken);
     { id: 2, name: "NORMAL" },
   ];
   const [lotSize, setLotSize]=useState(50)
+  const [stopLoss, setStopLoss]=useState()
 
   useEffect(()=>{
     for (let i = 0; i < maindata.length; i++) {
@@ -129,6 +130,19 @@ const instrumentTokenRef = useRef(instrumentToken);
     console.log(arrayOfTokens)
     console.log(newArray)
   }
+
+
+  // either change the fetchedPositions state itself or store the stoplosses of instruments into saperate state stopLoss
+
+  // const stopLossHandler=(token,stoploss)=>{
+  //   setFetchedPositions(prev=>{
+  //     return {...prev,"day":fetchedPositions["day"].map(p=>{
+  //       if(String(token)===String(p.instrument_token)){
+  //         return 
+  //       }
+  //     })}
+  //   })
+  // }
 
   const updatePositions=()=>{
     fetch(`${API_URL}/updatePositions`, {
@@ -169,9 +183,9 @@ const instrumentTokenRef = useRef(instrumentToken);
 
       })
   }
-  const totalPnl=function( orderBook, ){
-    return pnl
-  }
+  // const totalPnl=function( orderBook, ){
+  //   return pnl
+  // }
   
   const handleClick = (selected) => {
     console.log("selected", selected)
@@ -384,6 +398,18 @@ useEffect(()=>{
 
         const watchList = [...prevArrayOfTokens]; 
         ticks.forEach((tick) => {
+
+          //ltp and pnl of positions
+          setFetchedPositions(prev=>{
+            return {...prev, day:prev.day.map(p=>{
+              if(String(p.instrument_token)===String(tick.instrument_token)){
+                return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
+              }
+              return p;
+            })}
+          })
+          console.log(fetchedPositionsRef.current.day[0].last_price)
+
           if(String(tick.instrument_token)===String(callTokenRef.current)){
             setCallLTP(tick.last_price)
 

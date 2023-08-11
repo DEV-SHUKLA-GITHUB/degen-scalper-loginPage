@@ -2,7 +2,7 @@ const KiteConnect = require("kiteconnect").KiteConnect;
 const fs = require('fs');
 const path = require('path');
 
-const access_token = "ls8tPJ1IMMwuz6FAIP3PUBLAAe7ThajU";
+const access_token = "H9UChv2MNZtOMrnl2j10C6qI6Yr5X2QY";
 const api_key = "elrfps73mpn9aou4";
 
 const a = async () => {
