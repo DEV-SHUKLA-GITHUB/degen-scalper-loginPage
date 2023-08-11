@@ -119,6 +119,7 @@ router.post("/getInstruments", async (req, res) => {
 
       // Perform any kite operations here
       const instruments = await kite.getInstruments(["NFO"]);
+      const margins=await kite.getMargins()
       // console.log(instruments, "instruments");
       const filteredInstruments = instrumentsData.filter(
         (instrument) => instrument.name === (selected.name || selected) && instrument.segment === 'NFO-OPT'
@@ -143,7 +144,7 @@ router.post("/getInstruments", async (req, res) => {
 
 
       // Send the response to the client
-      res.send({ uniqueExpiryDates, instruments, uniqueStrikes, orderbook,tradebook, positions, accountName: jsonData.BrokerList[0].accountName });
+      res.send({margins, uniqueExpiryDates, instruments, uniqueStrikes, orderbook,tradebook, positions, accountName: jsonData.BrokerList[0].accountName });
     };
 
     a();
@@ -205,10 +206,12 @@ wss.on('connection', (ws) => {
             const firstHalf = tokenData.slice(0, middleIndex);
             const secondHalf = tokenData.slice(middleIndex);
             console.log(firstHalf.length, secondHalf.length)
-            ticker.subscribe(firstHalf);
-            ticker.setMode(ticker.modeQuote, firstHalf);
-            ticker.subscribe(secondHalf);
-            ticker.setMode(ticker.modeQuote, secondHalf);
+            // ticker.subscribe(firstHalf);
+            // ticker.setMode(ticker.modeQuote, firstHalf);
+            // ticker.subscribe(secondHalf);
+            // ticker.setMode(ticker.modeQuote, secondHalf);
+            ticker.subscribe(tokenData);
+            ticker.setMode(ticker.modeQuote, tokenData);
           }
           
           // function unsubscribe(instrumentToken) {
