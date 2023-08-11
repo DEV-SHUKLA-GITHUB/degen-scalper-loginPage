@@ -14,6 +14,7 @@ import { API_URL,SOCKET_API_URL } from './environmentVariables';
 const TradeDashboard = () => {
 
 // var instrumentToken;
+const [errorMessage, setErrorMessage]=useState()
 const [instrumentToken,setInstrumentToken] = useState()
 const instrumentTokenRef = useRef(instrumentToken);
     useEffect(() => {
@@ -143,6 +144,25 @@ const instrumentTokenRef = useRef(instrumentToken);
   //     })}
   //   })
   // }
+  const handleInputChange = (e) => {
+    setSelectedOption6(e.target.value);
+
+    const inputValue = e.target.value.trim(); 
+
+    if (inputValue !== '') {
+      const intValue = parseInt(inputValue);
+      const isMultiple = intValue % lotSize === 0;
+      const isInRange = intValue >= lotSize && intValue <= lotSize * 36;
+
+      if (!(isMultiple && isInRange)) {
+        setErrorMessage('Please provide a valid quantity.');
+      } else {
+        setErrorMessage('');
+      }
+    } else {
+      setErrorMessage('');
+    }
+  };
 
   const updatePositions=()=>{
     fetch(`${API_URL}/updatePositions`, {
@@ -400,15 +420,17 @@ useEffect(()=>{
         ticks.forEach((tick) => {
 
           //ltp and pnl of positions
-          setFetchedPositions(prev=>{
+          if(fetchedPositionsRef!=undefined){
+            console.log(fetchedPositionsRef)
+            setFetchedPositions(prev=>{
             return {...prev, day:prev.day.map(p=>{
               if(String(p.instrument_token)===String(tick.instrument_token)){
                 return {...p,last_price:tick.last_price,pnl:(tick.last_price-p.average_price)*p.quantity}
               }
               return p;
             })}
-          })
-          console.log(fetchedPositionsRef.current.day[0].last_price)
+          })}
+          // console.log(fetchedPositionsRef.current.day[0].last_price)
 
           if(String(tick.instrument_token)===String(callTokenRef.current)){
             setCallLTP(tick.last_price)
@@ -592,16 +614,16 @@ useEffect(()=>{
           value={selectedOption5}
           onSelect={setSelectedOption5}
         />
-  <input
-    type="number"
-    placeholder='QTY 1 to 36' 
-    className="h-10 border-2 m-4 rounded border-black"
-    value={selectedOption6}
-    onChange={(e) => {
-      setSelectedOption6(e.target.value);
-      console.log(selectedOption6);
-    }}
-  />
+  <div>
+     <input
+        type="number"
+        placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
+        className="h-10 border-2 m-4 rounded border-black"
+        value={selectedOption6}
+        onChange={handleInputChange}
+      />
+      {errorMessage && <div>{errorMessage}</div>}
+    </div>
         <CustomCombobox options={products} onChange={setSelectedOption7} />
         <div className= "flex">
           <div>PNL: </div>

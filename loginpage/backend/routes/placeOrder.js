@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
                     "exchange": "NFO",
                     "tradingsymbol": symbol,
                     "transaction_type": transaction_type,
-                    "quantity": qty*lotSize,
+                    "quantity": qty,
                     "product": product,
                     "order_type": "MARKET"
                 }).then(async function(resp) {
