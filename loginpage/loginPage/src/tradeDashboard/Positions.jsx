@@ -6,14 +6,12 @@ import { API_URL } from '../dynamicRoutes';
 const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stopLossValue, setStopLossValue] = useState({
-    [props.Positions.day[0].instrument_token]: 'sl1'
+    [props.Positions.day[0].instrument_token]: '-'
   });
   const stopLossForToken = stopLossValue[props.Positions.day[0].instrument_token]; 
 
   function exitHandler(symbol){
     console.log(symbol)
-    // props.orderbook&&props.orderbook.map(order=>{
-    //   if(order.tradingsymbol===Symbol){
       try{fetch(`${API_URL}/exit`, {
         method: "POST",
         headers: {
@@ -24,14 +22,6 @@ const Positions = (props) => {
           symbol
         }),
       }).then(data=>{
-        // if(resp.status){
-        //     console.log("position squared off")
-            
-        //   }
-        //   else{
-        //     console.log("error in closing the position")
-        //   }
-        // })
         console.log(data)
         if(data.status){
             toast.success("position squared off", {

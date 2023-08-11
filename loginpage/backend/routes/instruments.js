@@ -200,8 +200,15 @@ wss.on('connection', (ws) => {
             console.log(typeof tokenData)
             tokenData= JSON.parse(tokenData).map(Number);
             // console.log("inside subscribe", instrumentToken)
-            ticker.subscribe(tokenData);
-            ticker.setMode(ticker.modeQuote, tokenData);
+            const middleIndex = Math.floor(tokenData.length / 2);
+            
+            const firstHalf = tokenData.slice(0, middleIndex);
+            const secondHalf = tokenData.slice(middleIndex);
+            console.log(firstHalf.length, secondHalf.length)
+            ticker.subscribe(firstHalf);
+            ticker.setMode(ticker.modeQuote, firstHalf);
+            ticker.subscribe(secondHalf);
+            ticker.setMode(ticker.modeQuote, secondHalf);
           }
           
           // function unsubscribe(instrumentToken) {
