@@ -5,10 +5,9 @@ import { API_URL } from '../dynamicRoutes';
 
 const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [stopLossValue, setStopLossValue] = useState({
-    [props.Positions.day[0].instrument_token]: '-'
-  });
-  const stopLossForToken = stopLossValue[props.Positions.day[0].instrument_token]; 
+  // const [stopLossValue, setStopLossValue] = useState({
+  //   [props.Positions.day[0].instrument_token]: '-'
+  // });
 
   function exitHandler(symbol){
     console.log(symbol)
@@ -91,14 +90,14 @@ const Positions = (props) => {
   };
 
   return (
-    <div>
+    <div className='w-full'>
       <div className='flex justify-around mt-2'>
         <h2 className='font-bold'>Net Qty: 0</h2>
         <h2 className='font-bold'>MTM: 32055.50</h2>
       </div>
-      <div className='w-screen border-black'>
-        <div className='w-screen'>
-          <table className='w-screen'>
+      <div className='w-7/8 border-black'>
+        <div >
+          <table >
             <thead className='bg-blue-100 border-2 border-black w-screen'>
               <tr className=''>
                 <th className='text-center border-2 border-black'>Symbol Name</th>

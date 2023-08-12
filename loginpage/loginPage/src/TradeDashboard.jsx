@@ -7,6 +7,7 @@ import WatchList from './watchList';
 import Orderbook from './tradeDashboard/Orderbook'
 import Tradebook from './tradeDashboard/Tradebook'
 import Positions from './tradeDashboard/Positions'
+import Funds from './tradeDashboard/Funds'
 import maindata from '../../backend/routes/data/instrument.json';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -42,6 +43,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [selectedOption7, setSelectedOption7] = useState();
   const [selectedDate, setSelectedDate] = useState(null);
   const [positions,setPositions] = useState(false)
+  const [funds,setFunds] = useState(false)
   const [orderBook,setOrderBook] = useState(false)
   const [TradeBook,setTradeBook] = useState(false)
   const [customize,setCustomize] = useState(false)
@@ -103,6 +105,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [positionButtonClicked, setPositionButtonClicked] = useState(false);
   const [orderBookButtonClicked, setOrderBookButtonClicked] = useState(false);
   const [tradeBookButtonClicked, setTradeBookButtonClicked] = useState(false);
+  const [FundsButtonClicked, setFundsButtonClicked] = useState(false);
   const options = [
     { id: 1, name: "NIFTY" },
     { id: 2, name: "BANKNIFTY" },
@@ -113,7 +116,9 @@ const instrumentTokenRef = useRef(instrumentToken);
     { id: 2, name: "NORMAL" },
   ];
   const [lotSize, setLotSize]=useState(50)
-  const [stopLoss, setStopLoss]=useState({})
+  const [stopLoss, setStopLoss]=useState({
+    "": ''
+  })
 
   useEffect(()=>{
     for (let i = 0; i < maindata.length; i++) {
@@ -281,7 +286,7 @@ const instrumentTokenRef = useRef(instrumentToken);
           }
         }    
         console.log(data.margins,"data 133");
-        setMargin(data.margins.equity.net)
+        setMargin(data.margins)
         setOrderbook(data.orderbook)
         setTradebook(data.tradebook)
         setFetchedPositions(data.positions)
@@ -573,27 +578,43 @@ useEffect(()=>{
     setPositionButtonClicked(true);
     setOrderBookButtonClicked(false);
     setTradeBookButtonClicked(false);
+    setFundsButtonClicked(false);
     setPositions(true);
     setOrderBook(false);
     setTradeBook(false);
+    setFunds(false)
   };
   
   const handleOrderBookClick = () => {
     setOrderBookButtonClicked(true);
     setTradeBookButtonClicked(false);
     setPositionButtonClicked(false);
+    setFundsButtonClicked(false);
     setOrderBook(true);
     setTradeBook(false);
     setPositions(false);
+    setFunds(false)
   };
   
   const handleTradeBookClick = () => {
     setTradeBookButtonClicked(true);
     setOrderBookButtonClicked(false);
     setPositionButtonClicked(false);
+    setFundsButtonClicked(false);
     setTradeBook(true);
     setOrderBook(false);
     setPositions(false);
+    setFunds(false)
+  };
+  const handleFundsClick = () => {
+    setTradeBookButtonClicked(false);
+    setOrderBookButtonClicked(false);
+    setPositionButtonClicked(false);
+    setFundsButtonClicked(true);
+    setTradeBook(false);
+    setOrderBook(false);
+    setPositions(false);
+    setFunds(true)
   };
 
 
@@ -707,10 +728,6 @@ useEffect(()=>{
         <div className= "flex">
           <div>PNL: </div>
           {pnl}
-        </div>
-        <div className= "flex">
-          <div>Margin: </div>
-          {margin}
         </div>
       </div>
      <div className="flex items-center mt-4">
@@ -832,6 +849,12 @@ useEffect(()=>{
       >
         Trade Book
       </button>
+      <button
+        className={`ml-8 font-medium w-40 h-10 border-0 rounded ${FundsButtonClicked ? 'bg-pink-200' : ''}`}
+        onClick={handleFundsClick}
+      >
+        Funds
+      </button>
     </div>
 {orderBook && 
 <Orderbook orderbook={orderbook}  />
@@ -840,7 +863,10 @@ useEffect(()=>{
 <Tradebook tradebook={tradebook}  />
             }
 {positions &&   
-<Positions exit={handleClick} Positions={fetchedPositions&&fetchedPositions} />
+<Positions exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} />
+}
+{funds &&   
+<Funds data={margin} />
 }
    </div>
 </div>
