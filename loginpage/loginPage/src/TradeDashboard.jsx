@@ -181,7 +181,7 @@ const instrumentTokenRef = useRef(instrumentToken);
               progress: undefined,
               theme: "dark",
             });
-              handleClick(selectedOption1)
+              updatePositions()
           }else{
             toast.error("error in closing the position", {
               position: "top-right",
@@ -338,7 +338,7 @@ const instrumentTokenRef = useRef(instrumentToken);
       // console.log(selectedOption7,"test")
       // console.log("placedorder:",orderType);
       // console.log(selectedOption7.name)
-      console.log(lotSize)
+      // console.log(lotSize)
       try{fetch(`${API_URL}/placeOrder`, {
         method: "POST",
         headers: {
