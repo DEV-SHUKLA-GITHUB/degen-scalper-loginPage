@@ -119,6 +119,9 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [stopLoss, setStopLoss]=useState({
     "": ''
   })
+  const [trailingStopLoss, setTrailingStopLoss]=useState({
+    "": ''
+  })
   const stopLossRef=useRef(stopLoss)
   useEffect(()=>{
     stopLossRef.current=stopLoss
@@ -877,7 +880,7 @@ useEffect(()=>{
 <Tradebook tradebook={tradebook}  />
             }
 {positions &&   
-<Positions exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} />
+<Positions exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
 }
 {funds &&   
 <Funds data={margin} />

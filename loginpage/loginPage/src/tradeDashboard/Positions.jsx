@@ -5,9 +5,7 @@ import { API_URL } from '../dynamicRoutes';
 
 const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [stopLossValue, setStopLossValue] = useState({
-  //   [props.Positions.day[0].instrument_token]: '-'
-  // });
+  const [tsl,setTsl] = useState(true);
 
   function exitHandler(symbol){
     console.log(symbol)
@@ -58,6 +56,13 @@ const Positions = (props) => {
   const handleClick = () => {
     setIsModalOpen(true);
   };
+  const handleTSLClick = () => {
+    props.setTrailingStopLoss({
+      ...props.trailingStopLoss,
+      [props.Positions.day[0].instrument_token]: !tsl
+    })
+    setTsl(!tsl)
+  }
 
   const handleModalConfirm = () => {
     if (props.stopLossValue) {
@@ -88,7 +93,7 @@ const Positions = (props) => {
       });
     }
   };
-// props.stopLossValue&&console.log(props.stopLossValue)
+console.log(props.trailingStopLoss)
   return (
     <div className='w-full'>
       <div className='flex justify-around mt-2'>
@@ -105,6 +110,8 @@ const Positions = (props) => {
                 <th className='text-center border-2 border-black'>NET Qty</th>
                 <th className='text-center border-2 border-black'>SL</th>
                 <th className='text-center border-2 border-black'>SL Button</th>
+                <th className='text-center border-2 border-black'>TSL</th>
+                <th className='text-center border-2 border-black'>TSL Button</th>
                 <th className='text-center border-2 border-black'>LTP</th>
                 <th className='text-center border-2 border-black'>P&L</th>
                 <th className='text-center border-2 border-black'>Avg Price</th>
@@ -124,6 +131,12 @@ const Positions = (props) => {
                         <td className='text-center'>
                           <button onClick={handleClick} className='bg-blue-500 text-white px-2 py-1 rounded'>
                             SL Button
+                          </button>
+                        </td>
+                        <td className='text-center'>{tsl}</td>
+                        <td className='text-center'>
+                          <button type='radio' onClick={handleTSLClick} className='bg-blue-500 text-white px-2 py-1 rounded'>
+                            TSL Button
                           </button>
                         </td>
                         <td className='text-center'>{item.last_price}</td>
