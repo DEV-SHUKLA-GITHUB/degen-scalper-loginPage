@@ -88,7 +88,7 @@ const Positions = (props) => {
       });
     }
   };
-props.stopLossValue&&console.log(props.stopLossValue)
+// props.stopLossValue&&console.log(props.stopLossValue)
   return (
     <div className='w-full'>
       <div className='flex justify-around mt-2'>

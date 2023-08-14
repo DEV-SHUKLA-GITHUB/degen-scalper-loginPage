@@ -119,6 +119,10 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [stopLoss, setStopLoss]=useState({
     "": ''
   })
+  const stopLossRef=useRef(stopLoss)
+  useEffect(()=>{
+    stopLossRef.current=stopLoss
+  },[stopLoss])
 
   useEffect(()=>{
     for (let i = 0; i < maindata.length; i++) {
@@ -164,7 +168,8 @@ const instrumentTokenRef = useRef(instrumentToken);
           symbol
         }),
       }).then(data=>{
-        console.log(data)
+        // if()
+        // console.log(data)
         if(data.status){
             toast.success("position squared off", {
               position: "top-right",
@@ -176,6 +181,7 @@ const instrumentTokenRef = useRef(instrumentToken);
               progress: undefined,
               theme: "dark",
             });
+              handleClick(selectedOption1)
           }else{
             toast.error("error in closing the position", {
               position: "top-right",
@@ -193,7 +199,6 @@ const instrumentTokenRef = useRef(instrumentToken);
     catch(err){
       console.log(err)
     }
-    handleClick(selectedOption1)
   }
 
   const handleInputChange = (e) => {
@@ -477,17 +482,26 @@ useEffect(()=>{
           //stop loss 
           
           fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
-            if(Object.prototype.hasOwnProperty.call(stopLoss, p.instrument_token)){if(String(p.instrument_token)===String(tick.instrument_token)){
+            const currentToken=p.instrument_token
+            // console.log(stopLossRef.current, p)
+            if(Object.prototype.hasOwnProperty.call(stopLossRef.current, Number(p.instrument_token))&&stopLossRef.current[currentToken]!="0"){if(String(p.instrument_token)===String(tick.instrument_token)){
               if(p.quantity>0){
-                if(Number(tick.last_price)<=Number(stopLoss[`${p.instrument_token}`])){
+                if(Number(tick.last_price)<=Number(stopLossRef.current[Number(p.instrument_token)])){
                   exit(p.tradingsymbol)
+                setStopLoss(prev=>{
+                  return  {...prev, [currentToken]:"0"}
+                })
+
                 }
               }
             else if(p.quantity<0){
-              if(Number(tick.last_price)>=Number(stopLoss[`${p.instrument_token}`])){
-                //place order
-                exit(p.tradingsymbol)
+              console.log("sell")
 
+              if(Number(tick.last_price)>=Number(stopLossRef.current[Number(p.instrument_token)])){
+                exit(p.tradingsymbol)
+                setStopLoss(prev=>{
+                  return  {...prev, [currentToken]:"0"}
+                })
               }
             }
             }}

@@ -41,7 +41,7 @@ router.post("/", async(req,res)=>{
                 }).catch(function(err) {
                     console.log(err);
                     res.send({status:false, error:err})
-                });}else{
+                });}else if(position.quantity<0){
                     
             console.log("BUY", Math.abs(position.quantity))
             const variety="regular"
@@ -61,6 +61,7 @@ router.post("/", async(req,res)=>{
                     res.send({status:false, error:err})
                 });
                 }
+                // res.send()
             }
     })}catch(err){
         console.log(err)
