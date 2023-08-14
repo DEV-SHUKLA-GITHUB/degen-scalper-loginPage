@@ -123,6 +123,10 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [trailingStopLoss, setTrailingStopLoss]=useState({
     "": ''
   })
+  const trailingStopLossRef=useRef(trailingStopLoss)
+  useEffect(()=>{
+    trailingStopLossRef.current=trailingStopLoss
+  },[trailingStopLoss])
   const stopLossRef=useRef(stopLoss)
   useEffect(()=>{
     stopLossRef.current=stopLoss
@@ -185,7 +189,7 @@ const instrumentTokenRef = useRef(instrumentToken);
               progress: undefined,
               theme: "dark",
             });
-              handleClick(selectedOption1)
+              updatePositions()
           }else{
             toast.error("error in closing the position", {
               position: "top-right",
@@ -353,7 +357,7 @@ console.log("qty")
       // console.log(selectedOption7,"test")
       // console.log("placedorder:",orderType);
       // console.log(selectedOption7.name)
-      console.log(lotSize)
+      // console.log(lotSize)
       try{fetch(`${API_URL}/placeOrder`, {
         method: "POST",
         headers: {
@@ -500,6 +504,17 @@ useEffect(()=>{
           fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
             const currentToken=p.instrument_token
             // console.log(stopLossRef.current, p)
+            
+            //trailing stop loss
+            if(Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, Number(p.instrument_token))&&trailingStopLossRef.current[currentToken]==true){
+              if(String(p.instrument_token)===String(tick.instrument_token)){
+                console.log(stopLossRef.current[currentToken])
+              if(Number(stopLossRef.current[currentToken])+1<String(tick.last_price)){
+                setStopLoss(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-1)}})
+              }
+              }
+            }
+
             if(Object.prototype.hasOwnProperty.call(stopLossRef.current, Number(p.instrument_token))&&stopLossRef.current[currentToken]!="0"){if(String(p.instrument_token)===String(tick.instrument_token)){
               if(p.quantity>0){
                 if(Number(tick.last_price)<=Number(stopLossRef.current[Number(p.instrument_token)])){
