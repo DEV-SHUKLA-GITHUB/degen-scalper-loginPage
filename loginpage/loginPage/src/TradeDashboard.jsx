@@ -84,7 +84,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const tradebookRef=useRef(tradebook)
   const fetchedPositionsRef=useRef(fetchedPositions)
   useEffect(()=>{
-    console.log(fetchedPositionsRef.current)
+    // console.log(fetchedPositionsRef.current)
     orderbookRef.current=orderBook
     tradebookRef.current=tradebook
     fetchedPositionsRef.current=fetchedPositions
@@ -142,15 +142,15 @@ const instrumentTokenRef = useRef(instrumentToken);
 
   // either change the fetchedPositions state itself or store the stoplosses of instruments into saperate state stopLoss
 
-  // const stopLossHandler=(token,stoploss)=>{
-  //   setFetchedPositions(prev=>{
-  //     return {...prev,"day":fetchedPositions["day"].map(p=>{
-  //       if(String(token)===String(p.instrument_token)){
-  //         return 
-  //       }
-  //     })}
-  //   })
-  // }
+  const stopLossHandler=(token,stoploss)=>{
+    setFetchedPositions(prev=>{
+      return {...prev,"day":fetchedPositions["day"].map(p=>{
+        if(String(token)===String(p.instrument_token)){
+          return 
+        }
+      })}
+    })
+  }
 
   function exit(symbol){
     console.log(symbol)
@@ -507,7 +507,7 @@ useEffect(()=>{
         //   setFetchedPositions(obj)
         // }
         if(fetchedPositionsRef.current!=undefined){
-          console.log(fetchedPositionsRef)
+          // console.log(fetchedPositionsRef)
           setFetchedPositions(prev=>{
           return {...prev, day:prev.day.map(p=>{
             if(String(p.instrument_token)===String(tick.instrument_token)){
@@ -690,7 +690,7 @@ useEffect(()=>{
       <div className="flex p-2 m-2 justify-between">
         <div className='flex-col'>
         <div className='flex'>
-        <CustomCombobox options={options} onChange={handleClick} />
+        <CustomCombobox options={options} onChange={handleClick} /> 
         </div>
         </div>
         <Dropdown

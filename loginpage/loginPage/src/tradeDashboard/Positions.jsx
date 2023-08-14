@@ -60,7 +60,7 @@ const Positions = (props) => {
   };
 
   const handleModalConfirm = () => {
-    if (stopLossValue) {
+    if (props.stopLossValue) {
       setIsModalOpen(false);
 
       // Display a success message
@@ -88,7 +88,7 @@ const Positions = (props) => {
       });
     }
   };
-
+props.stopLossValue&&console.log(props.stopLossValue)
   return (
     <div className='w-full'>
       <div className='flex justify-around mt-2'>
@@ -120,7 +120,7 @@ const Positions = (props) => {
                         <td className='text-center'>{item.tradingsymbol}</td>
                         <td className='text-center'>{item.product}</td>
                         <td className='text-center'>{item.quantity}</td>
-                        <td className='text-center'>{stopLossValue[props.Positions.day[0].instrument_token]}</td>
+                        <td className='text-center'>{props.stopLossValue[`${props.Positions.day[0].instrument_token}`]}</td>
                         <td className='text-center'>
                           <button onClick={handleClick} className='bg-blue-500 text-white px-2 py-1 rounded'>
                             SL Button
@@ -154,11 +154,12 @@ const Positions = (props) => {
             <input
               type="text"
               id="stopLossInput"
-              value={stopLossValue[props.Positions.day[0].instrument_token]}
-              onChange={(e) => setStopLossValue({
-                ...stopLossValue,
+              value={props.stopLossValue[props.Positions.day[0].instrument_token]}
+              onChange={(e) => props.setStopLossValue({
+                ...props.stopLossValue,
                 [props.Positions.day[0].instrument_token]: e.target.value
-              })}
+              })
+            }
               className="w-full px-2 py-1 border rounded mb-4"
             />
             <div className='flex justify-end'>
