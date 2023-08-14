@@ -10,7 +10,6 @@ const WatchList = (props) => {
   const [name, setName] = useState();
 
   useEffect(() => {
-    // Retrieve data from local storage on component mount
     const storedData = JSON.parse(localStorage.getItem('watchlistData'));
     if (storedData) {
       setData(storedData);
@@ -18,23 +17,17 @@ const WatchList = (props) => {
   }, []);
 
   useEffect(() => {
-    if (tokendata !== undefined) {
-      // Update the data state and local storage
+    if (tokendata !== undefined && name !== undefined) {
       const updatedData = [...data, { token: tokendata, ltp: 0, name: name }];
       setData(updatedData);
       localStorage.setItem('watchlistData', JSON.stringify(updatedData));
       props.add(updatedData);
-      console.log(tokendata, name);
     }
-  }, [tokendata]);
+  }, [tokendata, name]);
 
   const token = (selected) => {
-    console.log(selected.replace(/\s/g, ''));
     instruments.forEach((item) => {
       if (item.tradingsymbol === selected.replace(/\s/g, '')) {
-        console.log(item.tradingsymbol, 'tradingsymbol');
-        console.log(item.instrument_token, 'tradingsymbol');
-        console.log(typeof Number(item.instrument_token));
         setTokendata(item.instrument_token);
         return;
       }
@@ -42,26 +35,48 @@ const WatchList = (props) => {
   };
 
   const handleClick = (selected) => {
-    token(selected.name);
-    setName(selected.name);
-    console.log(selected.name);
-    console.log(instruments);
+    if (!data.some(item => item.name === selected.name)) {
+      if (selected.name.includes("CE") || selected.name.includes("PE") || selected.name.includes("FUT")) {
+        setName(selected.name);
+        token(selected.name);
+      }
+    }
   };
 
-  const filteredCEData = maindata.filter(item => item.instrument_type === 'CE');
-  const filteredPEData = maindata.filter(item => item.instrument_type === 'PE');
+  const resetData = () => {
+    setData([]);
+    localStorage.removeItem('watchlistData');
+  };
+
+  const ceData = data.filter(value => !value.name.includes("PE"));
+  const peData = data.filter(value => value.name.includes("PE"));
 
   return (
-    <div className='w-full h-screen border-black border-2'>
-      <div className='flex'>
+    <div className='w-full h-screen border-black border-2 p-4'>
+      <div className='mb-4'>
         <CustomCombobox options={tradingsymbols} onChange={handleClick} />
+        <button className='ml-4 bg-blue-500 text-white py-2 px-4 rounded' onClick={resetData}>
+          Reset
+        </button>
       </div>
-      {data.map((value, index) => (
-        <div key={index} className='flex justify-between m-4'>
-          <div>{value.name}</div>
-          <div>{value.ltp}</div>
-        </div>
-      ))}
+      <div className='h-1/2 border-b-2 border-black overflow-y-auto'>
+        <h2 className='mb-2'>CE Section</h2>
+        {ceData.map((value, index) => (
+          <div key={index} className='flex justify-between mb-2'>
+            <div>{value.name}</div>
+            <div>{value.ltp}</div>
+          </div>
+        ))}
+      </div>
+      <div className='h-1/2 overflow-y-auto'>
+        <h2 className='mb-2'>PE Section</h2>
+        {peData.map((value, index) => (
+          <div key={index} className='flex justify-between mb-2'>
+            <div>{value.name}</div>
+            <div>{value.ltp}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -8,7 +8,7 @@ const KiteConnect = require("kiteconnect").KiteConnect;
 const {checkAuth}=require("../modules/auth")
 
 router.post("/", async (req, res) => {
-    const {lotSize, symbol, qty, transaction_type,product,variety, token, } = req.body;
+    const {lotSize,switchQty, symbol, qty, transaction_type,product,variety, token, } = req.body;
     console.log({symbol, qty, transaction_type,product,variety, token, } )
     try {
         const checkAuthResponse = await checkAuth(token)
@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
                     "exchange": "NFO",
                     "tradingsymbol": symbol,
                     "transaction_type": transaction_type,
-                    "quantity": qty,
+                    "quantity": switchQty&&qty || qty*lotSize,
                     "product": product,
                     "order_type": "MARKET"
                 }).then(async function(resp) {

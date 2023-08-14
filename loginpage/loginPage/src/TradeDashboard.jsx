@@ -50,6 +50,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [orderbook,setOrderbook]=useState()
   const [tradebook, setTradebook]=useState()
   const [fetchedPositions, setFetchedPositions]=useState()
+  const [qty,setQty]=useState(false)
   const [enableClick, setEnableClick] = useState(false);
   const [callSymbol, setCallSymbol]=useState()
     const callSymbolRef=useRef(callSymbol)
@@ -209,12 +210,23 @@ const instrumentTokenRef = useRef(instrumentToken);
 
     const inputValue = e.target.value.trim(); 
 
-    if (inputValue !== '') {
+    if (qty==true && inputValue !== '') {
       const intValue = parseInt(inputValue);
       const isMultiple = intValue % lotSize === 0;
       const isInRange = intValue >= lotSize && intValue <= lotSize * 36;
-
+console.log("qty")
       if (!(isMultiple && isInRange)) {
+        setErrorMessage('Please provide a valid quantity.');
+      } else {
+        setErrorMessage('');
+      }
+    }
+    else if ( inputValue !== '') {
+      const intValue = parseInt(inputValue);
+      const isInRange = intValue >= 0 && intValue <= 36;
+      console.log("lot")
+
+      if (!(isInRange)) {
         setErrorMessage('Please provide a valid quantity.');
       } else {
         setErrorMessage('');
@@ -354,7 +366,8 @@ const instrumentTokenRef = useRef(instrumentToken);
           qty: selectedOption6,
           transaction_type: orderType,
           product: selectedOption7.name,
-          variety: "regular"
+          variety: "regular",
+          switchQty: qty
         }),
       })
         .then((res) => res.json())
@@ -695,6 +708,14 @@ useEffect(()=>{
       setCustomSellPutKey(customSellPutKeyFromStorage);
     }
   }, []);
+  const handleQtyClick =()=>{
+    setQty(true)
+    console.log(qty)
+  }
+  const handleLotClick =()=>{
+    setQty(false)
+    console.log(qty)
+  }
   return (
     <div className='flex'>
       <div className='h-screen w-1/5'>
@@ -731,16 +752,38 @@ useEffect(()=>{
           value={selectedOption5}
           onSelect={setSelectedOption5}
         />
-  <div>
-     <input
-        type="number"
-        placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
-        className="h-10 border-2 m-4 rounded border-black"
-        value={selectedOption6}
-        onChange={handleInputChange}
-      />
-      {errorMessage && <div>{errorMessage}</div>}
-    </div>
+<div className='flex'>
+  <div className="flex flex-col">
+    <input
+      type="number"
+      placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
+      className="h-10 border-2 m-4 mr-0 rounded border-black px-2 focus:outline-none focus:border-blue-500"
+      value={selectedOption6}
+      onChange={handleInputChange}
+    />
+    {errorMessage && <div className="text-red-500 mt-1">{errorMessage}</div>}
+  </div>
+  <div className="mt-4 border-2 border-gray-500 rounded flex">
+    <button
+      className={`flex-1 py-2 px-4 focus:outline-none ${
+        qty==true ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
+      }`}
+      onClick={handleQtyClick}
+    >
+      qty
+    </button>
+    <button
+      className={`flex-1 py-2 px-4 focus:outline-none ${
+        qty==false ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
+      }`}
+      onClick={handleLotClick}
+    >
+      lot
+    </button>
+  </div>
+</div>
+
+
         <CustomCombobox options={products} onChange={setSelectedOption7} />
         <div className= "flex">
           <div>PNL: </div>
