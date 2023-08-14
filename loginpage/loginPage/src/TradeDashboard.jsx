@@ -12,6 +12,10 @@ import maindata from '../../backend/routes/data/instrument.json';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_URL,SOCKET_API_URL } from './dynamicRoutes';
+import {AiOutlineArrowLeft} from 'react-icons/ai';
+import {AiOutlineArrowRight} from 'react-icons/ai';
+import {AiOutlineArrowUp} from 'react-icons/ai';
+import {AiOutlineArrowDown} from 'react-icons/ai';
 const TradeDashboard = () => {
 
 // var instrumentToken;
@@ -731,8 +735,23 @@ useEffect(()=>{
     setQty(false)
     console.log(qty)
   }
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", refresh);
+    return () => {
+      window.removeEventListener("beforeunload", refresh);
+    };
+  }, []);
+  const refresh=(e)=>{ 
+    fetch(`${API_URL}/test`,{
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })}
+  
   return (
-    <div className='flex'>
+    <div className='flex trade'>
       <div className='h-screen w-1/5'>
         <WatchList tokens={arrayOfTokens} add={changeArrayOfToken} ticks={ticksData}/>
       </div>
@@ -878,11 +897,11 @@ useEffect(()=>{
         <div>
         <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" 
          onClick={()=>{placeOrder("SELL","CE"),setCallType("CE")}}>
-        Sell Call  
+       <div className='flex'> <AiOutlineArrowLeft className='mt-1.5 mr-2'/> Buy call</div> 
       </button>
       <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
        onClick={()=>{placeOrder("BUY","CE"),setCallType("CE")}}>
-        Buy Call
+        <div className='flex'> <AiOutlineArrowUp className='mt-1.5 mr-2'/> Buy call</div>
       </button>
         </div>
         <div>
@@ -896,11 +915,11 @@ useEffect(()=>{
         <div>
         <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
         onClick={()=>{placeOrder("BUY","PE"),setCallType("PE")}} >
-        Buy Put
+        <div className='flex'>Sell Put  <AiOutlineArrowDown className='mt-1.5 ml-2'/></div>
       </button>
       <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
       onClick={()=>{placeOrder("SELL","PE"),setCallType("PE")}} > 
-        Sell Put
+        <div className='flex'>Sell Put  <AiOutlineArrowRight className='mt-1.5 ml-2'/></div>
       </button>
         </div>
       </div>

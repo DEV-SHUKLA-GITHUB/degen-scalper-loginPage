@@ -27,7 +27,7 @@ const CustomCombobox = ({ options, onChange }) => {
     onChange(selectedOption);
   };
 
-  const visibleOptions = filteredOptions.slice(0, 10); // Display only 10 visible options initially
+  const visibleOptions = filteredOptions.slice(0, 100); // Display only 10 visible options initially
 
   return (
     <Combobox value={selected} onChange={handleSelect}>
@@ -49,7 +49,7 @@ const CustomCombobox = ({ options, onChange }) => {
           leaveTo="opacity-0"
           afterLeave={() => setQuery("")}
         >
-          <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm bg-white">
+          <Combobox.Options className="absolute mt-1 h-screen w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm bg-white">
             {filteredOptions.length === 0 && query !== "" ? (
               <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                 Nothing found.

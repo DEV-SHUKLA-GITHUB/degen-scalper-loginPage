@@ -58,7 +58,9 @@ mongoose
   app.use("/exitAll", exitAllRouter)
   app.use("/updatePositions", updatePositionsRouter)
 
-
+  app.get("/test",(req,res)=>{
+    console.log("closed/refreshed");
+  })
   
 
 app.listen(8000, () => {
