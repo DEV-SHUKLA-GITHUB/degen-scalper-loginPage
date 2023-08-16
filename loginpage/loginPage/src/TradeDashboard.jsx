@@ -521,7 +521,7 @@ useEffect(()=>{
 
             if(Object.prototype.hasOwnProperty.call(stopLossRef.current, Number(p.instrument_token))&&stopLossRef.current[currentToken]!="0"){if(String(p.instrument_token)===String(tick.instrument_token)){
               if(p.quantity>0){
-                if(Number(tick.last_price)<=Number(stopLossRef.current[Number(p.instrument_token)])){
+                if(Number(tick.last_price)==Number(stopLossRef.current[Number(p.instrument_token)])){
                   exit(p.tradingsymbol)
                 setStopLoss(prev=>{
                   return  {...prev, [currentToken]:"0"}

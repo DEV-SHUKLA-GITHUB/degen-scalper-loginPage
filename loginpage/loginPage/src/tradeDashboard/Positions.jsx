@@ -5,67 +5,70 @@ import { API_URL } from '../dynamicRoutes';
 
 const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tsl,setTsl] = useState(true);
+  const [selectedInstrumentToken, setSelectedInstrumentToken] = useState(null);
+  const [tsl, setTsl] = useState(true);
 
-  function exitHandler(symbol){
-    console.log(symbol)
-      try{fetch(`${API_URL}/exit`, {
-        method: "POST",
+  function exitHandler(symbol) {
+    console.log(symbol);
+    try {
+      fetch(`${API_URL}/exit`, {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          token: window.localStorage.getItem("token"),
-          symbol
+          token: window.localStorage.getItem('token'),
+          symbol,
         }),
-      }).then(data=>{
-        console.log(data)
-        if(data.status){
-            toast.success("position squared off", {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "dark",
-            });
-          }else{
-            toast.error("error in closing the position", {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "dark",
-            });
-          }
-      })
+      }).then((data) => {
+        console.log(data);
+        if (data.status) {
+          toast.success('Position squared off', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'dark',
+          });
+        } else {
+          toast.error('Error in closing the position', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'dark',
+          });
+        }
+      });
+    } catch (err) {
+      console.log(err);
     }
-    catch(err){
-      console.log(err)
-    }
-    props.exit
-    //   }
-    // })
+    props.exit();
   }
 
-  const handleClick = () => {
+  const handleClick = (instrumentToken) => {
+    setSelectedInstrumentToken(instrumentToken);
     setIsModalOpen(true);
   };
-  const handleTSLClick = () => {
+
+  const handleTSLClick = (instrumentToken) => {
     props.setTrailingStopLoss({
       ...props.trailingStopLoss,
-      [props.Positions.day[0].instrument_token]: !tsl
-    })
-    setTsl(!tsl)
-  }
+      [instrumentToken]: !tsl,
+    });
+    setTsl(!tsl);
+  };
 
-  const handleModalConfirm = () => {
-    if (props.stopLossValue) {
+  const handleModalConfirm = (instrumentToken) => {
+    const stopLossValue = props.stopLossValue[instrumentToken];
+
+    if (stopLossValue) {
       setIsModalOpen(false);
 
       // Display a success message
@@ -93,7 +96,7 @@ const Positions = (props) => {
       });
     }
   };
-console.log(props.trailingStopLoss)
+
   return (
     <div className='w-full'>
       <div className='flex justify-around mt-2'>
@@ -101,10 +104,10 @@ console.log(props.trailingStopLoss)
         <h2 className='font-bold'>MTM: 32055.50</h2>
       </div>
       <div className='w-7/8 border-black'>
-        <div >
-          <table >
+        <div>
+          <table>
             <thead className='bg-blue-100 border-2 border-black w-screen'>
-              <tr className=''>
+              <tr>
                 <th className='text-center border-2 border-black'>Symbol Name</th>
                 <th className='text-center border-2 border-black'>Product</th>
                 <th className='text-center border-2 border-black'>NET Qty</th>
@@ -123,19 +126,31 @@ console.log(props.trailingStopLoss)
                 props.Positions['day'].map((item, index) => {
                   if (item.quantity !== 0) {
                     return (
+                      
                       <tr key={index}>
+                        {console.log(props.Positions,"pos")}
                         <td className='text-center'>{item.tradingsymbol}</td>
                         <td className='text-center'>{item.product}</td>
                         <td className='text-center'>{item.quantity}</td>
-                        <td className='text-center'>{props.stopLossValue[`${props.Positions.day[0].instrument_token}`]}</td>
                         <td className='text-center'>
-                          <button onClick={handleClick} className='bg-blue-500 text-white px-2 py-1 rounded'>
+                          {props.stopLossValue[item.instrument_token]}
+                        </td>
+                        <td className='text-center'>
+                          <button
+                            onClick={() => handleClick(item.instrument_token)}
+                            className='bg-blue-500 text-white px-2 py-1 rounded'
+                          >
                             SL Button
                           </button>
                         </td>
-                        <td className='text-center'>{tsl}</td>
                         <td className='text-center'>
-                          <button type='radio' onClick={handleTSLClick} className='bg-blue-500 text-white px-2 py-1 rounded'>
+                          {props.trailingStopLoss[item.instrument_token] ? 'Enabled' : 'Disabled'}
+                        </td>
+                        <td className='text-center'>
+                          <button
+                            onClick={() => handleTSLClick(item.instrument_token)}
+                            className='bg-blue-500 text-white px-2 py-1 rounded'
+                          >
                             TSL Button
                           </button>
                         </td>
@@ -143,7 +158,10 @@ console.log(props.trailingStopLoss)
                         <td className='text-center'>{item.pnl}</td>
                         <td className='text-center'>{item.average_price}</td>
                         <td className='text-center'>
-                          <button onClick={() => exitHandler(item.tradingsymbol)} className='bg-red-500 text-white px-2 py-1 rounded'>
+                          <button
+                            onClick={() => exitHandler(item.tradingsymbol)}
+                            className='bg-red-500 text-white px-2 py-1 rounded'
+                          >
                             Exit
                           </button>
                         </td>
@@ -157,33 +175,37 @@ console.log(props.trailingStopLoss)
       </div>
 
       {/* Modal */}
-      {isModalOpen && (
+      {isModalOpen && selectedInstrumentToken && (
+        
         <div className='fixed inset-0 flex items-center justify-center z-50'>
           <div className='bg-white p-6 rounded-lg shadow-lg'>
+            {console.log(selectedInstrumentToken,"selected instrument token")}
             <h2 className='text-lg font-semibold mb-4'>Set Stop Loss</h2>
             <label htmlFor='stopLossInput' className='block mb-2'>
               Stop Loss Value:
             </label>
             <input
-              type="text"
-              id="stopLossInput"
-              value={props.stopLossValue[props.Positions.day[0].instrument_token]}
+              type='text'
+              id='stopLossInput'
+              value={props.stopLossValue[selectedInstrumentToken] || ''}
               onChange={(e) => props.setStopLossValue({
                 ...props.stopLossValue,
-                [props.Positions.day[0].instrument_token]: e.target.value
-              })
-            }
-              className="w-full px-2 py-1 border rounded mb-4"
+                [selectedInstrumentToken]: e.target.value,
+              })}
+              className='w-full px-2 py-1 border rounded mb-4'
             />
             <div className='flex justify-end'>
               <button
-                onClick={handleModalConfirm}
+                onClick={() => handleModalConfirm(selectedInstrumentToken)}
                 className='bg-blue-500 text-white px-4 py-2 rounded mr-2'
               >
                 Confirm
               </button>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setSelectedInstrumentToken(null);
+                }}
                 className='bg-gray-300 text-gray-700 px-4 py-2 rounded'
               >
                 Cancel

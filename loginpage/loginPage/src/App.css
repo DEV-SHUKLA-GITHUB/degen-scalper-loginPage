@@ -15,9 +15,3 @@
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover
 }
-.trade{
-    background-image: linear-gradient(to right top, #000000, #1a1a1a, #2d2d2d, #414141, #575757);
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: cover
-}
