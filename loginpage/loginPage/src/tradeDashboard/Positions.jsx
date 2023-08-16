@@ -7,6 +7,8 @@ const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInstrumentToken, setSelectedInstrumentToken] = useState(null);
   const [tsl, setTsl] = useState(true);
+  const [stoploss, setStoploss] = useState(false);
+  const [trailingstoploss, setTrailingstoploss] = useState(false);
 
   function exitHandler(symbol) {
     console.log(symbol);
@@ -54,20 +56,25 @@ const Positions = (props) => {
 
   const handleClick = (instrumentToken) => {
     setSelectedInstrumentToken(instrumentToken);
+    setStoploss(true)
     setIsModalOpen(true);
   };
 
   const handleTSLClick = (instrumentToken) => {
-    props.setTrailingStopLoss({
-      ...props.trailingStopLoss,
-      [instrumentToken]: !tsl,
-    });
-    setTsl(!tsl);
+    setSelectedInstrumentToken(instrumentToken);
+    setTrailingstoploss(true)
+    setIsModalOpen(true);
+    // props.setTrailingStopLoss({
+    //   ...props.trailingStopLoss,
+    //   [instrumentToken]: !tsl,
+    // });
+    // setTsl(!tsl);
+
   };
 
   const handleModalConfirm = (instrumentToken) => {
     const stopLossValue = props.stopLossValue[instrumentToken];
-
+    // const trailingStopLoss = props.trailingStopLoss[instrumentToken];
     if (stopLossValue) {
       setIsModalOpen(false);
 
@@ -144,7 +151,7 @@ const Positions = (props) => {
                           </button>
                         </td>
                         <td className='text-center'>
-                          {props.trailingStopLoss[item.instrument_token] ? 'Enabled' : 'Disabled'}
+                        {props.trailingStopLoss[item.instrument_token]}
                         </td>
                         <td className='text-center'>
                           <button
@@ -180,7 +187,8 @@ const Positions = (props) => {
         <div className='fixed inset-0 flex items-center justify-center z-50'>
           <div className='bg-white p-6 rounded-lg shadow-lg'>
             {console.log(selectedInstrumentToken,"selected instrument token")}
-            <h2 className='text-lg font-semibold mb-4'>Set Stop Loss</h2>
+            {stoploss&&<div>
+              <h2 className='text-lg font-semibold mb-4'>Set Stop Loss</h2>
             <label htmlFor='stopLossInput' className='block mb-2'>
               Stop Loss Value:
             </label>
@@ -204,13 +212,50 @@ const Positions = (props) => {
               <button
                 onClick={() => {
                   setIsModalOpen(false);
+                  setStoploss(false)
                   setSelectedInstrumentToken(null);
                 }}
                 className='bg-gray-300 text-gray-700 px-4 py-2 rounded'
               >
                 Cancel
               </button>
-            </div>
+            </div></div>}
+            {trailingstoploss&&<div>
+              <h2 className='text-lg font-semibold mb-4'>Set Trailing Stop Loss</h2>
+            <label htmlFor='stopLossInput' className='block mb-2'>
+              Trailing Stop Loss Value:
+            </label>
+            <input
+              type='text'
+              id='trailingstopLossInput'
+              value={props.trailingStopLoss[selectedInstrumentToken] || ''}
+              onChange={(e) => props.setTrailingStopLoss({
+                ...props.trailingStopLoss,
+                [selectedInstrumentToken]: e.target.value,
+              })}
+              className='w-full px-2 py-1 border rounded mb-4'
+            />
+            {/* {console.log(props.trailingStopLoss,"tsl")} */}
+            <div className='flex justify-end'>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                  //  handleModalConfirm(selectedInstrumentToken)
+                  
+                className='bg-blue-500 text-white px-4 py-2 rounded mr-2'
+              >
+                Confirm
+              </button>
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setTrailingstoploss(false)
+                  setSelectedInstrumentToken(null);
+                }}
+                className='bg-gray-300 text-gray-700 px-4 py-2 rounded'
+              >
+                Cancel
+              </button>
+            </div></div>}
           </div>
         </div>
       )}
