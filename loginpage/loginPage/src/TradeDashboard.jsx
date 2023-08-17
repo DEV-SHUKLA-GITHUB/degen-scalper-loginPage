@@ -514,6 +514,9 @@ useEffect(()=>{
               if(String(p.instrument_token)===String(tick.instrument_token)){
                 console.log(stopLossRef.current[currentToken])
               if(Number(stopLossRef.current[currentToken])+1<String(tick.last_price)){
+                setTrailingStopLoss(prev=>{
+                  return  {...prev, [currentToken]:false}
+               })
                 setStopLoss(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-1)}})
               }
               }
@@ -897,7 +900,7 @@ useEffect(()=>{
         <div>
         <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" 
          onClick={()=>{placeOrder("SELL","CE"),setCallType("CE")}}>
-       <div className='flex'> <AiOutlineArrowLeft className='mt-1.5 mr-2'/> Buy call</div> 
+       <div className='flex'> <AiOutlineArrowLeft className='mt-1.5 mr-2'/> SELL call</div> 
       </button>
       <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
        onClick={()=>{placeOrder("BUY","CE"),setCallType("CE")}}>
@@ -915,7 +918,7 @@ useEffect(()=>{
         <div>
         <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
         onClick={()=>{placeOrder("BUY","PE"),setCallType("PE")}} >
-        <div className='flex'>Sell Put  <AiOutlineArrowDown className='mt-1.5 ml-2'/></div>
+        <div className='flex'>BUY Put  <AiOutlineArrowDown className='mt-1.5 ml-2'/></div>
       </button>
       <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
       onClick={()=>{placeOrder("SELL","PE"),setCallType("PE")}} > 

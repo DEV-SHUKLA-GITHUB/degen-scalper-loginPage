@@ -19,7 +19,6 @@ const Tradebook = (props) => {
                 <th className="font-normal">Qty</th>
                 <th className="font-normal">Order Type</th>
                 <th className="font-normal">Transaction Type</th>
-    
                 <th className="font-normal">Status</th>
                 {/* <th className="font-normal">Sell</th> */}
               </tr>
