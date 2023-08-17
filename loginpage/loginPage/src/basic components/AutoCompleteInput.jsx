@@ -38,7 +38,7 @@ const CustomCombobox = ({ options, onChange }) => {
             displayValue={(option) => option.name}
             onChange={(event) => setQuery(event.target.value)}
           />
-          <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+          <Combobox.Button className="absolute  right-0 flex items-center pr-2">
             <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </Combobox.Button>
         </div>
