@@ -121,16 +121,24 @@ router.post("/getInstruments", async (req, res) => {
       const instruments = await kite.getInstruments(["NFO"]);
       const margins=await kite.getMargins()
       // console.log(instruments, "instruments");
+      const currentDate = new Date();
+
+const year = currentDate.getFullYear();
+const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+const day = String(currentDate.getDate()).padStart(2, '0');
+
+const formattedDate = `${year}-${month}-${day}`;
+
+
       const filteredInstruments = instrumentsData.filter(
-        (instrument) => instrument.name === (selected.name || selected) && instrument.segment === 'NFO-OPT'
-      );
-
+        (instrument) =>
+          instrument.name === (selected.name || selected) &&
+          instrument.segment === 'NFO-OPT'      );
+      
       const uniqueExpiryDates = Array.from(
-        new Set(
-          filteredInstruments.map((instrument) => new Date(instrument.expiry).getTime())
-        )
-      ).map((timestamp) => new Date(timestamp));
-
+        new Set(filteredInstruments.map((instrument) => instrument.expiry))
+      ).filter((expiryDate) => expiryDate >= formattedDate); 
+      
       const uniqueStrikes = Array.from(
         new Set(
           filteredInstruments.map((instrument) => instrument.strike)
