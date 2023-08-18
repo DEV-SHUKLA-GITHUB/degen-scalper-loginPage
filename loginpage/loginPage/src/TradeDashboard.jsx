@@ -124,13 +124,20 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [stopLoss, setStopLoss]=useState({
     "": ''
   })
+  const [TSL, setTSL]=useState({
+    "": ''
+  })
   const [trailingStopLoss, setTrailingStopLoss]=useState({
     "": ''
   })
-  const trailingStopLossRef=useRef(trailingStopLoss)
+  const trailingStopLossRef=useRef(trailingstoploss)
   useEffect(()=>{
-    trailingStopLossRef.current=trailingStopLoss
-  },[trailingStopLoss])
+    trailingStopLossRef.current=trailingstoploss
+  },[trailingstoploss])
+  const TSLRef=useRef(TSL)
+  useEffect(()=>{
+    TSLRef.current=TSL
+  },[TSL])
   const stopLossRef=useRef(stopLoss)
   useEffect(()=>{
     stopLossRef.current=stopLoss
@@ -507,13 +514,13 @@ useEffect(()=>{
           
           fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
             const currentToken=p.instrument_token
-            console.log(stopLossRef.current, p)
-            
+            // console.log(stopLossRef.current,)
+            console.log(trailingStopLossRef, TSLRef)
             //trailing stop loss
             if(Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, Number(p.instrument_token))&&trailingStopLossRef.current[currentToken]==true){
               if(String(p.instrument_token)===String(tick.instrument_token)){
                 console.log("test",stopLossRef.current[currentToken], trailingStopLossRef.current[currentToken])
-              if(Number(stopLossRef.current[currentToken])+1<String(tick.last_price)){
+              if(Number(TSLRef.current[currentToken])(TSL)<String(tick.last_price)){
                 setStopLoss(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-1)}})
               }
               }
@@ -960,7 +967,7 @@ useEffect(()=>{
 <Tradebook tradebook={tradebook}  />
             }
 {positions &&   
-<Positions maindata exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
+<Positions maindata exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} tslValue={TSL} setTslValue={setTSL} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
 }
 {funds &&   
 <Funds data={margin} />
