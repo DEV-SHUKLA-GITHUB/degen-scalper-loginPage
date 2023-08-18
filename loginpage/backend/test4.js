@@ -10,7 +10,7 @@ const a = async () => {
   kc.setAccessToken(access_token);
   // const positions=await kc.getPositions()
   kc.placeOrder('regular', {
-    "exchange": "NFO",
+    "exchange": "NSE",
     "tradingsymbol": 'ITC',
     "transaction_type": 'SELL',
     "quantity": 1,
