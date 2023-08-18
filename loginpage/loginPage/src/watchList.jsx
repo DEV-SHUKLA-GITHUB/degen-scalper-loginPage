@@ -52,12 +52,12 @@ const WatchList = (props) => {
   const peData = data.filter(value => value.name.includes("PE"));
 
   return (
-    <div className='w-full h-screen border-black border-2 p-4'>
+    <div className='w-full h-screen border-black border-2 '>
       <div className='mb-4'>
         <CustomCombobox options={tradingsymbols} onChange={handleClick} />
-        <button className='ml-4 bg-blue-500 text-white py-2 px-4 rounded' onClick={resetData}>
+        {/* <button className='ml-4 bg-blue-500 text-white py-2 px-4 rounded' onClick={resetData}>
           Reset
-        </button>
+        </button> */}
       </div>
       <div className='h-1/2 border-b-2 border-black overflow-y-auto'>
         <h2 className='mb-2'>CE Section</h2>

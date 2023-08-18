@@ -27,6 +27,7 @@
     "otp-generator": "^4.0.1",
     "puppeteer": "^20.7.4",
     "shortid": "^2.2.16",
+    "smooth-scrollbar-react": "^2.4.1",
     "socket.io": "^4.7.1",
     "socket.io-client": "^4.7.1",
     "totp-generator": "^0.0.14",

@@ -1,12 +1,14 @@
-import { Fragment, useState } from 'react';
-import { Menu, Transition } from '@headlessui/react';
-import { FaChevronDown } from 'react-icons/fa';
+import { Fragment, useState } from "react";
+import { Menu, Transition } from "@headlessui/react";
+import { FaChevronDown } from "react-icons/fa";
+
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 export default function Dropdown(props) {
+  
   const [selectedOption, setSelectedOption] = useState(
     props.itemList && props.itemList.length > 0 ? props.itemList[0].value : null
   );
@@ -23,15 +25,20 @@ export default function Dropdown(props) {
 
   return (
     <div className="max-w-sm ">
-      <label className="block text-sm font-medium text-gray-700">{props.label}</label>
+      <label className="block text-sm font-medium text-gray-700 bg-green-500">
+        {props.label}
+      </label>
       <div className="relative inline-block text-right">
         <div>
           <Menu>
             {({ open }) => (
               <>
-                <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-gray-400 shadow-sm border border-gray-400 hover:border-green-500">
                   {selectedOption === null ? props.heading : selectedOption}
-                  <FaChevronDown className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+                  <FaChevronDown
+                    className="-mr-1 h-5 w-3 text-gray-400"
+                    aria-hidden="true"
+                  />
                 </Menu.Button>
 
                 <Transition
@@ -46,17 +53,20 @@ export default function Dropdown(props) {
                 >
                   <Menu.Items
                     static
-                    className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md  shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    className="absolute bg-transparent overflow-hidden border-gray-700 right-0 z-10 mt-2 w-full origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >
-                    <div className="py-1">
+              
+                    <div className="max-h-44 overflow-y-auto ">
                       {itemList.map((item) => (
                         <Menu.Item key={item.value}>
                           {({ active }) => (
                             <a
                               href="#"
                               className={classNames(
-                                active ? 'bg-gray-100 text-white' : 'text-gray-700',
-                                'block px-4 py-2 text-sm'
+                                active
+                                  ? "bg-gray-700 bg-black"
+                                  : "text-gray-400",
+                                "block px-4 py-2 text-sm border border-gray-700"
                               )}
                               onClick={() => handleOptionSelect(item.value)}
                             >

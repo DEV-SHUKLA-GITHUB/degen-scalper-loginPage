@@ -15,3 +15,36 @@
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover
 }
+.trade{
+    background-image: linear-gradient(to right top, #000000, #1a1a1a, #2d2d2d, #414141, #575757);
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover
+}
+
+.absolute {
+    position: absolute;
+  }
+  
+  /* Customize the scrollbar track */
+  .overflow-auto {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent; /* Customize this as needed */
+  }
+  
+  /* Customize the scrollbar thumb */
+  .overflow-auto::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2); /* Customize this as needed */
+    border-radius: 10px;
+  }
+  
+  /* Customize the scrollbar track */
+  .overflow-auto::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  
+  /* Other styles for the dropdown menu */
+  .bg-transparent {
+    background-color: transparent;
+    /* Add more styles as needed */
+  }
