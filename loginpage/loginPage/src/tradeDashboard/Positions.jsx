@@ -6,7 +6,7 @@ import { API_URL } from '../dynamicRoutes';
 const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInstrumentToken, setSelectedInstrumentToken] = useState(null);
-  const [tsl, setTsl] = useState(true);
+  const [tsl, setTsl] = useState(false);
   const [stoploss, setStoploss] = useState(false);
   const [trailingstoploss, setTrailingstoploss] = useState(false);
 
@@ -155,6 +155,8 @@ const Positions = (props) => {
     console.log(props.stopLossValue,"value")
     console.log(price,trigger_price)
     stopLossOrder(selectedInstrumentToken,price,trigger_price)
+     setTsl(true);
+
     if (stopLossValue) {
       setIsModalOpen(false);
 
@@ -221,10 +223,10 @@ const Positions = (props) => {
                         <td className='text-center'>{item.product}</td>
                         <td className='text-center'>{item.quantity}</td>
                         <td className='text-center'>
-                          {props.stopLossValue[item.instrument_token.price]}
+                          {tsl && props.stopLossValue[item.instrument_token].price||""}
                         </td>
                         <td className='text-center'>
-                          {props.stopLossValue[item.instrument_token.trigger_price]}
+                        {tsl && props.stopLossValue[item.instrument_token].trigger_price||""}
                         </td>
                         <td className='text-center'>
                           <button
