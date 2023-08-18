@@ -15,9 +15,11 @@ import { API_URL, SOCKET_API_URL } from "./dynamicRoutes";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { AiOutlineArrowUp } from "react-icons/ai";
+import {Scrollbar} from 'smooth-scrollbar-react'
 import { AiOutlineArrowDown } from "react-icons/ai";
 const TradeDashboard = () => {
   // var instrumentToken;
+  const scrollbar = useRef(null)
   const [errorMessage, setErrorMessage] = useState();
   const [instrumentToken, setInstrumentToken] = useState();
   const instrumentTokenRef = useRef(instrumentToken);
@@ -833,7 +835,23 @@ const TradeDashboard = () => {
         </div>
 
         <div className="h-full w-3/4    flex items-center justify-center">
-          <div className="flex h-1/2 w-5/6  p-2 shadow-inner shadow-gray-500 rounded-lg"></div>
+          <div className="flex h-1/2 w-5/6 gap-2 p-2 shadow-inner shadow-gray-500 rounded-lg justify-center items-center">
+          <Dropdown
+          
+          heading=" Call Strike Price"
+          itemList={strikeList}
+          value={selectedOption4}
+          onSelect={setSelectedOption4}
+        />
+         
+         <Dropdown
+          
+          heading=" Put Strike Price"
+          itemList={strikeList}
+          value={selectedOption4}
+          onSelect={setSelectedOption4}
+        />
+          </div>
         </div>
       </div>
     </div>

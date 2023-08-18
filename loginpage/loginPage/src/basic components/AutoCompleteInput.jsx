@@ -31,10 +31,10 @@ const CustomCombobox = ({ options, onChange }) => {
 
   return (
     <Combobox value={selected} onChange={handleSelect}>
-      <div className="relative mt-1 ">
-        <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+      <div className="relative  ">
+        <div className="relative w-full cursor-default overflow-hidden  text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
           <Combobox.Input
-            className="w-full border-none py-2 pl-3 pr-10 color-white text-sm leading-5 text-gray-900 focus:ring-0"
+            className="w-full shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]  bg-gray-400 border-none py-2 pl-3 pr-10 color-transparent text-sm leading-5 text-gray-900 focus:ring-0"
             displayValue={(option) => option.name}
             onChange={(event) => setQuery(event.target.value)}
           />
