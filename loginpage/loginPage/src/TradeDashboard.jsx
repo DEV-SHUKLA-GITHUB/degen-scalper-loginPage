@@ -124,20 +124,13 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [stopLoss, setStopLoss]=useState({
     "": ''
   })
-  const [TSL, setTSL]=useState({
-    "": ''
-  })
   const [trailingStopLoss, setTrailingStopLoss]=useState({
     "": ''
   })
-  const trailingStopLossRef=useRef(trailingstoploss)
+  const trailingStopLossRef=useRef(trailingStopLoss)
   useEffect(()=>{
-    trailingStopLossRef.current=trailingstoploss
-  },[trailingstoploss])
-  const TSLRef=useRef(TSL)
-  useEffect(()=>{
-    TSLRef.current=TSL
-  },[TSL])
+    trailingStopLossRef.current=trailingStopLoss
+  },[trailingStopLoss])
   const stopLossRef=useRef(stopLoss)
   useEffect(()=>{
     stopLossRef.current=stopLoss
@@ -514,13 +507,13 @@ useEffect(()=>{
           
           fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
             const currentToken=p.instrument_token
-            // console.log(stopLossRef.current,)
-            console.log(trailingStopLossRef, TSLRef)
+            // console.log(stopLossRef.current, p)
+            
             //trailing stop loss
             if(Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, Number(p.instrument_token))&&trailingStopLossRef.current[currentToken]==true){
               if(String(p.instrument_token)===String(tick.instrument_token)){
-                console.log("test",stopLossRef.current[currentToken], trailingStopLossRef.current[currentToken])
-              if(Number(TSLRef.current[currentToken])(TSL)<String(tick.last_price)){
+                console.log(stopLossRef.current[currentToken])
+              if(Number(stopLossRef.current[currentToken])+1<String(tick.last_price)){
                 setStopLoss(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-1)}})
               }
               }
@@ -530,12 +523,9 @@ useEffect(()=>{
               if(p.quantity>0){
                 if(Number(tick.last_price)==Number(stopLossRef.current[Number(p.instrument_token)])){
                   exit(p.tradingsymbol)
-                  setTrailingStopLoss(prev=>{
-                    return  {...prev, [currentToken]:false}
-                  })
-                  setStopLoss(prev=>{
-                    return  {...prev, [currentToken]:"0"}
-                  })
+                setStopLoss(prev=>{
+                  return  {...prev, [currentToken]:"0"}
+                })
 
                 }
               }
@@ -907,7 +897,7 @@ useEffect(()=>{
         <div>
         <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" 
          onClick={()=>{placeOrder("SELL","CE"),setCallType("CE")}}>
-       <div className='flex'> <AiOutlineArrowLeft className='mt-1.5 mr-2'/> SELL call</div> 
+       <div className='flex'> <AiOutlineArrowLeft className='mt-1.5 mr-2'/> Buy call</div> 
       </button>
       <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
        onClick={()=>{placeOrder("BUY","CE"),setCallType("CE")}}>
@@ -925,7 +915,7 @@ useEffect(()=>{
         <div>
         <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
         onClick={()=>{placeOrder("BUY","PE"),setCallType("PE")}} >
-        <div className='flex'>BUY Put  <AiOutlineArrowDown className='mt-1.5 ml-2'/></div>
+        <div className='flex'>Sell Put  <AiOutlineArrowDown className='mt-1.5 ml-2'/></div>
       </button>
       <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
       onClick={()=>{placeOrder("SELL","PE"),setCallType("PE")}} > 
@@ -967,7 +957,7 @@ useEffect(()=>{
 <Tradebook tradebook={tradebook}  />
             }
 {positions &&   
-<Positions maindata exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} tslValue={TSL} setTslValue={setTSL} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
+<Positions exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
 }
 {funds &&   
 <Funds data={margin} />
