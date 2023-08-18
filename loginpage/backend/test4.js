@@ -8,37 +8,37 @@ const api_key = "elrfps73mpn9aou4";
 const a = async () => {
   const kc = new KiteConnect({ api_key });
   kc.setAccessToken(access_token);
-  // const positions=await kc.getPositions()
-  kc.placeOrder('regular', {
-    "exchange": "NSE",
-    "tradingsymbol": 'ITC',
-    "transaction_type": 'SELL',
-    "quantity": 1,
-    "product": 'MIS',
-    "order_type": "SL-M",
-    validity:"DAY",
-    price:400,
-    trigger_price:430
-}).then(async function(resp) {
-    console.log("33",resp);
-    const orderbook=await kite.getOrders()
-    if(orderbook[orderbook.length-1].status==="COMPLETE"){
+  const positions=await kc.getOrders()
+//   kc.placeOrder('regular', {
+//     "exchange": "NSE",
+//     "tradingsymbol": 'ITC',
+//     "transaction_type": 'SELL',
+//     "quantity": 1,
+//     "product": 'MIS',
+//     "order_type": "SL-M",
+//     validity:"DAY",
+//     price:400,
+//     trigger_price:430
+// }).then(async function(resp) {
+//     console.log("33",resp);
+//     const orderbook=await kite.getOrders()
+//     if(orderbook[orderbook.length-1].status==="COMPLETE"){
 
-        // res.send({status:true,data:resp});
-    }
-    else{
+//         // res.send({status:true,data:resp});
+//     }
+//     else{
         
-        // res.send({status:false, data:{message:"Maybe due to insufficient funds. Check your balance and all the input fields again. ;)"}});
+//         // res.send({status:false, data:{message:"Maybe due to insufficient funds. Check your balance and all the input fields again. ;)"}});
 
-    }
-}).catch(err=>{
-    console.log(err)
-    // res.send({status:false,data:err})
-})
+//     }
+// }).catch(err=>{
+//     console.log(err)
+//     // res.send({status:false,data:err})
+// })
 
 
 
-  // console.log(positions)
+  console.log(positions)
   // const tradeBook=kc.getTrades()
   // let buy=0, sell=0
   // tradeBook.map(trade=>{

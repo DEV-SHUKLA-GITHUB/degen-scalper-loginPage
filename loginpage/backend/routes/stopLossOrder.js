@@ -17,7 +17,17 @@ router.post("/", async (req, res) => {
 
         const kite = new KiteConnect({ api_key });
         kite.setAccessToken(access_token);
+        const orderbook=await kite.getOrders()
+        console.log(typeof orderbook, orderbook)
+        orderbook.map(order=>{
+            if(order.tradingsymbol===symbol && order.status==="TRIGGER PENDING"){
+                kite.cancelOrder("regular", order.order_id)
+            }
+        })
         function regularOrderPlace(variety) {
+
+
+
             kite.placeOrder(variety, {
                     exchange,
                     "tradingsymbol": symbol,

@@ -79,6 +79,8 @@ const Positions = (props) => {
         exchange=item.exchange
       }
     })[0]
+
+    
     
     
     
@@ -103,10 +105,10 @@ const Positions = (props) => {
       .then((res) => res.json())
       .then((data) => {
         if(data.status == true){
-          console.log(data.data)
+          console.log("id",data.data)
           props.setStopLossValue({
             ...props.stopLossValue,
-            [selectedInstrumentToken]: {id:data.data},
+            [selectedInstrumentToken]: {id:data.data.order_id},
           })
           console.log("stop loss order placed")
           toast.success("stop loss order Placed", {
