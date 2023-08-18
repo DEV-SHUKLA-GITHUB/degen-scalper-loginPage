@@ -76,7 +76,7 @@ const Positions = (props) => {
   
   const stopLossOrder = (token, price, trigger_price)=> {
 
-    let symbol,qty,transaction_type,product;
+    let symbol,qty,transaction_type,product,exchange;
 
     props.Positions['day'].map(item=>{
       if(String(item.instrument_token)===String(token)){
@@ -84,6 +84,7 @@ const Positions = (props) => {
         qty=item.quantity
         transaction_type=item.quantity>0?"SELL":"BUY"
         product=item.product
+        exchange=item.exchange
       }
     })[0]
     
@@ -102,7 +103,8 @@ const Positions = (props) => {
         product,
         variety: "regular",
         price, 
-        trigger_price
+        trigger_price,
+        exchange
         
       }),
     })
