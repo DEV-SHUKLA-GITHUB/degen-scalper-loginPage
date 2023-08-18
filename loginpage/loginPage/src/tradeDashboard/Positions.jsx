@@ -7,7 +7,8 @@ const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInstrumentToken, setSelectedInstrumentToken] = useState(null);
   const [tsl, setTsl] = useState(true);
-
+  const [price, setPrice] = useState();
+  const [trigger_price, setTrigger_price] = useState();
   function exitHandler(symbol) {
     console.log(symbol);
     try {
@@ -64,10 +65,86 @@ const Positions = (props) => {
     });
     setTsl(!tsl);
   };
+  
+  const stopLossOrder = (token, price, trigger_price)=> {
+
+    let symbol,qty,transaction_type,product;
+
+    props.Positions['day'].map(item=>{
+      if(String(item.instrument_token)===String(token)){
+        symbol=item.tradingsymbol
+        qty=item.quantity
+        transaction_type=item.quantity>0?"SELL":"BUY"
+        product=item.product
+      }
+    })[0]
+    
+    
+    
+    try{fetch(`${API_URL}/stopLossOrder`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: window.localStorage.getItem("token"),
+        symbol,
+        qty,
+        transaction_type,
+        product,
+        variety: "regular",
+        price, 
+        trigger_price
+        
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if(data.status == true){
+          console.log(data.data)
+          props.setStopLossValue({
+            ...props.stopLossValue,
+            [selectedInstrumentToken]: {id:data.data},
+          })
+          console.log("stop loss order placed")
+          toast.success("stop loss order Placed", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        }else{
+          toast.error(data.data.message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        }
+        // handleClick(selectedOption1)
+  })}
+  catch(err) {
+    console.log("request error: " + err)
+  }
+}
 
   const handleModalConfirm = (instrumentToken) => {
     const stopLossValue = props.stopLossValue[instrumentToken];
-
+    props.setStopLossValue({
+      ...props.stopLossValue,
+      [selectedInstrumentToken]: {price:price,trigger_price:trigger_price},//set price and trigger_price
+    })
+    console.log(props.stopLossValue,"value")
+    console.log(price,trigger_price)
+    stopLossOrder(selectedInstrumentToken,price,trigger_price)
     if (stopLossValue) {
       setIsModalOpen(false);
 
@@ -128,12 +205,12 @@ const Positions = (props) => {
                     return (
                       
                       <tr key={index}>
-                        {console.log(props.Positions,"pos")}
+                        {/* {console.log(props.Positions,"pos")} */}
                         <td className='text-center'>{item.tradingsymbol}</td>
                         <td className='text-center'>{item.product}</td>
                         <td className='text-center'>{item.quantity}</td>
                         <td className='text-center'>
-                          {props.stopLossValue[item.instrument_token]}
+                          {/* {props.stopLossValue[item.instrument_token]} */}
                         </td>
                         <td className='text-center'>
                           <button
@@ -187,11 +264,20 @@ const Positions = (props) => {
             <input
               type='text'
               id='stopLossInput'
-              value={props.stopLossValue[selectedInstrumentToken] || ''}
-              onChange={(e) => props.setStopLossValue({
-                ...props.stopLossValue,
-                [selectedInstrumentToken]: e.target.value,
-              })}
+              // value={props.stopLossValue[selectedInstrumentToken] || ''}
+              onChange={(e) => { setPrice(e.target.value)
+              }}
+              className='w-full px-2 py-1 border rounded mb-4'
+            />
+            <label htmlFor='stopLossInput' className='block mb-2'>
+              Stop Loss Trigger Value:
+            </label>
+            <input
+              type='text'
+              id='stopLossTriggerInput'
+              // value={}
+              onChange={(e) => {setTrigger_price(e.target.value)
+              }}
               className='w-full px-2 py-1 border rounded mb-4'
             />
             <div className='flex justify-end'>
@@ -203,6 +289,7 @@ const Positions = (props) => {
               </button>
               <button
                 onClick={() => {
+
                   setIsModalOpen(false);
                   setSelectedInstrumentToken(null);
                 }}
