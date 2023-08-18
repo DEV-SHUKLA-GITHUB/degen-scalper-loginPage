@@ -834,7 +834,7 @@ const TradeDashboard = () => {
         <WatchList tokens={arrayOfTokens} add={changeArrayOfToken} ticks={ticksData}/>
         </div>
 
-        <div className="h-full w-3/4    flex items-center justify-center">
+        <div className="h-full w-3/4 items-center justify-center">
           <div className="flex h-1/2 w-5/6 gap-2 p-2 shadow-inner shadow-gray-500 rounded-lg justify-center items-center">
           <Dropdown
           
@@ -851,6 +851,48 @@ const TradeDashboard = () => {
           value={selectedOption4}
           onSelect={setSelectedOption4}
         />
+          </div>
+          <div className="flex h-1/2 w-5/6  shadow-inner shadow-gray-500 rounded-lg ">
+          <div className="w-full">
+   <div className="flex w-full mt-4 border-b-4 border-pink-300 ">
+      <button
+        className={` font-medium w-1/4 h-10 border-0 border-white rounded ${positionButtonClicked ? 'bg-pink-200' : ''}`}
+        onClick={handlePositionClick}
+      >
+        positions
+      </button>
+      <button
+        className={`font-medium w-1/4 h-10 border-0 rounded ${orderBookButtonClicked ? 'bg-pink-200' : ''}`}
+        onClick={handleOrderBookClick}
+      >
+        Order Book
+      </button>
+      <button
+        className={` font-medium w-1/4 h-10 border-0 rounded ${tradeBookButtonClicked ? 'bg-pink-200' : ''}`}
+        onClick={handleTradeBookClick}
+      >
+        Trade Book
+      </button>
+      <button
+        className={` font-medium w-1/4 h-10 border-0 rounded ${FundsButtonClicked ? 'bg-pink-200' : ''}`}
+        onClick={handleFundsClick}
+      >
+        Funds
+      </button>
+    </div>
+{orderBook && 
+<Orderbook orderbook={orderbook}  />
+            }
+{TradeBook && 
+<Tradebook tradebook={tradebook}  />
+            }
+{positions &&   
+<Positions exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
+}
+{funds &&   
+<Funds data={margin} />
+}
+   </div>
           </div>
         </div>
       </div>

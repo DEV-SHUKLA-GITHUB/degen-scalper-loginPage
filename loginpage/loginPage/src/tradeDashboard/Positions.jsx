@@ -110,7 +110,7 @@ const Positions = (props) => {
         <h2 className='font-bold'>Net Qty: 0</h2>
         <h2 className='font-bold'>MTM: 32055.50</h2>
       </div>
-      <div className='w-7/8 border-black'>
+      <div className='w-full border-black'>
         <div>
           <table>
             <thead className='bg-blue-100 border-2 border-black w-screen'>
