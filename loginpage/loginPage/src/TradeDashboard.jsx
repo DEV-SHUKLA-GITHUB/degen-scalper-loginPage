@@ -505,45 +505,45 @@ useEffect(()=>{
           // }
           //stop loss 
           
-          // fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
-          //   const currentToken=p.instrument_token
-            // console.log(stopLossRef.current, p)
+          fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
+            const currentToken=p.instrument_token
+            console.log(stopLossRef.current, p)
             
             //trailing stop loss
-            // if(Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, Number(p.instrument_token))&&trailingStopLossRef.current[currentToken]==true){
-            //   if(String(p.instrument_token)===String(tick.instrument_token)){
-            //     console.log("test",stopLossRef.current[currentToken], trailingStopLossRef.current[currentToken])
-            //   if(Number(stopLossRef.current[currentToken])+1<String(tick.last_price)){
-            //     setStopLoss(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-1)}})
-            //   }
-            //   }
-            // }
+            if(Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, Number(p.instrument_token))&&trailingStopLossRef.current[currentToken]==true){
+              if(String(p.instrument_token)===String(tick.instrument_token)){
+                console.log("test",stopLossRef.current[currentToken], trailingStopLossRef.current[currentToken])
+              if(Number(stopLossRef.current[currentToken])+1<String(tick.last_price)){
+                setStopLoss(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-1)}})
+              }
+              }
+            }
 
-            // if(Object.prototype.hasOwnProperty.call(stopLossRef.current, Number(p.instrument_token))&&stopLossRef.current[currentToken]!="0"){if(String(p.instrument_token)===String(tick.instrument_token)){
-            //   if(p.quantity>0){
-            //     if(Number(tick.last_price)==Number(stopLossRef.current[Number(p.instrument_token)])){
-            //       exit(p.tradingsymbol)
-            //       setTrailingStopLoss(prev=>{
-            //         return  {...prev, [currentToken]:false}
-            //       })
-            //       setStopLoss(prev=>{
-            //         return  {...prev, [currentToken]:"0"}
-            //       })
+            if(Object.prototype.hasOwnProperty.call(stopLossRef.current, Number(p.instrument_token))&&stopLossRef.current[currentToken]!="0"){if(String(p.instrument_token)===String(tick.instrument_token)){
+              if(p.quantity>0){
+                if(Number(tick.last_price)==Number(stopLossRef.current[Number(p.instrument_token)])){
+                  exit(p.tradingsymbol)
+                  setTrailingStopLoss(prev=>{
+                    return  {...prev, [currentToken]:false}
+                  })
+                  setStopLoss(prev=>{
+                    return  {...prev, [currentToken]:"0"}
+                  })
 
-            //     }
-            //   }
-            // else if(p.quantity<0){
-            //   console.log("sell")
+                }
+              }
+            else if(p.quantity<0){
+              console.log("sell")
 
-            //   if(Number(tick.last_price)>=Number(stopLossRef.current[Number(p.instrument_token)])){
-            //     exit(p.tradingsymbol)
-            //     setStopLoss(prev=>{
-            //       return  {...prev, [currentToken]:"0"}
-            //     })
-            //   }
-            // }
-            // }}
-          // })
+              if(Number(tick.last_price)>=Number(stopLossRef.current[Number(p.instrument_token)])){
+                exit(p.tradingsymbol)
+                setStopLoss(prev=>{
+                  return  {...prev, [currentToken]:"0"}
+                })
+              }
+            }
+            }}
+          })
 
           //ltp and pnl of positions
         //   if(fetchedPositionsRef.current!=undefined){
