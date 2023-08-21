@@ -8,20 +8,20 @@ const Funds = (props) => {
     // <div>{props.data&&props.data.equity.available.cash}</div>
     // console.log(props.data)
     // hell0
-    <div className='w-full border-black'>
-    <div >
+    <div className='w-full text-[#BABABA] text-lg'>
+    <div  >
       <table >
-        <thead className='bg-blue-100 border-2 border-black w-screen'>
+        <thead className=' w-screen'>
           <tr className=''>
-            <th className='text-center border-2 border-black'>Available Cash</th>
-            <th className='text-center border-2 border-black'>Live balance</th>
-            <th className='text-center border-2 border-black'>Opening balance</th>
-            <th className='text-center border-2 border-black'>debits</th>
-            <th className='text-center border-2 border-black'>equity</th>
-            <th className='text-center border-2 border-black'>exposure</th>
-            <th className='text-center border-2 border-black'>holding sales</th>
-            <th className='text-center border-2 border-black'>adhoc margin</th>
-            <th className='text-center border-2 border-black'>intraday payin</th>
+            <th className='w-1/12 text-center'>Available Cash</th>
+            <th className='w-1/12 text-center'>Live balance</th>
+            <th className='w-1/12 text-center'>Opening balance</th>
+            <th className='w-1/12 text-center'>debits</th>
+            <th className='w-1/12 text-center'>equity</th>
+            <th className='w-1/12 text-center'>exposure</th>
+            <th className='w-1/12 text-center'>holding sales</th>
+            <th className='w-1/12 text-center'>adhoc margin</th>
+            <th className='w-1/12 text-center'>intraday payin</th>
           </tr>
         </thead>
         <tbody>

@@ -6,9 +6,14 @@ import { API_URL } from '../dynamicRoutes';
 const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInstrumentToken, setSelectedInstrumentToken] = useState(null);
-  const [tsl, setTsl] = useState(true);
+  const [tsl, setTsl] = useState(false);
+  const [val, setval] = useState(false);
+  const [stoploss, setStoploss] = useState(false);
+  const [trailingstoploss, setTrailingstoploss] = useState(false);
+
   const [price, setPrice] = useState();
   const [trigger_price, setTrigger_price] = useState();
+  const [tslRatio, setTslRatio] = useState();
   function exitHandler(symbol) {
     console.log(symbol);
     try {
@@ -63,11 +68,6 @@ const Positions = (props) => {
     setSelectedInstrumentToken(instrumentToken);
     setTrailingstoploss(true)
     setIsModalOpen(true);
-    // props.setTrailingStopLoss({
-    //   ...props.trailingStopLoss,
-    //   [instrumentToken]: !tsl,
-    // });
-    // setTsl(!tsl);
 
   };
   
@@ -154,6 +154,8 @@ const Positions = (props) => {
     console.log(props.stopLossValue,"value")
     console.log(price,trigger_price)
     stopLossOrder(selectedInstrumentToken,price,trigger_price)
+     setval(true);
+
     if (stopLossValue) {
       setIsModalOpen(false);
 
@@ -182,29 +184,65 @@ const Positions = (props) => {
       });
     }
   };
+  const handleTslModalConfirm = (instrumentToken) => {
+    props.setTrailingStopLoss({
+      ...props.trailingStopLoss,
+      [selectedInstrumentToken]: {value:tslRatio,status:tsl},//set price and trigger_price
+    })
+    if (tslRatio) {
+      console.log(props.trailingStopLoss)
+      setIsModalOpen(false);
+
+      // Display a success message
+      toast.success('Trailing Stop loss set successfully', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+    } else {
+      // Display an error message if the input value is empty
+      toast.error('Please enter a valid Trailing stop loss value', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+    }
+  };
 
   return (
-    <div className='w-full'>
+    <div className='w-full bg-transparent text-[#BABABA] text-lg h-full'>
       <div className='flex justify-around mt-2'>
         <h2 className='font-bold'>Net Qty: 0</h2>
         <h2 className='font-bold'>MTM: 32055.50</h2>
       </div>
-      <div className='w-full border-black'>
+      <div className='w-full border-t-2  '>
         <div>
           <table>
-            <thead className='bg-blue-100 border-2 border-black w-screen'>
+            <thead className='bg-transparent w-screen'>
               <tr>
-                <th className='text-center border-2 border-black'>Symbol Name</th>
-                <th className='text-center border-2 border-black'>Product</th>
-                <th className='text-center border-2 border-black'>NET Qty</th>
-                <th className='text-center border-2 border-black'>SL</th>
-                <th className='text-center border-2 border-black'>SL Button</th>
-                <th className='text-center border-2 border-black'>TSL</th>
-                <th className='text-center border-2 border-black'>TSL Button</th>
-                <th className='text-center border-2 border-black'>LTP</th>
-                <th className='text-center border-2 border-black'>P&L</th>
-                <th className='text-center border-2 border-black'>Avg Price</th>
-                <th className='text-center border-2 border-black'>Exit</th>
+                <th className='w-1/12 text-center'>Product</th>
+                <th className='w-1/12 text-center'>Symbol Name</th>
+                <th className='w-1/12 text-center'>NET Qty</th>
+                <th className='w-1/12 text-center'>SL</th>
+                <th className='w-1/12 text-center'>SL</th>
+                <th className='w-1/12 text-center'>SL Button</th>
+                <th className='w-1/12 text-center'>TSL</th>
+                <th className='w-1/12 text-center'>TSL</th>
+                <th className='w-1/12 text-center'>TSL Button</th>
+                <th className='w-1/12 text-center'>LTP</th>
+                <th className='w-1/12 text-center'>P&L</th>
+                <th className='w-1/12 text-center'>Avg Price</th>
+                <th className='w-1/12 text-center'>Exit</th>
               </tr>
             </thead>
             <tbody>
@@ -219,7 +257,10 @@ const Positions = (props) => {
                         <td className='text-center'>{item.product}</td>
                         <td className='text-center'>{item.quantity}</td>
                         <td className='text-center'>
-                          {/* {props.stopLossValue[item.instrument_token]} */}
+                          {/* {(val && props.stopLossValue[item.instrument_token].price)||""} */}
+                        </td>
+                        <td className='text-center'>
+                        {/* {(val && props.stopLossValue[item.instrument_token].trigger_price)||""} */}
                         </td>
                         <td className='text-center'>
                           <button
@@ -230,7 +271,23 @@ const Positions = (props) => {
                           </button>
                         </td>
                         <td className='text-center'>
-                        {props.trailingStopLoss[item.instrument_token]}
+                        {/* {props.trailingStopLoss[item.instrument_token]} */}
+                        </td>
+                        <td className='text-center'>
+                          <button
+                            onClick={() => {
+                              setTsl(!tsl)
+                              props.setTrailingStopLoss({
+                                ...props.trailingStopLoss,
+                                [item.instrument_token]: {value:tslRatio,status:tsl},//set price and trigger_price
+                              })
+                              console.log(props.trailingStopLoss)
+                            }}
+                            type='radio'
+                            // className='bg-blue-500 text-white px-2 py-1 rounded'
+                          >
+                            TSL Button
+                          </button>
                         </td>
                         <td className='text-center'>
                           <button
@@ -265,7 +322,7 @@ const Positions = (props) => {
         
         <div className='fixed inset-0 flex items-center justify-center z-50'>
           <div className='bg-white p-6 rounded-lg shadow-lg'>
-            {console.log(selectedInstrumentToken,"selected instrument token")}
+            {/* {console.log(selectedInstrumentToken,"selected instrument token")} */}
             {stoploss&&<div>
               <h2 className='text-lg font-semibold mb-4'>Set Stop Loss</h2>
             <label htmlFor='stopLossInput' className='block mb-2'>
@@ -317,19 +374,16 @@ const Positions = (props) => {
             <input
               type='text'
               id='trailingstopLossInput'
-              value={props.trailingStopLoss[selectedInstrumentToken] || ''}
-              onChange={(e) => props.setTrailingStopLoss({
-                ...props.trailingStopLoss,
-                [selectedInstrumentToken]: e.target.value,
-              })}
+              // value={props.trailingStopLoss[selectedInstrumentToken] || ''}
+              onChange={(e) => setTslRatio(e.target.value)}
               className='w-full px-2 py-1 border rounded mb-4'
             />
             {/* {console.log(props.trailingStopLoss,"tsl")} */}
             <div className='flex justify-end'>
               <button
-                onClick={() => setIsModalOpen(false)}
-                  //  handleModalConfirm(selectedInstrumentToken)
-                  
+                onClick={() => {
+                   handleTslModalConfirm(selectedInstrumentToken)
+            }}
                 className='bg-blue-500 text-white px-4 py-2 rounded mr-2'
               >
                 Confirm

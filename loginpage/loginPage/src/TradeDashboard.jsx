@@ -214,27 +214,25 @@ const instrumentTokenRef = useRef(instrumentToken);
   }
 
   const handleInputChange = (e) => {
-    setSelectedOption6(e.target.value);
-
-    const inputValue = e.target.value.trim(); 
-
-    if (qty==true && inputValue !== '') {
+    const inputValue = e.target.value;
+    console.log(typeof parseInt(inputValue))
+    setSelectedOption6(parseInt(inputValue));
+  
+    if (qty === true && inputValue !== '') {
       const intValue = parseInt(inputValue);
       const isMultiple = intValue % lotSize === 0;
       const isInRange = intValue >= lotSize && intValue <= lotSize * 36;
-console.log("qty")
+  
       if (!(isMultiple && isInRange)) {
         setErrorMessage('Please provide a valid quantity.');
       } else {
         setErrorMessage('');
       }
-    }
-    else if ( inputValue !== '') {
+    } else if (inputValue !== '') {
       const intValue = parseInt(inputValue);
       const isInRange = intValue >= 0 && intValue <= 36;
-      console.log("lot")
-
-      if (!(isInRange)) {
+  
+      if (!isInRange) {
         setErrorMessage('Please provide a valid quantity.');
       } else {
         setErrorMessage('');
@@ -243,6 +241,7 @@ console.log("qty")
       setErrorMessage('');
     }
   };
+  
 
   const updatePositions=()=>{
     fetch(`${API_URL}/updatePositions`, {
@@ -505,42 +504,42 @@ useEffect(()=>{
           // }
           //stop loss 
           
-          fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
-            const currentToken=p.instrument_token
+          // fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
+          //   const currentToken=p.instrument_token
             // console.log(stopLossRef.current, p)
             
             //trailing stop loss
-            if(Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, Number(p.instrument_token))&&trailingStopLossRef.current[currentToken]==true){
-              if(String(p.instrument_token)===String(tick.instrument_token)){
-                console.log(stopLossRef.current[currentToken])
-              if(Number(stopLossRef.current[currentToken])+1<String(tick.last_price)){
-                setStopLoss(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-1)}})
-              }
-              }
-            }
+          //   if(Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, Number(p.instrument_token))&&trailingStopLossRef.current[currentToken]==true){
+          //     if(String(p.instrument_token)===String(tick.instrument_token)){
+          //       console.log(stopLossRef.current[currentToken])
+          //     if(Number(stopLossRef.current[currentToken])+1<String(tick.last_price)){
+          //       setStopLoss(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-1)}})
+          //     }
+          //     }
+          //   }
 
-            if(Object.prototype.hasOwnProperty.call(stopLossRef.current, Number(p.instrument_token))&&stopLossRef.current[currentToken]!="0"){if(String(p.instrument_token)===String(tick.instrument_token)){
-              if(p.quantity>0){
-                if(Number(tick.last_price)==Number(stopLossRef.current[Number(p.instrument_token)])){
-                  exit(p.tradingsymbol)
-                setStopLoss(prev=>{
-                  return  {...prev, [currentToken]:"0"}
-                })
+          //   if(Object.prototype.hasOwnProperty.call(stopLossRef.current, Number(p.instrument_token))&&stopLossRef.current[currentToken]!="0"){if(String(p.instrument_token)===String(tick.instrument_token)){
+          //     if(p.quantity>0){
+          //       if(Number(tick.last_price)==Number(stopLossRef.current[Number(p.instrument_token)])){
+          //         exit(p.tradingsymbol)
+          //       setStopLoss(prev=>{
+          //         return  {...prev, [currentToken]:"0"}
+          //       })
 
-                }
-              }
-            else if(p.quantity<0){
-              console.log("sell")
+          //       }
+          //     }
+          //   else if(p.quantity<0){
+          //     console.log("sell")
 
-              if(Number(tick.last_price)>=Number(stopLossRef.current[Number(p.instrument_token)])){
-                exit(p.tradingsymbol)
-                setStopLoss(prev=>{
-                  return  {...prev, [currentToken]:"0"}
-                })
-              }
-            }
-            }}
-          })
+          //     if(Number(tick.last_price)>=Number(stopLossRef.current[Number(p.instrument_token)])){
+          //       exit(p.tradingsymbol)
+          //       setStopLoss(prev=>{
+          //         return  {...prev, [currentToken]:"0"}
+          //       })
+          //     }
+          //   }
+          //   }}
+          // })
 
           //ltp and pnl of positions
         //   if(fetchedPositionsRef.current!=undefined){
@@ -771,51 +770,91 @@ useEffect(()=>{
       </div>
 
       <div className="h-full w-3/4 items-center justify-center">
-        <div className="flex h-1/2 w-5/6 gap-2 p-2 shadow-inner shadow-gray-500 rounded-lg justify-center items-center">
+        <div className="flex h-1/2 w-full gap-2 p-2 shadow-inner shadow-gray-500 rounded-lg justify-center items-center">
         <Dropdown
         
-        heading=" Call Strike Price"
+        heading="Strike Price"
         itemList={strikeList}
         value={selectedOption4}
         onSelect={setSelectedOption4}
       />
-       
-       <Dropdown
-        
-        heading=" Put Strike Price"
-        itemList={strikeList}
-        value={selectedOption4}
-        onSelect={setSelectedOption4}
+<div className="flex">
+  <div className="flex flex-col">
+    <div className="relative flex items-center">
+      <button
+        className="px-3 py-2 bg-red-500 rounded-l text-white focus:outline-none"
+        onClick={() => handleInputChange({ target: { value: qty ? Math.max(selectedOption6 - parseInt(lotSize), lotSize) : (selectedOption6 - 1) } })}
+      >
+        -
+      </button>
+      <input
+        type="number"
+        placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
+        className="h-10 border-2 border-black rounded border-r-0 px-2 focus:outline-none focus:border-blue-500"
+        value={selectedOption6}
+        onChange={handleInputChange}
       />
+      <button
+        className="px-3 py-2 bg-green-500 rounded-r text-white focus:outline-none"
+        onClick={() => handleInputChange({ target: { value: qty ? selectedOption6 + parseInt(lotSize) : selectedOption6 + 1 } })}
+      >
+        +
+      </button>
+      <button
+        className={`px-3 py-2 bg-gray-300 rounded-r-l focus:outline-none ${
+          qty === true ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
+        }`}
+        onClick={handleQtyClick}
+      >
+        qty
+      </button>
+      <button
+        className={`px-3 py-2 bg-gray-300 rounded-r focus:outline-none ${
+          qty === false ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
+        }`}
+        onClick={handleLotClick}
+      >
+        lot
+      </button>
+      {errorMessage && <div className="text-red-500 mt-1">{errorMessage}</div>}
+</div>
+</div>
+</div>
+
+
+
+
         </div>
-        <div className="flex h-1/2 w-5/6  shadow-inner shadow-gray-500 rounded-lg ">
+        <div className="flex h-1/2 w-full ">
         <div className="w-full">
- <div className="flex w-full mt-4 border-b-4 border-pink-300 ">
-    <button
-      className={` font-medium w-1/4 h-10 border-0 border-white rounded ${positionButtonClicked ? 'bg-pink-200' : ''}`}
-      onClick={handlePositionClick}
-    >
-      positions
-    </button>
-    <button
-      className={`font-medium w-1/4 h-10 border-0 rounded ${orderBookButtonClicked ? 'bg-pink-200' : ''}`}
-      onClick={handleOrderBookClick}
-    >
-      Order Book
-    </button>
-    <button
-      className={` font-medium w-1/4 h-10 border-0 rounded ${tradeBookButtonClicked ? 'bg-pink-200' : ''}`}
-      onClick={handleTradeBookClick}
-    >
-      Trade Book
-    </button>
-    <button
-      className={` font-medium w-1/4 h-10 border-0 rounded ${FundsButtonClicked ? 'bg-pink-200' : ''}`}
-      onClick={handleFundsClick}
-    >
-      Funds
-    </button>
-  </div>
+<div className="flex w-full border-b-4 border-">
+  <button
+    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 border-white rounded-xl ${positionButtonClicked ? 'button-active' : ''} button-animation`}
+    onClick={handlePositionClick}
+  >
+    Positions
+  </button>
+  <button
+    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${orderBookButtonClicked ? 'button-active' : ''} button-animation`}
+    onClick={handleOrderBookClick}
+  >
+    Order Book
+  </button>
+  <button
+    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${tradeBookButtonClicked ? 'button-active' : ''} button-animation`}
+    onClick={handleTradeBookClick}
+  >
+    Trade Book
+  </button>
+  <button
+    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${FundsButtonClicked ? 'button-active' : ''} button-animation`}
+    onClick={handleFundsClick}
+  >
+    Funds
+  </button>
+</div>
+
+
 {orderBook && 
 <Orderbook orderbook={orderbook}  />
           }
@@ -823,7 +862,7 @@ useEffect(()=>{
 <Tradebook tradebook={tradebook}  />
           }
 {positions &&   
-<Positions maindata exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
+<Positions exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
 }
 {funds &&   
 <Funds data={margin} />

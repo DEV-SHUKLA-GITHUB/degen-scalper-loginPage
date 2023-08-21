@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
                     "transaction_type": transaction_type,
                     "quantity": qty,
                     "product": product,
-                    "order_type": "SL-M",
+                    "order_type": "SL",
                     validity:"DAY",
                     price,
                     trigger_price

@@ -48,3 +48,31 @@
     background-color: transparent;
     /* Add more styles as needed */
   }
+/* Define the animation classes */
+.button-animation {
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .button-active {
+    background-color: #0c0c0c; /* Change this color as needed */
+  }
+/* Define animation keyframes (optional) */
+@keyframes buttonFadeIn {
+    from {
+      background-color: transparent;
+    }
+    to {
+      background-color: #0c0c0c; /* Change this color as needed */
+    }
+  }
+  
+  .button-animation {
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .button-active {
+    animation: buttonFadeIn 0.3s ease-in-out;
+    background-color: #0c0c0c; /* Change this color as needed */
+    color: white;
+  }
+    

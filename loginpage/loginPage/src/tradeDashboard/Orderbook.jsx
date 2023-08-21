@@ -2,7 +2,7 @@ import React from 'react'
 
 const Orderbook = (props) => {
   return (
-    <div className="flex flex-col gap-4 bg-[#101013] text-white w-full h-full">
+    <div className="flex flex-col gap-4 bg-transparent text-white w-full h-full">
     {/* header - nifty time  */}
 
     <h2 className="font-bold text-2xl"></h2>
@@ -28,7 +28,7 @@ const Orderbook = (props) => {
           {/* use map here  */}
           {props.orderbook&&props.orderbook.map((item,index)=>{
             return (
-              <tr  className="bg-[#262832]  border-2 border-[#212126] w-screen" >
+              <tr  className="w-screen" >
               <th className='mr-10 p-10'>{item.tradingsymbol}</th>
               <td className='mr-10 p-10'>{item.order_timestamp.split('T')[0]}</td>
               <td className='mr-10 p-10'>{item.quantity}</td>
