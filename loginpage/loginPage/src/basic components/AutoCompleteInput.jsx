@@ -32,27 +32,27 @@ const CustomCombobox = ({ options, onChange }) => {
   return (
     <Combobox value={selected} onChange={handleSelect}>
       <div className="relative  ">
-        <div className="relative w-full cursor-default overflow-hidden  text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+        <div className="relative w-full cursor-default overflow-hidden  text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-green-500 sm:text-sm">
           <Combobox.Input
-            className="w-full shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]  bg-gray-400 border-none py-2 pl-3 pr-10 color-transparent text-sm leading-5 text-gray-900 focus:ring-0"
+            className="w-full shadow-[rgba(50,50,93,0.25)_0px_6px_12px_-2px,_rgba(0,0,0,0.3)_0px_3px_7px_-3px] bg-gray-900 border-none py-2 pl-3 pr-10 color-transparent text-sm leading-5 text-white focus:ring-0"
             displayValue={(option) => option.name}
             onChange={(event) => setQuery(event.target.value)}
           />
-          <Combobox.Button className="absolute  right-0 flex items-center pr-2">
-            <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <Combobox.Button className="absolute right-0 flex items-center pr-2">
+            <ChevronDownIcon className="h-5 w-5 text-white" aria-hidden="true" />
           </Combobox.Button>
         </div>
         <Transition
           as={Fragment}
-          leave="transition ease-in duration-100"
+          leave="transition ease-in duration-200"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
           afterLeave={() => setQuery("")}
         >
-          <Combobox.Options className="absolute mt-1 h-screen w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm bg-white">
+          <Combobox.Options className="absolute mt-1 h-screen w-full overflow-hidden rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm bg-black text-white border ">
             {filteredOptions.length === 0 && query !== "" ? (
-              <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
-                Nothing found.
+              <div className="relative cursor-default select-none py-2 px-4  text-red-500">
+                NOTHING Found .
               </div>
             ) : (
               visibleOptions.map((option) => (
@@ -60,7 +60,7 @@ const CustomCombobox = ({ options, onChange }) => {
                   key={option.id}
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                      active ? "bg-teal-600 text-white" : "text-gray-900"
+                      active ? "bg-gray-800 text-white" : "text-white"
                     }`
                   }
                   value={option}
@@ -77,7 +77,7 @@ const CustomCombobox = ({ options, onChange }) => {
                       {selected ? (
                         <span
                           className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                            active ? "text-white" : "text-teal-600"
+                            active ? "text-white" : "text-white"
                           }`}
                         >
                           <CheckIcon className="h-5 w-5" aria-hidden="true" />
