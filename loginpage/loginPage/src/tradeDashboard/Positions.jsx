@@ -7,6 +7,7 @@ const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInstrumentToken, setSelectedInstrumentToken] = useState(null);
   const [tsl, setTsl] = useState(false);
+  const [tslValue,setTslValue] = useState()
   const [val, setval] = useState(false);
   const [stoploss, setStoploss] = useState(false);
   const [trailingstoploss, setTrailingstoploss] = useState(false);
@@ -276,6 +277,7 @@ const Positions = (props) => {
                         <td className='text-center'>
                           <button
                             onClick={() => {
+                              setTslValue
                               setTsl(!tsl)
                               props.setTrailingStopLoss({
                                 ...props.trailingStopLoss,
