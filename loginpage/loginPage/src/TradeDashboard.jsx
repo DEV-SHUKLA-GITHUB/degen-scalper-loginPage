@@ -756,8 +756,8 @@ useEffect(()=>{
   }
   
   return (
-    <div className="trade min-h-screen w-full flex flex-col">
-    <div className="h-1/6 w-full  shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] flex flex-row ">
+    <div className="trade min-h-full w-full flex flex-col">
+    <div className="h-10 w-full  shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] flex flex-row ">
       <div className="flex  p-2 ">
         <h1 className="text-white p-2">
           NIFTY50 <span className="text-green-300">{selectedOption2}</span>
@@ -771,13 +771,13 @@ useEffect(()=>{
       </div>
     </div>
     <div className="h-screen w-full flex flex-row p-2  gap-4 ">
-      <div className="h-full w-1/4 shadow-[0_3px_10px_rgb(0,0,0,0.2)] ">
+      <div className="h-screen w-1/4 shadow-[0_3px_10px_rgb(0,0,0,0.2)] ">
       <WatchList tokens={arrayOfTokens} add={changeArrayOfToken} ticks={ticksData}/>
       </div>
 
       <div className="h-screen w-3/4">
-        <div className="flex w-full bg-black flex-col h-1/2 w-full shadow-inner shadow-gray-500 rounded-lg">
-        <div className='h-full w-full'>
+        <div className="flex w-full bg-black flex-col h-2/4 shadow-inner shadow-gray-500 rounded-lg">
+        <div className='h-screen w-full'>
       <h2>
         Broker: <span className="font-semibold">Zerodha(User: YTNN30)</span>
       </h2>
@@ -809,16 +809,16 @@ useEffect(()=>{
     <input
       type="number"
       placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
-      className="h-10 w-2 border-2 mt-5 ml-2 rounded border-black px-2 focus:outline-none focus:border-blue-500"
+      className="h-10 w-20 border-2 mt-5 ml-2 rounded border-black px-2 focus:outline-none focus:border-blue-500"
       value={selectedOption6}
       onChange={handleInputChange}
     />
     {errorMessage && <div className="text-red-500 mt-1">{errorMessage}</div>}
   </div>
-  <div className="mt-4 border-2 border-gray-500 rounded flex">
+  <div className="mt-4 border-2 bg-white border-gray-500 rounded flex">
     <button
       className={`flex-1 py-2 px-4 focus:outline-none ${
-        qty==true ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
+        qty==true ? 'bg-green-500 text-white' : ''
       }`}
       onClick={handleQtyClick}
     >
@@ -826,7 +826,7 @@ useEffect(()=>{
     </button>
     <button
       className={`flex-1 py-2 px-4 focus:outline-none ${
-        qty==false ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
+        qty==false ? 'bg-green-500 text-white' : ''
       }`}
       onClick={handleLotClick}
     >
@@ -837,13 +837,13 @@ useEffect(()=>{
 
 
         <CustomCombobox options={products} onChange={setSelectedOption7} />
-        <div className= "flex">
+        <div className= "flex text-white">
           <div>PNL: </div>
           {pnl}
         </div>
       </div>
      <div className="flex items-center mt-4">
-        <label className="mr-2">Enable Click:</label>
+        <label className="mr-2 text-white">Enable Click:</label>
         <input
           type="checkbox"
           checked={enableClick}
@@ -901,17 +901,7 @@ useEffect(()=>{
           </button>
         </div>
       )}
-      <div className='mt-8 ml-4 mr-4 flex justify-between'>
-        <h3>strike: {callSymbol}</h3>
-        <h3>{selectedOption1}</h3>
-        <h3>strike: {putSymbol}</h3>
-      </div>
-      <div className='mt-2 ml-4 mr-4 flex justify-between'>
-        <h3>LTP: {callLTP}</h3>
-        <h3>LTP: {selectedOption2}</h3>
-        <h3>{putLTP} :LTP</h3>
-      </div>
-      <div className='mt-4 w- flex justify-between'>
+      <div className={`${customize ? 'mt-6' : 'mt-20'} flex justify-between `}>
         <div>
         <button className="text-red-700 hover:text-white border mr-8 border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-900" 
          onClick={()=>{placeOrder("SELL","CE"),setCallType("CE")}}>
@@ -948,7 +938,7 @@ useEffect(()=>{
 
 
         </div>
-        <div className="flex p-8 h-full w-full ">
+        <div className="flex pt-6 mt-10 h-full justify-contain w-full ">
         <div className="w-full">
 <div className="flex w-full border-b-4">
   <button
@@ -970,7 +960,7 @@ useEffect(()=>{
     Trade Book
   </button>
   <button
-    className={`font-medium  text-white w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${FundsButtonClicked ? 'button-active' : ''} button-animation`}
+    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${FundsButtonClicked ? 'button-active' : ''} button-animation`}
     onClick={handleFundsClick}
   >
     Funds

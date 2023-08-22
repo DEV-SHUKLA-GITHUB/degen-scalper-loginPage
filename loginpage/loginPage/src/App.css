@@ -59,7 +59,7 @@ input::-webkit-inner-spin-button {
   }
   
   .button-active {
-    background-color: #0c0c0c; /* Change this color as needed */
+    background-color: #9e9e9e; /* Change this color as needed */
   }
 /* Define animation keyframes (optional) */
 @keyframes buttonFadeIn {
@@ -67,7 +67,7 @@ input::-webkit-inner-spin-button {
       background-color: transparent;
     }
     to {
-      background-color: #0c0c0c; /* Change this color as needed */
+      background-color: #777777; /* Change this color as needed */
     }
   }
   
@@ -77,7 +77,7 @@ input::-webkit-inner-spin-button {
   
   .button-active {
     animation: buttonFadeIn 0.3s ease-in-out;
-    background-color: #0c0c0c; /* Change this color as needed */
+    background-color: #7e7d7d; /* Change this color as needed */
     color: white;
   }
     
