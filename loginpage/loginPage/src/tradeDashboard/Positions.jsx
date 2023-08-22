@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect ,useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { API_URL } from '../dynamicRoutes';
@@ -11,7 +11,7 @@ const Positions = (props) => {
   const [val, setval] = useState(false);
   const [stoploss, setStoploss] = useState(false);
   const [trailingstoploss, setTrailingstoploss] = useState(false);
-
+  const selectedInstrumentTokenRef = useRef(null);
   const [price, setPrice] = useState();
   const [trigger_price, setTrigger_price] = useState();
   const [tslRatio, setTslRatio] = useState();
@@ -67,12 +67,39 @@ const Positions = (props) => {
 
   const handleTSLClick = (instrumentToken) => {
     setSelectedInstrumentToken(instrumentToken);
-    setTsl(prevTsl => !prevTsl);
-    
+    setTrailingstoploss(true)
     setIsModalOpen(true);
+
   };
-  
-  
+  useEffect(() => {
+    // Update trailingStopLoss value when the tsl value changes
+    // if (selectedInstrumentToken !== null && props.trailingStopLoss[selectedInstrumentToken]) {
+      props.setTrailingStopLoss({
+        ...props.trailingStopLoss,
+        [selectedInstrumentToken]: {
+          ...props.trailingStopLoss[selectedInstrumentToken],
+          value: tslRatio,
+        },
+      });
+      console.log(props.trailingStopLoss,"value")
+    // }
+  }, [tslRatio]);
+
+  useEffect(() => {
+    // Toggle the tsl value and update trailingStopLoss when the Toggle TSL button is clicked
+    // if (selectedInstrumentToken !== null && props.trailingStopLoss[selectedInstrumentToken]) {
+      console.log(selectedInstrumentToken,"token")
+      props.setTrailingStopLoss({
+        ...props.trailingStopLoss,
+        [selectedInstrumentTokenRef.current]: {
+          ...props.trailingStopLoss[selectedInstrumentTokenRef.current],
+          status:tsl,
+        },
+      });
+      console.log(props.trailingStopLoss,"tsl")
+    // }
+  }, [tsl]);
+
   const stopLossOrder = (token, price, trigger_price)=> {
 
     let symbol,qty,transaction_type,product,exchange;
@@ -186,46 +213,49 @@ const Positions = (props) => {
       });
     }
   };
-const handleTslModalConfirm = (instrumentToken) => {
-  props.setTrailingStopLoss({
-    ...props.trailingStopLoss,
-    [instrumentToken]: {
-      ...props.trailingStopLoss[instrumentToken],
-      value: tslRatio,
-    },
-  });
-
-  setIsModalOpen(false);
-
-  if (tslRatio) {
-    console.log(props.trailingStopLoss)
-    setIsModalOpen(false);
-
-    // Display a success message
-    toast.success('Trailing Stop loss set successfully', {
-      position: 'top-right',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'dark',
+  const handleTslModalConfirm = (instrumentToken) => {
+    props.setTrailingStopLoss({
+      ...props.trailingStopLoss,
+      [selectedInstrumentToken]: {
+        ...props.trailingStopLoss[selectedInstrumentToken],
+        value: tslRatio, 
+      },
     });
-  } else {
-    // Display an error message if the input value is empty
-    toast.error('Please enter a valid Trailing stop loss value', {
-      position: 'top-right',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'dark',
-    });
-};
+    
+    if (tslRatio) {
+      console.log(props.trailingStopLoss)
+      setIsModalOpen(false);
 
+      // Display a success message
+      toast.success('Trailing Stop loss set successfully', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+    } else {
+      // Display an error message if the input value is empty
+      toast.error('Please enter a valid Trailing stop loss value', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+    }
+  };
+  const handletoggle = (instrumentToken) => {
+    selectedInstrumentTokenRef.current = instrumentToken;
+    setTsl(!tsl);
+    console.log("clicked tsl");
+  };
   return (
     <div className='w-full bg-transparent text-[#BABABA] text-lg h-full'>
       <div className='flex justify-around mt-2'>
@@ -283,15 +313,7 @@ const handleTslModalConfirm = (instrumentToken) => {
 
                         <td className='text-center'>
                           <button
-                            onClick={() => {
-                              setTslValue
-                              setTsl(!tsl)
-                              props.setTrailingStopLoss({
-                                ...props.trailingStopLoss,
-                                [item.instrument_token]: {value:tslRatio,status:tsl},//set price and trigger_price
-                              })
-                              console.log(props.trailingStopLoss)
-                            }}
+                            onClick={() => handletoggle(item.instrument_token)}
                             type='radio'
                             // className='bg-blue-500 text-white px-2 py-1 rounded'
                           >
