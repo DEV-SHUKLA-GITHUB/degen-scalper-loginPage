@@ -33,7 +33,7 @@ export default function Dropdown(props) {
           <Menu>
             {({ open }) => (
               <>
-                <Menu.Button className="inline-flex w-52 justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-gray-400 shadow-sm border border-gray-400 hover:border-green-500">
+                <Menu.Button className="inline-flex w-36 justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-gray-400 shadow-sm border border-gray-400 hover:border-green-500">
                   {selectedOption === null ? props.heading : selectedOption}
                   <FaChevronDown
                     className="-mr-1 h-5 w-3 text-gray-400"

@@ -775,71 +775,182 @@ useEffect(()=>{
       <WatchList tokens={arrayOfTokens} add={changeArrayOfToken} ticks={ticksData}/>
       </div>
 
-      <div className="h-full w-3/4 items-center justify-center">
-        <div className="flex  bg-black flex-col h-1/2 w-full gap-2 p-2 shadow-inner shadow-gray-500 rounded-lg justify-center items-center">
+      <div className="h-screen w-3/4">
+        <div className="flex w-full bg-black flex-col h-1/2 w-full shadow-inner shadow-gray-500 rounded-lg">
+        <div className='h-full w-full'>
+      <h2>
+        Broker: <span className="font-semibold">Zerodha(User: YTNN30)</span>
+      </h2>
+      <div className="flex p-2 m-2 justify-between">
+        <CustomCombobox options={options} onChange={handleClick} /> 
         <Dropdown
-        
-        heading="Strike Price"
-        itemList={strikeList}
-        value={selectedOption4}
-        onSelect={setSelectedOption4}
-      />
-<div className="flex">
+          label="Expiry date"
+          heading="select expiry"
+          itemList={expiryList}
+          value={selectedOption3}
+          onSelect={setSelectedOption3}
+        />
+        <Dropdown
+          label="call strike price"
+          heading="Select options"
+          itemList={strikeList}
+          value={selectedOption4}
+          onSelect={setSelectedOption4}
+        />
+        <Dropdown
+          label="put strike price"
+          heading="Select options"
+          itemList={strikeList}
+          value={selectedOption5}
+          onSelect={setSelectedOption5}
+        />
+<div className='flex'>
   <div className="flex flex-col">
-    <div className="relative flex items-center">
+    <input
+      type="number"
+      placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
+      className="h-10 w-2 border-2 mt-5 ml-2 rounded border-black px-2 focus:outline-none focus:border-blue-500"
+      value={selectedOption6}
+      onChange={handleInputChange}
+    />
+    {errorMessage && <div className="text-red-500 mt-1">{errorMessage}</div>}
+  </div>
+  <div className="mt-4 border-2 border-gray-500 rounded flex">
+    <button
+      className={`flex-1 py-2 px-4 focus:outline-none ${
+        qty==true ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
+      }`}
+      onClick={handleQtyClick}
+    >
+      qty
+    </button>
+    <button
+      className={`flex-1 py-2 px-4 focus:outline-none ${
+        qty==false ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
+      }`}
+      onClick={handleLotClick}
+    >
+      lot
+    </button>
+  </div>
+</div>
+
+
+        <CustomCombobox options={products} onChange={setSelectedOption7} />
+        <div className= "flex">
+          <div>PNL: </div>
+          {pnl}
+        </div>
+      </div>
+     <div className="flex items-center mt-4">
+        <label className="mr-2">Enable Click:</label>
+        <input
+          type="checkbox"
+          checked={enableClick}
+          onChange={(e) => setEnableClick(e.target.checked)}
+          // onKeyDown={handleKeyDown}
+        />
+      </div>
+      {/* <button
+        className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
+        onKeyDown={handleKeyDown}
+      >
+        Enable click
+      </button> */}
       <button
-        className="px-3 py-2 bg-red-500 rounded-l text-white focus:outline-none"
-        onClick={() => handleInputChange({ target: { value: qty ? Math.max(selectedOption6 - parseInt(lotSize), lotSize) : (selectedOption6 - 1) } })}
+        className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
+        onClick={handleCustomizeClick}
       >
-        -
+        Customize click
       </button>
-      <input
-        type="number"
-        placeholder='QTY'
-          // `QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`
-        className="h-10 border-2 w-32 bg-black border-black rounded border-r-0 px-2 focus:outline-none focus:border-blue-500"
-        value={selectedOption6}
-        onChange={handleInputChange}
-      />
-      <button
-        className="px-3 py-2 bg-green-500 rounded-r text-white focus:outline-none"
-        onClick={() => handleInputChange({ target: { value: qty ? selectedOption6 + parseInt(lotSize) : selectedOption6 + 1 } })}
-      >
-        +
+            {customize && (
+        <div>
+          <input
+            type="text"
+            value={customBuyCallKey}
+            onChange={(e) => setCustomBuyCallKey(e.target.value)}
+            className="m-2 p-2 border-2 rounded border-black"
+            placeholder="customize key for Buy call"
+          />
+          <input
+            type="text"
+            value={customSellCallKey}
+            onChange={(e) => setCustomSellCallKey(e.target.value)}
+            className="m-2 p-2 border-2 rounded border-black"
+            placeholder="customize key for sell call"
+          />
+          <input
+            type="text"
+            value={customBuyPutKey}
+            onChange={(e) => setCustomBuyPutKey(e.target.value)}
+            className="m-2 p-2 border-2 rounded border-black"
+            placeholder="customize key for Buy put"
+          />
+          <input
+            type="text"
+            value={customSellPutKey}
+            onChange={(e) => setCustomSellPutKey(e.target.value)}
+            className="m-2 p-2 border-2 rounded border-black"
+            placeholder="customize key for sell put"
+          />
+          <button
+            className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
+            onClick={handleCustomizeClickSave}
+          >
+            Save
+          </button>
+        </div>
+      )}
+      <div className='mt-8 ml-4 mr-4 flex justify-between'>
+        <h3>strike: {callSymbol}</h3>
+        <h3>{selectedOption1}</h3>
+        <h3>strike: {putSymbol}</h3>
+      </div>
+      <div className='mt-2 ml-4 mr-4 flex justify-between'>
+        <h3>LTP: {callLTP}</h3>
+        <h3>LTP: {selectedOption2}</h3>
+        <h3>{putLTP} :LTP</h3>
+      </div>
+      <div className='mt-4 w- flex justify-between'>
+        <div>
+        <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded" 
+         onClick={()=>{placeOrder("SELL","CE"),setCallType("CE")}}>
+       <div className='flex'> <AiOutlineArrowLeft className='mt-1.5 mr-2'/> Buy call</div> 
       </button>
-     
-</div>
-</div>
-</div>
-<div className='w-52 flex justify-around'>
-<button
-        className={`px-3 py-2 bg-gray-300 rounded-r-l focus:outline-none ${
-          qty === true ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
-        }`}
-        onClick={handleQtyClick}
-      >
-        qty
+      <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
+       onClick={()=>{placeOrder("BUY","CE"),setCallType("CE")}}>
+        <div className='flex'> <AiOutlineArrowUp className='mt-1.5 mr-2'/> Buy call</div>
       </button>
-      {/* <Switch onChange={handleToggle} checked={toggle} width='66px' className='mt-2' /> */}
-      <Switch onChange={handleToggle} checked={toggle}/>
-      <button
-        className={`px-3 py-2 bg-gray-300 rounded-r focus:outline-none ${
-          qty === false ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
-        }`}
-        onClick={handleLotClick}
-      >
-        lot
+        </div>
+        <div>
+        <button onClick={exitAllHandler} className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
+        Close all Positions
       </button>
-</div>
-      {errorMessage && <div className="text-red-500 mt-1">{errorMessage}</div>}
+      <button className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
+        Cancel all orders
+      </button>
+        </div>
+        <div>
+        <button className="ml-4 bg-green-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded "
+        onClick={()=>{placeOrder("BUY","PE"),setCallType("PE")}} >
+        <div className='flex'>Sell Put  <AiOutlineArrowDown className='mt-1.5 ml-2'/></div>
+      </button>
+      <button className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
+      onClick={()=>{placeOrder("SELL","PE"),setCallType("PE")}} > 
+        <div className='flex'>Sell Put  <AiOutlineArrowRight className='mt-1.5 ml-2'/></div>
+      </button>
+        </div>
+      </div>
+
+
 
 
 
 
         </div>
-        <div className="flex h-1/2 w-full ">
+        <div className="flex p-8 h-1/2 w-full ">
         <div className="w-full">
-<div className="flex w-full border-b-4 border-">
+<div className="flex w-full border-b-4">
   <button
     className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 text-white border-white rounded-xl ${positionButtonClicked ? 'button-active' : ''} button-animation`}
     onClick={handlePositionClick}
@@ -883,6 +994,7 @@ useEffect(()=>{
         </div>
       </div>
     </div>
+  </div>
   </div>
 
   );
