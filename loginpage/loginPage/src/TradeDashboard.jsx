@@ -841,19 +841,19 @@ useEffect(()=>{
         <div className="w-full">
 <div className="flex w-full border-b-4 border-">
   <button
-    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 border-white rounded-xl ${positionButtonClicked ? 'button-active' : ''} button-animation`}
+    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 text-white border-white rounded-xl ${positionButtonClicked ? 'button-active' : ''} button-animation`}
     onClick={handlePositionClick}
   >
     Positions
   </button>
   <button
-    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${orderBookButtonClicked ? 'button-active' : ''} button-animation`}
+    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0  text-white rounded-xl ${orderBookButtonClicked ? 'button-active' : ''} button-animation`}
     onClick={handleOrderBookClick}
   >
     Order Book
   </button>
   <button
-    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${tradeBookButtonClicked ? 'button-active' : ''} button-animation`}
+    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl text-white ${tradeBookButtonClicked ? 'button-active' : ''} button-animation`}
     onClick={handleTradeBookClick}
   >
     Trade Book

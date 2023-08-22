@@ -13,7 +13,7 @@ const Orderbook = (props) => {
         {/* head */}
         <thead className="bg[#0A0A0C]">
           <tr className=" text-[#BABABA] text-lg">
-            <th className="font-normal">Symbol</th>
+            <th className=" font-normal text-gray-400">Symbol</th>
             {/* <th className="font-normal">LTP</th> */}
             <th className="font-normal">Time Stamp</th>
             <th className="font-normal">Qty</th>
@@ -28,13 +28,15 @@ const Orderbook = (props) => {
           {/* use map here  */}
           {props.orderbook&&props.orderbook.map((item,index)=>{
             return (
-              <tr  className="w-screen" >
-              <th className='mr-10 p-10'>{item.tradingsymbol}</th>
-              <td className='mr-10 p-10'>{item.order_timestamp.split('T')[0]}</td>
+              <tr  className="w-screen border p-4 border-gray-500 " >
+                <div className='flex items-center  border border-blue-500 justify-center m-8 p-4 bg-black rounded-xl'>
+              <th className="">{item.tradingsymbol}</th>
+              </div>
+              <td className='mr-10 p-10  '>{item.order_timestamp.split('T')[0]}</td>
               <td className='mr-10 p-10'>{item.quantity}</td>
               <td className='mr-10 p-10'>{item.order_type}</td>
               <td className='mr-10 p-10'>{item.transaction_type}</td>
-              <td className='mr-10 p-10'>{item.status}</td>
+              <td className='mr-10 p-10 '>{item.status}</td>
             </tr>        
             )
           })}
