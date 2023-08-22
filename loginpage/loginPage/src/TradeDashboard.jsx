@@ -797,7 +797,7 @@ useEffect(()=>{
         type="number"
         placeholder='QTY'
           // `QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`
-        className="h-10 border-2 w-32 bg-black border-black rounded border-r-0 px-2 focus:outline-none focus:border-blue-500"
+        className="h-10 border-2 w-32 text-white bg-black border-black rounded border-r-0 px-2 focus:outline-none focus:border-blue-500"
         value={selectedOption6}
         onChange={handleInputChange}
       />
@@ -821,7 +821,7 @@ useEffect(()=>{
         qty
       </button>
       {/* <Switch onChange={handleToggle} checked={toggle} width='66px' className='mt-2' /> */}
-      <Switch onChange={handleToggle} checked={toggle}/>
+      <Switch onChange={handleToggle} uncheckedIcon='Put' checkedIcon='Call' width='4rem' checked={toggle}/>
       <button
         className={`px-3 py-2 bg-gray-300 rounded-r focus:outline-none ${
           qty === false ? 'bg-green-500 text-white' : 'hover:bg-gray-100'

@@ -25,6 +25,11 @@
 .absolute {
     position: absolute;
   }
+  input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
   
   /* Customize the scrollbar track */
   .overflow-auto {
