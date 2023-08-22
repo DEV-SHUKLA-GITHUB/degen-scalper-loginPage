@@ -776,7 +776,7 @@ useEffect(()=>{
       </div>
 
       <div className="h-full w-3/4 items-center justify-center">
-        <div className="flex flex-col h-1/2 w-full gap-2 p-2 shadow-inner shadow-gray-500 rounded-lg justify-center items-center">
+        <div className="flex  bg-black flex-col h-1/2 w-full gap-2 p-2 shadow-inner shadow-gray-500 rounded-lg justify-center items-center">
         <Dropdown
         
         heading="Strike Price"

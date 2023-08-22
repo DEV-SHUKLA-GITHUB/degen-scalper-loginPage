@@ -68,12 +68,12 @@ const WatchList = (props) => {
   {ceData.map((value, index) => (
     <div
       key={index}
-      className='flex justify-between mt-2 p-4 text-white w-5/6 border bt rounded-xl'
+      className='flex justify-between  text-white w-5/6 '
     >
-      <div className='border rounded-2xl p-2 w-1/2 border-blue-400 bg-black'>
+      <div className='border rounded-2xl p-2 w-full border-blue-400 bg-black'>
         {value.name}
       </div>
-      <div className='border rounded-full flex justify-center text-green-400 font-semibold bg-black w-1/4'>
+      <div className='  w-1/2  border rounded-md border-gray-500  ml-4 flex justify-center text-green-400 font-semibold bg-black '>
         {value.ltp}
       </div>
     </div>
