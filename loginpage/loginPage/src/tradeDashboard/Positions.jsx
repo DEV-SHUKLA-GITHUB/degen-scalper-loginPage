@@ -67,10 +67,11 @@ const Positions = (props) => {
 
   const handleTSLClick = (instrumentToken) => {
     setSelectedInstrumentToken(instrumentToken);
-    setTrailingstoploss(true)
+    setTsl(prevTsl => !prevTsl);
+    
     setIsModalOpen(true);
-
   };
+  
   
   const stopLossOrder = (token, price, trigger_price)=> {
 
@@ -185,40 +186,45 @@ const Positions = (props) => {
       });
     }
   };
-  const handleTslModalConfirm = (instrumentToken) => {
-    props.setTrailingStopLoss({
-      ...props.trailingStopLoss,
-      [selectedInstrumentToken]: {value:tslRatio,status:tsl},//set price and trigger_price
-    })
-    if (tslRatio) {
-      console.log(props.trailingStopLoss)
-      setIsModalOpen(false);
+const handleTslModalConfirm = (instrumentToken) => {
+  props.setTrailingStopLoss({
+    ...props.trailingStopLoss,
+    [instrumentToken]: {
+      ...props.trailingStopLoss[instrumentToken],
+      value: tslRatio,
+    },
+  });
 
-      // Display a success message
-      toast.success('Trailing Stop loss set successfully', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'dark',
-      });
-    } else {
-      // Display an error message if the input value is empty
-      toast.error('Please enter a valid Trailing stop loss value', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'dark',
-      });
-    }
-  };
+  setIsModalOpen(false);
+
+  if (tslRatio) {
+    console.log(props.trailingStopLoss)
+    setIsModalOpen(false);
+
+    // Display a success message
+    toast.success('Trailing Stop loss set successfully', {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'dark',
+    });
+  } else {
+    // Display an error message if the input value is empty
+    toast.error('Please enter a valid Trailing stop loss value', {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'dark',
+    });
+};
 
   return (
     <div className='w-full bg-transparent text-[#BABABA] text-lg h-full'>
@@ -272,8 +278,9 @@ const Positions = (props) => {
                           </button>
                         </td>
                         <td className='text-center'>
-                        {/* {props.trailingStopLoss[item.instrument_token]} */}
-                        </td>
+  {tsl ? 'TSL Active' : 'TSL Inactive'}
+</td>
+
                         <td className='text-center'>
                           <button
                             onClick={() => {
@@ -288,7 +295,7 @@ const Positions = (props) => {
                             type='radio'
                             // className='bg-blue-500 text-white px-2 py-1 rounded'
                           >
-                            TSL Button
+                            Toggle TSL
                           </button>
                         </td>
                         <td className='text-center'>
