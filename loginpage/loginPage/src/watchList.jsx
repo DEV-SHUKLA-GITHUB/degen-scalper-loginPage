@@ -59,8 +59,8 @@ const WatchList = (props) => {
           Reset
         </button> */}
       </div>
-      <div className='border-b-2 border-black overflow-y-scroll h-1/2'>
-  <h2 className='p-2 m-2  inline-block rounded-full over    bg-neutral-800 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-neutral-50 shadow-[0_4px_9px_-4px_rgba(51,45,45,0.7)] transition duration-150 ease-in-out hover:bg-neutral-800 hover:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] focus:bg-neutral-800 focus:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] focus:outline-none focus:ring-0 active:bg-neutral-900 active:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] dark:bg-neutral-900 dark:shadow-[0_4px_9px_-4px_#030202] dark:hover:bg-neutral-900 dark:hover:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] dark:focus:bg-neutral-900 dark:focus:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] dark:active:bg-neutral-900 dark:active:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] border  "> Dark'>
+      <div className='border-b-2      overflow-y-scroll h-1/2'>
+  <h2 className='p-2 m-4   inline-block rounded-full over    bg-neutral-800 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-neutral-50 shadow-[0_4px_9px_-4px_rgba(51,45,45,0.7)] transition duration-150 ease-in-out hover:bg-neutral-800 hover:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] focus:bg-neutral-800 focus:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] focus:outline-none focus:ring-0 active:bg-neutral-900 active:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] dark:bg-neutral-900 dark:shadow-[0_4px_9px_-4px_#030202] dark:hover:bg-neutral-900 dark:hover:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] dark:focus:bg-neutral-900 dark:focus:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] dark:active:bg-neutral-900 dark:active:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] border  "> Dark'>
     CE Section
   </h2>
  
@@ -68,12 +68,34 @@ const WatchList = (props) => {
   {ceData.map((value, index) => (
     <div
       key={index}
-      className='flex justify-between  text-white w-5/6 '
+      className='flex w-full justify-between  text-white   h-12 '
     >
-      <div className='border rounded-2xl p-2 w-full border-blue-400 bg-black'>
+      <div className='  w-full  flex items-center justify-center border-b-2 border-gray-600'>
         {value.name}
       </div>
-      <div className='  w-1/2  border rounded-md border-gray-500  ml-4 flex justify-center text-green-400 font-semibold bg-black '>
+      <div className='  w-full flex justify-center text-green-400 font-semibold  border-b-2 border-gray-600'>
+        {value.ltp}
+      </div>
+    </div>
+  ))}
+  
+ 
+</div>
+<div className='border-b-2      overflow-y-scroll h-1/2'>
+  <h2 className='p-2 m-4 inline-block rounded-full over    bg-neutral-800 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-neutral-50 shadow-[0_4px_9px_-4px_rgba(51,45,45,0.7)] transition duration-150 ease-in-out hover:bg-neutral-800 hover:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] focus:bg-neutral-800 focus:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] focus:outline-none focus:ring-0 active:bg-neutral-900 active:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] dark:bg-neutral-900 dark:shadow-[0_4px_9px_-4px_#030202] dark:hover:bg-neutral-900 dark:hover:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] dark:focus:bg-neutral-900 dark:focus:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] dark:active:bg-neutral-900 dark:active:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] border  "> Dark'>
+    PE Section
+  </h2>
+ 
+
+  {peData.map((value, index) => (
+    <div
+      key={index}
+      className='flex w-full justify-between  text-white   h-12 '
+    >
+      <div className='  w-full  flex items-center justify-center border-b-2 border-gray-600'>
+        {value.name}
+      </div>
+      <div className='  w-full flex justify-center text-green-400 font-semibold  border-b-2 border-gray-600'>
         {value.ltp}
       </div>
     </div>
@@ -82,16 +104,7 @@ const WatchList = (props) => {
  
 </div>
 
-      <div className=' border-b-2 border-black overflow-hidden h-1/2   '>
-        <h2 className='p-2 m-2  inline-block rounded-full over  bg-black px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-neutral-50 shadow-[0_4px_9px_-4px_rgba(51,45,45,0.7)] transition duration-150 ease-in-out hover:bg-neutral-800 hover:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] focus:bg-neutral-800 focus:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] focus:outline-none focus:ring-0 active:bg-neutral-900 active:shadow-[0_8px_9px_-4px_rgba(51,45,45,0.2),0_4px_18px_0_rgba(51,45,45,0.1)] dark:bg-neutral-900 dark:shadow-[0_4px_9px_-4px_#030202] dark:hover:bg-neutral-900 dark:hover:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] dark:focus:bg-neutral-900 dark:focus:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] dark:active:bg-neutral-900 dark:active:shadow-[0_8px_9px_-4px_rgba(3,2,2,0.3),0_4px_18px_0_rgba(3,2,2,0.2)] border  ">
-  Dark'>PE Section</h2>
-        {peData.map((value, index) => (
-          <div key={index} className='flex justify-between mt-2  p-4 text-white overflow-hi border bt rounded-xl w-5/6'>
-          <div className='border rounded-2xl p-2 w-1/2 border-blue-400 bg-black  '>{value.name}</div>
-          <div className=' border  rounded-full flex justify-center text-green-400  font-semibold bg-black w-1/4'>{value.ltp}</div>
-        </div>
-        ))}
-      </div>
+
     </div>
   );
 };
