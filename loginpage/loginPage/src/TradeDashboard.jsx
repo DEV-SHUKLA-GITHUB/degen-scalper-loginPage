@@ -16,6 +16,7 @@ import {AiOutlineArrowLeft} from 'react-icons/ai';
 import {AiOutlineArrowRight} from 'react-icons/ai';
 import {AiOutlineArrowUp} from 'react-icons/ai';
 import {AiOutlineArrowDown} from 'react-icons/ai';
+import Switch from "react-switch";
 const TradeDashboard = () => {
 
 // var instrumentToken;
@@ -48,6 +49,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [selectedDate, setSelectedDate] = useState(null);
   const [positions,setPositions] = useState(false)
   const [funds,setFunds] = useState(false)
+  const [toggle,setToggle]= useState(false)
   const [orderBook,setOrderBook] = useState(false)
   const [TradeBook,setTradeBook] = useState(false)
   const [customize,setCustomize] = useState(false)
@@ -748,6 +750,10 @@ useEffect(()=>{
       "Content-Type": "application/json",
     }
   })}
+
+  const handleToggle =()=>{
+    setToggle(!toggle)
+  }
   
   return (
     <div className="trade min-h-screen w-full flex flex-col">
@@ -770,7 +776,7 @@ useEffect(()=>{
       </div>
 
       <div className="h-full w-3/4 items-center justify-center">
-        <div className="flex h-1/2 w-full gap-2 p-2 shadow-inner shadow-gray-500 rounded-lg justify-center items-center">
+        <div className="flex flex-col h-1/2 w-full gap-2 p-2 shadow-inner shadow-gray-500 rounded-lg justify-center items-center">
         <Dropdown
         
         heading="Strike Price"
@@ -789,8 +795,9 @@ useEffect(()=>{
       </button>
       <input
         type="number"
-        placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
-        className="h-10 border-2 border-black rounded border-r-0 px-2 focus:outline-none focus:border-blue-500"
+        placeholder='QTY'
+          // `QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`
+        className="h-10 border-2 w-32 bg-black border-black rounded border-r-0 px-2 focus:outline-none focus:border-blue-500"
         value={selectedOption6}
         onChange={handleInputChange}
       />
@@ -800,7 +807,12 @@ useEffect(()=>{
       >
         +
       </button>
-      <button
+     
+</div>
+</div>
+</div>
+<div className='w-52 flex justify-around'>
+<button
         className={`px-3 py-2 bg-gray-300 rounded-r-l focus:outline-none ${
           qty === true ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
         }`}
@@ -808,6 +820,8 @@ useEffect(()=>{
       >
         qty
       </button>
+      {/* <Switch onChange={handleToggle} checked={toggle} width='66px' className='mt-2' /> */}
+      <Switch onChange={handleToggle} checked={toggle}/>
       <button
         className={`px-3 py-2 bg-gray-300 rounded-r focus:outline-none ${
           qty === false ? 'bg-green-500 text-white' : 'hover:bg-gray-100'
@@ -816,10 +830,8 @@ useEffect(()=>{
       >
         lot
       </button>
+</div>
       {errorMessage && <div className="text-red-500 mt-1">{errorMessage}</div>}
-</div>
-</div>
-</div>
 
 
 
