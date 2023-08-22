@@ -268,7 +268,7 @@ const Positions = (props) => {
             <thead className='bg-transparent w-screen'>
               <tr>
                 <th className='w-1/12 text-center'>Product</th>
-                <th className='w-1/12 text-center'>Symbol Name</th>
+                <th className='w-1/12 text-center'>Symbol</th>
                 <th className='w-1/12 text-center'>NET Qty</th>
                 <th className='w-1/12 text-center'>SL</th>
                 <th className='w-1/12 text-center'>SL</th>
