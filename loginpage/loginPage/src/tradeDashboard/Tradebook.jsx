@@ -13,7 +13,7 @@ const Tradebook = (props) => {
             {/* head */}
             <thead className="bg[#0A0A0C]">
               <tr className=" text-[#BABABA] text-lg">
-                <th className="font-normal">Symbol</th>
+                <th className="font-normal ">Symbol</th>
                 {/* <th className="font-normal">LTP</th> */}
                 <th className="font-normal">Time Stamp</th>
                 <th className="font-normal">Qty</th>
@@ -27,8 +27,10 @@ const Tradebook = (props) => {
               {/* use map here  */}
               {props.tradebook&&props.tradebook.map((item,index)=>{
                 return (
-                  <tr  className=" w-screen" >
-                  <th className='mr-10 p-10'>{item.tradingsymbol}</th>
+                  <tr  className=" w-screen border-b  border-gray-500 " >
+                    <div className=' flex items-center justify-center b '>
+                  <th  className='m-4 border rounded-md p-4 w-full bg-black'>{item.tradingsymbol}</th>
+                  </div>
                   <td className='mr-10 p-10'>{item.order_timestamp.split('T')[0]}</td>
                   <td className='mr-10 p-10'>{item.quantity}</td>
                   <td className='mr-10 p-10'>{item.order_type}</td>

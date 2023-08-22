@@ -859,7 +859,7 @@ useEffect(()=>{
     Trade Book
   </button>
   <button
-    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${FundsButtonClicked ? 'button-active' : ''} button-animation`}
+    className={`font-medium  text-white w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${FundsButtonClicked ? 'button-active' : ''} button-animation`}
     onClick={handleFundsClick}
   >
     Funds

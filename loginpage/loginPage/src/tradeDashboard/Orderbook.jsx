@@ -28,18 +28,20 @@ const Orderbook = (props) => {
           {/* use map here  */}
           {props.orderbook&&props.orderbook.map((item,index)=>{
             return (
-              <tr  className="w-screen border p-4  border-gray-500 " >
-                <div className='flex items-center h-12 border border-blue-500 justify-center m-8 p-4 bg-black rounded-xl'>
+              <tr  className="w-screen  border p-4   border-gray-500 " >
+                <div className='flex items-center w-full h-12 border border-white justify-center m-8 p-4 bg-black rounded-xl'>
               <th className="">{item.tradingsymbol}</th>
               </div>
              
            
-              <td className='mr-10 p-10  '>{item.order_timestamp.split('T')[0]}</td>
+              <td className='pl-24'>{item.order_timestamp.split('T')[0]}</td>
               
               <td className='mr-10 p-10'>{item.quantity}</td>
               <td className='mr-10 p-10'>{item.order_type}</td>
               <td className='mr-10 p-10'>{item.transaction_type}</td>
-              <td className='mr-10 p-10 '>{item.status}</td>
+              <div className='border p-4 border-green-300  rounded-lg w-fit pr-8'>
+              <td className='mr-8 p'>{item.status}</td>
+              </div>
             </tr>        
             )
           })}
