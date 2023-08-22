@@ -28,7 +28,7 @@ const Orderbook = (props) => {
           {/* use map here  */}
           {props.orderbook&&props.orderbook.map((item,index)=>{
             return (
-              <tr  className="w-screen  border p-4   border-gray-500 " >
+              <tr  className="w-screen   p-4  border-b-2  border-gray-500 " >
                 <div className='flex items-center w-full h-12 border border-white justify-center m-8 p-4 bg-black rounded-xl'>
               <th className="">{item.tradingsymbol}</th>
               </div>

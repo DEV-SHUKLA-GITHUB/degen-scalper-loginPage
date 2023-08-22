@@ -34,7 +34,7 @@ const CustomCombobox = ({ options, onChange }) => {
       <div className="relative  ">
         <div className="relative w-full cursor-default overflow-hidden  text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-green-500 sm:text-sm">
           <Combobox.Input
-            className="w-full shadow-[rgba(50,50,93,0.25)_0px_6px_12px_-2px,_rgba(0,0,0,0.3)_0px_3px_7px_-3px] bg-gray-900 border-none py-2 pl-3 pr-10 color-transparent text-sm leading-5 text-white focus:ring-0"
+            className="w-full   shadow-[rgba(50,50,93,0.25)_0px_6px_12px_-2px,_rgba(0,0,0,0.3)_0px_3px_7px_-3px] bg-gray-900 py-2 pl-3 pr-10 color-transparent text-sm leading-5 text-white focus:ring-0"
             displayValue={(option) => option.name}
             onChange={(event) => setQuery(event.target.value)}
           />

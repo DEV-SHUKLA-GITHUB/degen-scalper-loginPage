@@ -25,7 +25,7 @@ export default function Dropdown(props) {
 
   return (
     <div className="max-w-sm ">
-      <label className="block text-sm font-medium text-gray-700 bg-green-500">
+      <label className="block text-sm  font-medium text-gray-700 bg-green-500">
         {props.label}
       </label>
       <div className="relative inline-block text-right">
@@ -33,10 +33,10 @@ export default function Dropdown(props) {
           <Menu>
             {({ open }) => (
               <>
-                <Menu.Button className="inline-flex w-36 justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-gray-400 shadow-sm border border-gray-400 hover:border-green-500">
+                <Menu.Button className="inline-flex w-36  justify-center gap-x-1.5 rounded-2xl text-white  px-3 py-2 text-sm font-semibold text-gray-400 shadow-sm border border-gray-400 hover:border-green-500">
                   {selectedOption === null ? props.heading : selectedOption}
                   <FaChevronDown
-                    className="-mr-1 h-5 w-3 text-gray-400"
+                    className="-mr-1 h-5 w-3  text-gray-400"
                     aria-hidden="true"
                   />
                 </Menu.Button>
@@ -53,10 +53,10 @@ export default function Dropdown(props) {
                 >
                   <Menu.Items
                     static
-                    className="absolute bg-transparent overflow-hidden border-gray-700 right-0 z-10 mt-2 w-full origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    className="absolute bg-transparent  overflow-hidden border-gray-700 right-0 z-10 mt-2 w-full origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >
               
-                    <div className="max-h-44 overflow-y-auto ">
+                    <div className="max-h-44 border overflow-y-auto ">
                       {itemList.map((item) => (
                         <Menu.Item key={item.value}>
                           {({ active }) => (
@@ -64,7 +64,7 @@ export default function Dropdown(props) {
                               href="#"
                               className={classNames(
                                 active
-                                  ? "bg-gray-700 bg-black"
+                                  ? "bg-gray-700 bg-black "
                                   : "text-gray-400",
                                 "block px-4 py-2 text-sm border border-gray-700"
                               )}

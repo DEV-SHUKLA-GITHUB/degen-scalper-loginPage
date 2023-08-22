@@ -778,44 +778,75 @@ useEffect(()=>{
       <div className="h-screen w-3/4">
         <div className="flex w-full bg-black flex-col h-2/4 shadow-inner shadow-gray-500 rounded-lg">
         <div className='h-screen w-full'>
-      <h2>
-        Broker: <span className="font-semibold">Zerodha(User: YTNN30)</span>
-      </h2>
-      <div className="flex p-2 m-2 justify-between">
+      
+      <div className="flex p-8 border-b-2 border-gray-900 justify-between">
         <CustomCombobox options={options} onChange={handleClick} /> 
         <Dropdown
-          label="Expiry date"
+          
           heading="select expiry"
           itemList={expiryList}
           value={selectedOption3}
           onSelect={setSelectedOption3}
         />
         <Dropdown
-          label="call strike price"
-          heading="Select options"
+        
+          heading="Call strike"
           itemList={strikeList}
           value={selectedOption4}
           onSelect={setSelectedOption4}
         />
         <Dropdown
-          label="put strike price"
-          heading="Select options"
+          
+          heading="Put Strike"
           itemList={strikeList}
           value={selectedOption5}
           onSelect={setSelectedOption5}
         />
-<div className='flex'>
-  <div className="flex flex-col">
-    <input
+
+
+        <CustomCombobox options={products} onChange={setSelectedOption7} />
+        <div className= "flex text-white">
+          <div>PNL: </div>
+          {pnl}
+        </div>
+      </div>
+      <div className="flex items-center m-4 p-4">
+        <label className="mr-8 text-white">Enable Click:</label>
+        <input
+          type="checkbox"
+          checked={enableClick}
+          onChange={(e) => setEnableClick(e.target.checked)}
+          // onKeyDown={handleKeyDown}
+        />
+      </div>
+      {/* <button
+        className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
+        onKeyDown={handleKeyDown}
+      >
+        Enable click
+      </button> */}
+      
+      <div className='flex'>
+    
+      <button
+        className="ml-4 border border-white hover:bg-blue-400 text-white font-bold py-2 px-4  rounded"
+        onClick={handleCustomizeClick}
+      >
+        Customize click
+      </button>
+      <div className='flex ml-80 flex-col'>
+  <div className="flex">
+<div className='flex '>
+<input
       type="number"
       placeholder={`QTY (Multiple of ${lotSize}, Range ${lotSize} - ${lotSize * 36})`}
-      className="h-10 w-20 border-2 mt-5 ml-2 rounded border-black px-2 focus:outline-none focus:border-blue-500"
+      className="h-10 w-32 bg-transparent text-white border-2 mt-5 ml-2 rounded border-white px-2 focus:outline-none focus:border-blue-500"
       value={selectedOption6}
       onChange={handleInputChange}
     />
-    {errorMessage && <div className="text-red-500 mt-1">{errorMessage}</div>}
+    
   </div>
-  <div className="mt-4 border-2 bg-white border-gray-500 rounded flex">
+  <div className="mt-4 ml-4 border-2 bg-white border-gray-500 rounded flex">
     <button
       className={`flex-1 py-2 px-4 focus:outline-none ${
         qty==true ? 'bg-green-500 text-white' : ''
@@ -832,37 +863,13 @@ useEffect(()=>{
     >
       lot
     </button>
+    
   </div>
 </div>
+  {errorMessage && <div className="text-red-500 mt-4">{errorMessage}</div>}
+</div>
 
-
-        <CustomCombobox options={products} onChange={setSelectedOption7} />
-        <div className= "flex text-white">
-          <div>PNL: </div>
-          {pnl}
-        </div>
       </div>
-     <div className="flex items-center mt-4">
-        <label className="mr-2 text-white">Enable Click:</label>
-        <input
-          type="checkbox"
-          checked={enableClick}
-          onChange={(e) => setEnableClick(e.target.checked)}
-          // onKeyDown={handleKeyDown}
-        />
-      </div>
-      {/* <button
-        className="ml-4 bg-red-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 rounded"
-        onKeyDown={handleKeyDown}
-      >
-        Enable click
-      </button> */}
-      <button
-        className="ml-4 border border-white hover:bg-blue-400 text-white font-bold py-2 px-4  rounded"
-        onClick={handleCustomizeClick}
-      >
-        Customize click
-      </button>
             {customize && (
         <div>
           <input
@@ -902,10 +909,10 @@ useEffect(()=>{
         </div>
       )}
       <div className={`${customize ? 'mt-6' : 'mt-20'} flex justify-between `}>
-        <div>
+        <div className='m-4'>
         <button className="text-red-700 hover:text-white border mr-8 border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-900" 
          onClick={()=>{placeOrder("SELL","CE"),setCallType("CE")}}>
-       <div className='flex'> <AiOutlineArrowLeft className='mt-1.5 '/> Buy call</div> 
+       <div className='flex'> <AiOutlineArrowLeft className=' mt-1.5 mr-2'/> Buy call</div> 
       </button>
       <button className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900 "
        onClick={()=>{placeOrder("BUY","CE"),setCallType("CE")}}>
@@ -913,10 +920,10 @@ useEffect(()=>{
       </button>
         </div>
         <div>
-        <button onClick={exitAllHandler} className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
+        <button onClick={exitAllHandler} className="m-4 p-4 text-white border">
         Close all Positions
       </button>
-      <button className="ml-4 bg-white hover:bg-blue-400 text-red-500 font-bold py-2 px-4 border-b-4 rounded border-2 border-red-600">
+      <button className="m-4 p-4 text-white border">
         Cancel all orders
       </button>
         </div>
@@ -940,7 +947,7 @@ useEffect(()=>{
         </div>
         <div className="flex pt-6 mt-10 h-full justify-contain w-full ">
         <div className="w-full">
-<div className="flex w-full border-b-4">
+<div className="flex w-full ">
   <button
     className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 text-white border-white rounded-xl ${positionButtonClicked ? 'button-active' : ''} button-animation`}
     onClick={handlePositionClick}
@@ -960,7 +967,7 @@ useEffect(()=>{
     Trade Book
   </button>
   <button
-    className={`font-medium w-1/4 h-12 font-barlow-condensed font-sans border-0 rounded-xl ${FundsButtonClicked ? 'button-active' : ''} button-animation`}
+    className={`font-medium w-1/4 h-12 text-white font-barlow-condensed font-sans border-0 rounded-xl ${FundsButtonClicked ? 'button-active' : ''} button-animation`}
     onClick={handleFundsClick}
   >
     Funds
