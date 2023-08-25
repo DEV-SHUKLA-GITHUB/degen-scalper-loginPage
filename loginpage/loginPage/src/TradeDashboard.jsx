@@ -56,6 +56,8 @@ const instrumentTokenRef = useRef(instrumentToken);
   const [orderbook,setOrderbook]=useState()
   const [tradebook, setTradebook]=useState()
   const [fetchedPositions, setFetchedPositions]=useState()
+  const [TotalStopLossFlag,setTotalStopLossFlag]=useState(false)
+  const [TotalStopLoss,setTotalStopLoss]=useState({boolean:TotalStopLossFlag,mtm:"",stopLoss:""})
   const [qty,setQty]=useState(false)
   const [enableClick, setEnableClick] = useState(false);
   const [callSymbol, setCallSymbol]=useState()
@@ -743,6 +745,12 @@ useEffect(()=>{
       window.removeEventListener("beforeunload", refresh);
     };
   }, []);
+  useEffect(() => {
+console.log(TotalStopLoss)
+  }, [TotalStopLoss]);
+  useEffect(() => {
+    setTotalStopLoss({...TotalStopLoss,boolean:TotalStopLossFlag})
+  }, [TotalStopLossFlag]);
   const refresh=(e)=>{ 
     fetch(`${API_URL}/test`,{
     method: "GET",
@@ -908,6 +916,33 @@ useEffect(()=>{
           </button>
         </div>
       )}
+      <div className='flex justfiy-'>
+      <input
+  type="checkbox"
+  checked={TotalStopLossFlag}
+  onClick={() => {
+    setTotalStopLossFlag(!TotalStopLossFlag)
+    
+  }}
+/>
+
+
+        <input 
+        className='mr-6 ml-6'
+        placeholder='mtm'
+  type="text"
+  value={TotalStopLoss.mtm}
+  onChange={(e) => setTotalStopLoss({ ...TotalStopLoss, mtm: e.target.value })}
+/>
+
+<input
+placeholder='stopLoss'
+  type="text"
+  value={TotalStopLoss.stopLoss}
+  onChange={(e) => setTotalStopLoss({ ...TotalStopLoss, stopLoss: e.target.value })}
+/>
+
+      </div>
       <div className={`${customize ? 'mt-6' : 'mt-20'} flex justify-between `}>
         <div className='m-4'>
         <button className="text-red-700 hover:text-white border mr-8 border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-900" 

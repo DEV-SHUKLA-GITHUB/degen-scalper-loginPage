@@ -1,4 +1,4 @@
-import React, { useState, useEffect ,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { API_URL } from '../dynamicRoutes';
@@ -6,8 +6,8 @@ import { API_URL } from '../dynamicRoutes';
 const Positions = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInstrumentToken, setSelectedInstrumentToken] = useState(null);
-  const [tsl, setTsl] = useState(false);
-  const [tslValue,setTslValue] = useState()
+  const [tsl, setTsl] = useState(true);
+  const [tslValue, setTslValue] = useState()
   const [val, setval] = useState(false);
   const [stoploss, setStoploss] = useState(false);
   const [trailingstoploss, setTrailingstoploss] = useState(false);
@@ -16,7 +16,6 @@ const Positions = (props) => {
   const [trigger_price, setTrigger_price] = useState();
   const [tslRatio, setTslRatio] = useState();
   function exitHandler(symbol) {
-    console.log(symbol);
     try {
       fetch(`${API_URL}/exit`, {
         method: 'POST',
@@ -28,7 +27,6 @@ const Positions = (props) => {
           symbol,
         }),
       }).then((data) => {
-        console.log(data);
         if (data.status) {
           toast.success('Position squared off', {
             position: 'top-right',
@@ -74,77 +72,73 @@ const Positions = (props) => {
   useEffect(() => {
     // Update trailingStopLoss value when the tsl value changes
     // if (selectedInstrumentToken !== null && props.trailingStopLoss[selectedInstrumentToken]) {
-      props.setTrailingStopLoss({
-        ...props.trailingStopLoss,
-        [selectedInstrumentToken]: {
-          ...props.trailingStopLoss[selectedInstrumentToken],
-          value: tslRatio,
-        },
-      });
-      console.log(props.trailingStopLoss,"value")
+    props.setTrailingStopLoss({
+      ...props.trailingStopLoss,
+      [selectedInstrumentToken]: {
+        ...props.trailingStopLoss[selectedInstrumentToken],
+        value: tslRatio,
+      },
+    });
     // }
   }, [tslRatio]);
 
   useEffect(() => {
     // Toggle the tsl value and update trailingStopLoss when the Toggle TSL button is clicked
     // if (selectedInstrumentToken !== null && props.trailingStopLoss[selectedInstrumentToken]) {
-      console.log(selectedInstrumentToken,"token")
-      props.setTrailingStopLoss({
-        ...props.trailingStopLoss,
-        [selectedInstrumentTokenRef.current]: {
-          ...props.trailingStopLoss[selectedInstrumentTokenRef.current],
-          status:tsl,
-        },
-      });
-      console.log(props.trailingStopLoss,"tsl")
+    props.setTrailingStopLoss({
+      ...props.trailingStopLoss,
+      [selectedInstrumentTokenRef.current]: {
+        ...props.trailingStopLoss[selectedInstrumentTokenRef.current],
+        status: tsl,
+      },
+    });
     // }
   }, [tsl]);
 
-  const stopLossOrder = (token, price, trigger_price)=> {
+  const stopLossOrder = (token, price, trigger_price) => {
 
-    let symbol,qty,transaction_type,product,exchange;
+    let symbol, qty, transaction_type, product, exchange;
 
-    props.Positions['day'].map(item=>{
-      if(String(item.instrument_token)===String(token)){
-        symbol=item.tradingsymbol
-        qty=item.quantity
-        transaction_type=item.quantity>0?"SELL":"BUY"
-        product=item.product
-        exchange=item.exchange
+    props.Positions['day'].map(item => {
+      if (String(item.instrument_token) === String(token)) {
+        symbol = item.tradingsymbol
+        qty = item.quantity
+        transaction_type = item.quantity > 0 ? "SELL" : "BUY"
+        product = item.product
+        exchange = item.exchange
       }
     })[0]
 
-    
-    
-    
-    
-    try{fetch(`${API_URL}/stopLossOrder`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        token: window.localStorage.getItem("token"),
-        symbol,
-        qty,
-        transaction_type,
-        product,
-        variety: "regular",
-        price, 
-        trigger_price,
-        exchange
-        
-      }),
-    })
+
+
+
+
+    try {
+      fetch(`${API_URL}/stopLossOrder`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: window.localStorage.getItem("token"),
+          symbol,
+          qty,
+          transaction_type,
+          product,
+          variety: "regular",
+          price,
+          trigger_price,
+          exchange
+
+        }),
+      })
       .then((res) => res.json())
       .then((data) => {
-        if(data.status == true){
-          console.log("id",data.data)
+        if (data.status == true) {
           props.setStopLossValue({
             ...props.stopLossValue,
-            [selectedInstrumentToken]: {id:data.data.order_id},
+            [selectedInstrumentToken]: { id: data.data.order_id },
           })
-          console.log("stop loss order placed")
           toast.success("stop loss order Placed", {
             position: "top-right",
             autoClose: 3000,
@@ -155,7 +149,7 @@ const Positions = (props) => {
             progress: undefined,
             theme: "dark",
           });
-        }else{
+        } else {
           toast.error(data.data.message, {
             position: "top-right",
             autoClose: 3000,
@@ -168,22 +162,21 @@ const Positions = (props) => {
           });
         }
         // handleClick(selectedOption1)
-  })}
-  catch(err) {
-    console.log("request error: " + err)
+      })
+    }
+    catch (err) {
+      console.log("request error: " + err)
+    }
   }
-}
 
   const handleModalConfirm = (instrumentToken) => {
     const stopLossValue = props.stopLossValue[instrumentToken];
     props.setStopLossValue({
       ...props.stopLossValue,
-      [selectedInstrumentToken]: {price:price,trigger_price:trigger_price},//set price and trigger_price
+      [selectedInstrumentToken]: { price: price, trigger_price: trigger_price },//set price and trigger_price
     })
-    console.log(props.stopLossValue,"value")
-    console.log(price,trigger_price)
-    stopLossOrder(selectedInstrumentToken,price,trigger_price)
-     setval(true);
+    stopLossOrder(selectedInstrumentToken, price, trigger_price)
+    setval(true);
 
     if (stopLossValue) {
       setIsModalOpen(false);
@@ -213,17 +206,18 @@ const Positions = (props) => {
       });
     }
   };
+
+
+
   const handleTslModalConfirm = (instrumentToken) => {
     props.setTrailingStopLoss({
       ...props.trailingStopLoss,
       [selectedInstrumentToken]: {
-        ...props.trailingStopLoss[selectedInstrumentToken],
-        value: tslRatio, 
+        value: tslRatio, status: "true"
       },
     });
-    
+
     if (tslRatio) {
-      console.log(props.trailingStopLoss)
       setIsModalOpen(false);
 
       // Display a success message
@@ -254,7 +248,6 @@ const Positions = (props) => {
   const handletoggle = (instrumentToken) => {
     selectedInstrumentTokenRef.current = instrumentToken;
     setTsl(!tsl);
-    console.log("clicked tsl");
   };
   return (
     <div className='w-full bg-transparent text-[#BABABA] text-lg h-full'>
@@ -286,61 +279,180 @@ const Positions = (props) => {
               {props.Positions &&
                 props.Positions['day'].map((item, index) => {
                   if (item.quantity !== 0) {
-                    return (
-                      
-                      <tr key={index}>
-                        {/* {console.log(props.Positions,"pos")} */}
-                        <td className='text-center'>{item.tradingsymbol}</td>
-                        <td className='text-center'>{item.product}</td>
-                        <td className='text-center'>{item.quantity}</td>
-                        <td className='text-center'>
-                          {/* {(val && props.stopLossValue[item.instrument_token].price)||""} */}
-                        </td>
-                        <td className='text-center'>
-                        {/* {(val && props.stopLossValue[item.instrument_token].trigger_price)||""} */}
-                        </td>
-                        <td className='text-center'>
-                          <button
-                            onClick={() => handleClick(item.instrument_token)}
-                            className='bg-blue-500 text-white px-2 py-1 rounded'
-                          >
-                            SL Button
-                          </button>
-                        </td>
-                        <td className='text-center'>
-  {tsl ? 'TSL Active' : 'TSL Inactive'}
-</td>
+                    if (!item.tradingsymbol.includes("PE")) {
+                      return (
+                        <tr key={index} className=' border-2 border-white'>
+                          <td className='text-center'>{item.tradingsymbol}</td>
+                          <td className='text-center'>{item.product}</td>
+                          <td className='text-center'>{item.quantity}</td>
+                          <td className='text-center'>
+                            {/* {(val && props.stopLossValue[item.instrument_token].price)||""} */}
+                          </td>
+                          <td className='text-center'>
+                            {/* {(val && props.stopLossValue[item.instrument_token].trigger_price)||""} */}
+                          </td>
+                          <td className='text-center'>
+                            <button
+                              onClick={() => handleClick(item.instrument_token)}
+                              className='bg-blue-500 text-white px-2 py-1 rounded'
+                            >
+                              SL Button
+                            </button>
+                          </td>
+                          <td className='text-center'>
+                            {/* {tsl ? 'TSL Active' : 'TSL Inactive'} */}
+                          </td>
 
-                        <td className='text-center'>
-                          <button
-                            onClick={() => handletoggle(item.instrument_token)}
-                            type='radio'
+                          <td className='text-center'>
+                            <button
+                              onClick={() => handletoggle(item.instrument_token)}
+                              type='radio'
                             // className='bg-blue-500 text-white px-2 py-1 rounded'
-                          >
-                            Toggle TSL
-                          </button>
-                        </td>
-                        <td className='text-center'>
-                          <button
-                            onClick={() => handleTSLClick(item.instrument_token)}
-                            className='bg-blue-500 text-white px-2 py-1 rounded'
-                          >
-                            TSL Button
-                          </button>
-                        </td>
-                        <td className='text-center'>{item.last_price}</td>
-                        <td className='text-center'>{item.pnl}</td>
-                        <td className='text-center'>{item.average_price}</td>
-                        <td className='text-center'>
-                          <button
-                            onClick={() => exitHandler(item.tradingsymbol)}
-                            className='bg-red-500 text-white px-2 py-1 rounded'
-                          >
-                            Exit
-                          </button>
-                        </td>
-                      </tr>
-                    );
+                            >
+                              Toggle TSL
+                            </button>
+                          </td>
+                          <td className='text-center'>
+                            <button
+                              onClick={() => handleTSLClick(item.instrument_token)}
+                              className='bg-blue-500 text-white px-2 py-1 rounded'
+                            >
+                              TSL Button
+                            </button>
+                          </td>
+                          <td className='text-center'>{item.last_price}</td>
+                          <td className='text-center'>{item.pnl}</td>
+                          <td className='text-center'>{item.average_price}</td>
+                          <td className='text-center'>
+                            <button
+                              onClick={() => exitHandler(item.tradingsymbol)}
+                              className='bg-red-500 text-white px-2 py-1 rounded'
+                            >
+                              Exit
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    }
+                    else {
+                      return (
+                        // <tr key={index} className='h-full'>
+                        //   <tr className='h-1/2 w-full border-2 border-white'>
+                            // {(!item.tradingsymbol.includes("PE")) && (
+                              <tr key={index} className='border-2 border-red-600'>
+                                <td className='text-center'>{item.tradingsymbol}</td>
+                                <td className='text-center'>{item.product}</td>
+                                <td className='text-center'>{item.quantity}</td>
+                                <td className='text-center'>
+                                  {/* {(val && props.stopLossValue[item.instrument_token].price)||""} */}
+                                </td>
+                                <td className='text-center'>
+                                  {/* {(val && props.stopLossValue[item.instrument_token].trigger_price)||""} */}
+                                </td>
+                                <td className='text-center'>
+                                  <button
+                                    onClick={() => handleClick(item.instrument_token)}
+                                    className='bg-blue-500 text-white px-2 py-1 rounded'
+                                  >
+                                    SL Button
+                                  </button>
+                                </td>
+                                <td className='text-center'>
+                                  {/* {tsl ? 'TSL Active' : 'TSL Inactive'} */}
+                                </td>
+
+                                <td className='text-center'>
+                                  <button
+                                    onClick={() => handletoggle(item.instrument_token)}
+                                    type='radio'
+                                  // className='bg-blue-500 text-white px-2 py-1 rounded'
+                                  >
+                                    Toggle TSL
+                                  </button>
+                                </td>
+                                <td className='text-center'>
+                                  <button
+                                    onClick={() => handleTSLClick(item.instrument_token)}
+                                    className='bg-blue-500 text-white px-2 py-1 rounded'
+                                  >
+                                    TSL Button
+                                  </button>
+                                </td>
+                                <td className='text-center'>{item.last_price}</td>
+                                <td className='text-center'>{item.pnl}</td>
+                                <td className='text-center'>{item.average_price}</td>
+                                <td className='text-center'>
+                                  <button
+                                    onClick={() => exitHandler(item.tradingsymbol)}
+                                    className='bg-red-500 text-white px-2 py-1 rounded'
+                                  >
+                                    Exit
+                                  </button>
+                                </td>
+                              </tr>
+                            )}
+                          // </tr>
+                          // <hr/>
+                          // <tr className='h-1/2 border-2 border-white'>
+                          //   {(item.tradingsymbol.includes("PE") && (
+                          //     <tr key={index}>
+                          //       <td className='text-center'>{item.tradingsymbol}</td>
+                          //       <td className='text-center'>{item.product}</td>
+                          //       <td className='text-center'>{item.quantity}</td>
+                          //       <td className='text-center'>
+                          //         {/* {(val && props.stopLossValue[item.instrument_token].price)||""} */}
+                          //       </td>
+                          //       <td className='text-center'>
+                          //         {/* {(val && props.stopLossValue[item.instrument_token].trigger_price)||""} */}
+                          //       </td>
+                          //       <td className='text-center'>
+                          //         <button
+                          //           onClick={() => handleClick(item.instrument_token)}
+                          //           className='bg-blue-500 text-white px-2 py-1 rounded'
+                          //         >
+                          //           SL Button
+                          //         </button>
+                          //       </td>
+                          //       <td className='text-center'>
+                          //         {/* {tsl ? 'TSL Active' : 'TSL Inactive'} */}
+                          //       </td>
+
+                          //       <td className='text-center'>
+                          //         <button
+                          //           onClick={() => handletoggle(item.instrument_token)}
+                          //           type='radio'
+                          //         // className='bg-blue-500 text-white px-2 py-1 rounded'
+                          //         >
+                          //           Toggle TSL
+                          //         </button>
+                          //       </td>
+                          //       <td className='text-center'>
+                          //         <button
+                          //           onClick={() => handleTSLClick(item.instrument_token)}
+                          //           className='bg-blue-500 text-white px-2 py-1 rounded'
+                          //         >
+                          //           TSL Button
+                          //         </button>
+                          //       </td>
+                          //       <td className='text-center'>{item.last_price}</td>
+                          //       <td className='text-center'>{item.pnl}</td>
+                          //       <td className='text-center'>{item.average_price}</td>
+                          //       <td className='text-center'>
+                          //         <button
+                          //           onClick={() => exitHandler(item.tradingsymbol)}
+                          //           className='bg-red-500 text-white px-2 py-1 rounded'
+                          //         >
+                          //           Exit
+                          //         </button>
+                          //       </td>
+                          //     </tr>
+
+                            // ))}
+                        //   </tr>
+                        // </tr>
+                      // )
+                    // }
+
                   }
                 })}
             </tbody>
@@ -350,86 +462,86 @@ const Positions = (props) => {
 
       {/* Modal */}
       {isModalOpen && selectedInstrumentToken && (
-        
+
         <div className='fixed inset-0 flex items-center justify-center z-50'>
           <div className='bg-white p-6 rounded-lg shadow-lg'>
-            {/* {console.log(selectedInstrumentToken,"selected instrument token")} */}
-            {stoploss&&<div>
+            {stoploss && <div>
               <h2 className='text-lg font-semibold mb-4'>Set Stop Loss</h2>
-            <label htmlFor='stopLossInput' className='block mb-2'>
-              Stop Loss Value:
-            </label>
-            <input
-              type='text'
-              id='stopLossInput'
-              // value={props.stopLossValue[selectedInstrumentToken] || ''}
-              onChange={(e) => { setPrice(e.target.value)
-              }}
-              className='w-full px-2 py-1 border rounded mb-4'
-            />
-            <label htmlFor='stopLossInput' className='block mb-2'>
-              Stop Loss Trigger Value:
-            </label>
-            <input
-              type='text'
-              id='stopLossTriggerInput'
-              // value={}
-              onChange={(e) => {setTrigger_price(e.target.value)
-              }}
-              className='w-full px-2 py-1 border rounded mb-4'
-            />
-            <div className='flex justify-end'>
-              <button
-                onClick={() => handleModalConfirm(selectedInstrumentToken)}
-                className='bg-blue-500 text-white px-4 py-2 rounded mr-2'
-              >
-                Confirm
-              </button>
-              <button
-                onClick={() => {
+              <label htmlFor='stopLossInput' className='block mb-2'>
+                Stop Loss Value:
+              </label>
+              <input
+                type='text'
+                id='stopLossInput'
+                // value={props.stopLossValue[selectedInstrumentToken] || ''}
+                onChange={(e) => {
+                  setPrice(e.target.value)
+                }}
+                className='w-full px-2 py-1 border rounded mb-4'
+              />
+              <label htmlFor='stopLossInput' className='block mb-2'>
+                Stop Loss Trigger Value:
+              </label>
+              <input
+                type='text'
+                id='stopLossTriggerInput'
+                // value={}
+                onChange={(e) => {
+                  setTrigger_price(e.target.value)
+                }}
+                className='w-full px-2 py-1 border rounded mb-4'
+              />
+              <div className='flex justify-end'>
+                <button
+                  onClick={() => handleModalConfirm(selectedInstrumentToken)}
+                  className='bg-blue-500 text-white px-4 py-2 rounded mr-2'
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => {
 
-                  setIsModalOpen(false);
-                  setStoploss(false)
-                  setSelectedInstrumentToken(null);
-                }}
-                className='bg-gray-300 text-gray-700 px-4 py-2 rounded'
-              >
-                Cancel
-              </button>
-            </div></div>}
-            {trailingstoploss&&<div>
+                    setIsModalOpen(false);
+                    setStoploss(false)
+                    setSelectedInstrumentToken(null);
+                  }}
+                  className='bg-gray-300 text-gray-700 px-4 py-2 rounded'
+                >
+                  Cancel
+                </button>
+              </div></div>}
+            {trailingstoploss && <div>
               <h2 className='text-lg font-semibold mb-4'>Set Trailing Stop Loss</h2>
-            <label htmlFor='stopLossInput' className='block mb-2'>
-              Trailing Stop Loss Value:
-            </label>
-            <input
-              type='text'
-              id='trailingstopLossInput'
-              // value={props.trailingStopLoss[selectedInstrumentToken] || ''}
-              onChange={(e) => setTslRatio(e.target.value)}
-              className='w-full px-2 py-1 border rounded mb-4'
-            />
-            {/* {console.log(props.trailingStopLoss,"tsl")} */}
-            <div className='flex justify-end'>
-              <button
-                onClick={() => {
-                   handleTslModalConfirm(selectedInstrumentToken)
-            }}
-                className='bg-blue-500 text-white px-4 py-2 rounded mr-2'
-              >
-                Confirm
-              </button>
-              <button
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setTrailingstoploss(false)
-                  setSelectedInstrumentToken(null);
-                }}
-                className='bg-gray-300 text-gray-700 px-4 py-2 rounded'
-              >
-                Cancel
-              </button>
-            </div></div>}
+              <label htmlFor='stopLossInput' className='block mb-2'>
+                Trailing Stop Loss Value:
+              </label>
+              <input
+                type='text'
+                id='trailingstopLossInput'
+                // value={props.trailingStopLoss[selectedInstrumentToken] || ''}
+                onChange={(e) => setTslRatio(e.target.value)}
+                className='w-full px-2 py-1 border rounded mb-4'
+              />
+              <div className='flex justify-end'>
+                <button
+                  onClick={() => {
+                    handleTslModalConfirm(selectedInstrumentToken)
+                  }}
+                  className='bg-blue-500 text-white px-4 py-2 rounded mr-2'
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setTrailingstoploss(false)
+                    setSelectedInstrumentToken(null);
+                  }}
+                  className='bg-gray-300 text-gray-700 px-4 py-2 rounded'
+                >
+                  Cancel
+                </button>
+              </div></div>}
           </div>
         </div>
       )}
