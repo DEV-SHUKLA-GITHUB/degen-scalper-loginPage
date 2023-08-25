@@ -72,26 +72,29 @@ const Positions = (props) => {
   useEffect(() => {
     // Update trailingStopLoss value when the tsl value changes
     // if (selectedInstrumentToken !== null && props.trailingStopLoss[selectedInstrumentToken]) {
-    props.setTrailingStopLoss({
-      ...props.trailingStopLoss,
-      [selectedInstrumentToken]: {
-        ...props.trailingStopLoss[selectedInstrumentToken],
-        value: tslRatio,
-      },
-    });
+      props.setTrailingStopLoss({
+        ...props.trailingStopLoss,
+        [selectedInstrumentToken]: {
+          ...props.trailingStopLoss[selectedInstrumentToken],
+          value: tslRatio,
+        },
+      });
     // }
   }, [tslRatio]);
+  useEffect(()=>{
+    console.log(props.trailingStopLoss)
+  },[props.trailingStopLoss])
 
   useEffect(() => {
     // Toggle the tsl value and update trailingStopLoss when the Toggle TSL button is clicked
     // if (selectedInstrumentToken !== null && props.trailingStopLoss[selectedInstrumentToken]) {
-    props.setTrailingStopLoss({
-      ...props.trailingStopLoss,
-      [selectedInstrumentTokenRef.current]: {
-        ...props.trailingStopLoss[selectedInstrumentTokenRef.current],
-        status: tsl,
-      },
-    });
+      props.setTrailingStopLoss({
+        ...props.trailingStopLoss,
+        [selectedInstrumentTokenRef.current]: {
+          ...props.trailingStopLoss[selectedInstrumentTokenRef.current],
+          status:tsl,
+        },
+      });
     // }
   }, [tsl]);
 
@@ -134,7 +137,7 @@ const Positions = (props) => {
       })
       .then((res) => res.json())
       .then((data) => {
-        if (data.status == true) {
+        if(data.status == true){
           props.setStopLossValue({
             ...props.stopLossValue,
             [selectedInstrumentToken]: { id: data.data.order_id },
@@ -175,8 +178,8 @@ const Positions = (props) => {
       ...props.stopLossValue,
       [selectedInstrumentToken]: { price: price, trigger_price: trigger_price },//set price and trigger_price
     })
-    stopLossOrder(selectedInstrumentToken, price, trigger_price)
-    setval(true);
+    stopLossOrder(selectedInstrumentToken,price,trigger_price)
+     setval(true);
 
     if (stopLossValue) {
       setIsModalOpen(false);
@@ -213,10 +216,10 @@ const Positions = (props) => {
     props.setTrailingStopLoss({
       ...props.trailingStopLoss,
       [selectedInstrumentToken]: {
-        value: tslRatio, status: "true"
+        value: tslRatio, status:"true", closed: false
       },
     });
-
+    
     if (tslRatio) {
       setIsModalOpen(false);
 
@@ -279,29 +282,30 @@ const Positions = (props) => {
               {props.Positions &&
                 props.Positions['day'].map((item, index) => {
                   if (item.quantity !== 0) {
-                    if (!item.tradingsymbol.includes("PE")) {
-                      return (
-                        <tr key={index} className=' border-2 border-white'>
-                          <td className='text-center'>{item.tradingsymbol}</td>
-                          <td className='text-center'>{item.product}</td>
-                          <td className='text-center'>{item.quantity}</td>
-                          <td className='text-center'>
-                            {/* {(val && props.stopLossValue[item.instrument_token].price)||""} */}
-                          </td>
-                          <td className='text-center'>
-                            {/* {(val && props.stopLossValue[item.instrument_token].trigger_price)||""} */}
-                          </td>
-                          <td className='text-center'>
-                            <button
-                              onClick={() => handleClick(item.instrument_token)}
-                              className='bg-blue-500 text-white px-2 py-1 rounded'
-                            >
-                              SL Button
-                            </button>
-                          </td>
-                          <td className='text-center'>
-                            {/* {tsl ? 'TSL Active' : 'TSL Inactive'} */}
-                          </td>
+                    return (
+                      
+                      <tr key={index}>
+                        {/* {console.log(props.Positions,"pos")} */}
+                        <td className='text-center'>{item.tradingsymbol}</td>
+                        <td className='text-center'>{item.product}</td>
+                        <td className='text-center'>{item.quantity}</td>
+                        <td className='text-center'>
+                          {/* {(val && props.stopLossValue[item.instrument_token].price)||""} */}
+                        </td>
+                        <td className='text-center'>
+                        {/* {(val && props.stopLossValue[item.instrument_token].trigger_price)||""} */}
+                        </td>
+                        <td className='text-center'>
+                          <button
+                            onClick={() => handleClick(item.instrument_token)}
+                            className='bg-blue-500 text-white px-2 py-1 rounded'
+                          >
+                            SL Button
+                          </button>
+                        </td>
+                        <td className='text-center'>
+  {tsl ? 'TSL Active' : 'TSL Inactive'}
+</td>
 
                           <td className='text-center'>
                             <button
@@ -454,7 +458,7 @@ const Positions = (props) => {
                     // }
 
                   }
-                })}
+                )}
             </tbody>
           </table>
         </div>
@@ -465,7 +469,8 @@ const Positions = (props) => {
 
         <div className='fixed inset-0 flex items-center justify-center z-50'>
           <div className='bg-white p-6 rounded-lg shadow-lg'>
-            {stoploss && <div>
+            {/* {console.log(selectedInstrumentToken,"selected instrument token")} */}
+            {stoploss&&<div>
               <h2 className='text-lg font-semibold mb-4'>Set Stop Loss</h2>
               <label htmlFor='stopLossInput' className='block mb-2'>
                 Stop Loss Value:
@@ -512,36 +517,37 @@ const Positions = (props) => {
               </div></div>}
             {trailingstoploss && <div>
               <h2 className='text-lg font-semibold mb-4'>Set Trailing Stop Loss</h2>
-              <label htmlFor='stopLossInput' className='block mb-2'>
-                Trailing Stop Loss Value:
-              </label>
-              <input
-                type='text'
-                id='trailingstopLossInput'
-                // value={props.trailingStopLoss[selectedInstrumentToken] || ''}
-                onChange={(e) => setTslRatio(e.target.value)}
-                className='w-full px-2 py-1 border rounded mb-4'
-              />
-              <div className='flex justify-end'>
-                <button
-                  onClick={() => {
-                    handleTslModalConfirm(selectedInstrumentToken)
-                  }}
-                  className='bg-blue-500 text-white px-4 py-2 rounded mr-2'
-                >
-                  Confirm
-                </button>
-                <button
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setTrailingstoploss(false)
-                    setSelectedInstrumentToken(null);
-                  }}
-                  className='bg-gray-300 text-gray-700 px-4 py-2 rounded'
-                >
-                  Cancel
-                </button>
-              </div></div>}
+            <label htmlFor='stopLossInput' className='block mb-2'>
+              Trailing Stop Loss Value:
+            </label>
+            <input
+              type='text'
+              id='trailingstopLossInput'
+              // value={props.trailingStopLoss[selectedInstrumentToken] || ''}
+              onChange={(e) => setTslRatio(e.target.value)}
+              className='w-full px-2 py-1 border rounded mb-4'
+            />
+            {/* {console.log(props.trailingStopLoss,"tsl")} */}
+            <div className='flex justify-end'>
+              <button
+                onClick={() => {
+                   handleTslModalConfirm(selectedInstrumentToken)
+            }}
+                className='bg-blue-500 text-white px-4 py-2 rounded mr-2'
+              >
+                Confirm
+              </button>
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setTrailingstoploss(false)
+                  setSelectedInstrumentToken(null);
+                }}
+                className='bg-gray-300 text-gray-700 px-4 py-2 rounded'
+              >
+                Cancel
+              </button>
+            </div></div>}
           </div>
         </div>
       )}

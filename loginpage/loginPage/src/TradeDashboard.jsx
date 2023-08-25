@@ -134,11 +134,26 @@ const instrumentTokenRef = useRef(instrumentToken);
   const trailingStopLossRef=useRef(trailingStopLoss)
   useEffect(()=>{
     trailingStopLossRef.current=trailingStopLoss
+    // if(trailingStopLossRef.current[424961]&&Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, 424961)&&trailingStopLossRef.current[424961].status){
+    //   console.log(true)
+    // }else{
+    //   console.log(false)
+    // }
   },[trailingStopLoss])
   const stopLossRef=useRef(stopLoss)
   useEffect(()=>{
     stopLossRef.current=stopLoss
   },[stopLoss])
+  const [stopLossTSL, setStopLossTSL]=useState({
+    "": ''
+  })
+  useEffect(()=>{
+    console.log(stopLossTSL)
+  },[stopLossTSL])
+  const stopLossTSLRef=useRef(stopLossTSL)
+  useEffect(()=>{
+    stopLossTSLRef.current=stopLossTSL
+  },[stopLossTSL])
 
   useEffect(()=>{
     for (let i = 0; i < maindata.length; i++) {
@@ -173,7 +188,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   }
 
   function exit(symbol){
-    console.log(symbol)
+      console.log(symbol)
       try{fetch(`${API_URL}/exit`, {
         method: "POST",
         headers: {
@@ -503,47 +518,60 @@ useEffect(()=>{
 
         const watchList = [...prevArrayOfTokens]; 
         ticks.forEach((tick) => {
-          // if(tick.instrument_token=="13408770"){
-          //   console.log(tick)
-          // }
+          if(tick.instrument_token=="424961"){
+            console.log(tick)
+          }
           //stop loss 
           
-          // fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
-          //   const currentToken=p.instrument_token
-            // console.log(stopLossRef.current, p)
+          fetchedPositionsRef.current&&fetchedPositionsRef.current.day.map(p=>{
+            const currentToken=p.instrument_token
+            // console.log(stopLossTSLRef.current, p)
             
             //trailing stop loss
-          //   if(Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, Number(p.instrument_token))&&trailingStopLossRef.current[currentToken]==true){
-          //     if(String(p.instrument_token)===String(tick.instrument_token)){
-          //       console.log(stopLossRef.current[currentToken])
-          //     if(Number(stopLossRef.current[currentToken])+1<String(tick.last_price)){
-          //       setStopLoss(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-1)}})
-          //     }
-          //     }
-          //   }
+            if(Object.prototype.hasOwnProperty.call(trailingStopLossRef.current, Number(p.instrument_token))&&trailingStopLossRef.current[currentToken].status){
+              if(String(p.instrument_token)===String(tick.instrument_token)){
+                console.log(stopLossTSLRef.current[currentToken])
+                if(stopLossTSLRef.current[currentToken]==undefined){
+                  setStopLossTSL(prev=>{
+                    return {...prev, [currentToken]: "0"}
+                  })
+                }
+              if(Number(stopLossTSLRef.current[currentToken])+Number(trailingStopLossRef.current[currentToken].value)<String(tick.last_price)&& Number(trailingStopLossRef.current[currentToken].value) !=0 ){
+                setStopLossTSL(prev=>{return {...prev,[currentToken]:String(Number(tick.last_price)-Number(trailingStopLossRef.current[currentToken].value))}})
+              }
+              }
+            } 
 
-          //   if(Object.prototype.hasOwnProperty.call(stopLossRef.current, Number(p.instrument_token))&&stopLossRef.current[currentToken]!="0"){if(String(p.instrument_token)===String(tick.instrument_token)){
-          //     if(p.quantity>0){
-          //       if(Number(tick.last_price)==Number(stopLossRef.current[Number(p.instrument_token)])){
-          //         exit(p.tradingsymbol)
-          //       setStopLoss(prev=>{
-          //         return  {...prev, [currentToken]:"0"}
-          //       })
+            if(Object.prototype.hasOwnProperty.call(stopLossTSLRef.current, Number(p.instrument_token))&&stopLossTSLRef.current[currentToken]!="0"&&!trailingStopLossRef.current[currentToken].closed){if(String(p.instrument_token)===String(tick.instrument_token)){
+              if(p.quantity>0){
+                if(Number(tick.last_price)<=Number(stopLossTSLRef.current[Number(p.instrument_token)])){
+                console.log("exited- sold")
+                console.log(stopLossTSLRef.current[Number(p.instrument_token)])
+                // exit(p.tradingsymbol)
+                setStopLoss(prev=>{
+                  return  {...prev, [currentToken]:"0"}
+                })
+                setTrailingStopLoss(prev=>{
+                  return {...prev, [currentToken]: {value:"0", status: false, closed:true}}
+                })
 
-          //       }
-          //     }
-          //   else if(p.quantity<0){
-          //     console.log("sell")
+                }
+              }
+            else if(p.quantity<0){
+              console.log("exited - buy")
 
-          //     if(Number(tick.last_price)>=Number(stopLossRef.current[Number(p.instrument_token)])){
-          //       exit(p.tradingsymbol)
-          //       setStopLoss(prev=>{
-          //         return  {...prev, [currentToken]:"0"}
-          //       })
-          //     }
-          //   }
-          //   }}
-          // })
+              if(Number(tick.last_price)>=Number(stopLossTSLRef.current[Number(p.instrument_token)])){
+                // exit(p.tradingsymbol)
+                setStopLoss(prev=>{
+                  return  {...prev, [currentToken]:"0"}
+                })
+                setTrailingStopLoss(prev=>{
+                  return {...prev, [currentToken]: {value:"0", status: false}}
+                })
+              }
+            }
+            }}
+          })
 
           //ltp and pnl of positions
         //   if(fetchedPositionsRef.current!=undefined){
@@ -1017,7 +1045,7 @@ placeholder='stopLoss'
 <Tradebook tradebook={tradebook}  />
           }
 {positions &&   
-<Positions exit={handleClick} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
+<Positions exit={handleClick} setStopLossTSL={setStopLossTSL} Positions={fetchedPositions&&fetchedPositions} stopLossValue={stopLoss} setStopLossValue={setStopLoss} trailingStopLoss={trailingStopLoss} setTrailingStopLoss={setTrailingStopLoss} />
 }
 {funds &&   
 <Funds data={margin} />
