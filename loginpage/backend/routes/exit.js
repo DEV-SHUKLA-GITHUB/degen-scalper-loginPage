@@ -11,14 +11,14 @@ router.post("/", async(req,res)=>{
         res.status(500).json({ status: "error", msg: "jwt authintication failed" });
     }
     const userData=checkAuthResponse.data
-    // console.log(userData)   
+    console.log(userData)   
     const api_key=userData.BrokerList[0].apiKey
     const access_token=userData.BrokerList[0].accessToken
     // console.log(api_key, access_token)
     const kite = new KiteConnect({ api_key });
     kite.setAccessToken(access_token)
     const positions=await kite.getPositions()
-    console.log(positions['day'])
+    // console.log(positions['day'])
     positions['day'].map(position=>{
         // console.log(position)
         if(position.tradingsymbol===symbol){
@@ -41,7 +41,8 @@ router.post("/", async(req,res)=>{
                 }).catch(function(err) {
                     console.log(err);
                     res.send({status:false, error:err})
-                });}else if(position.quantity<0){
+                });
+            }else if(position.quantity<0){
                     
             console.log("BUY", Math.abs(position.quantity))
             const variety="regular"

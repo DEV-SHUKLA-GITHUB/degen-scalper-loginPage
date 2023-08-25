@@ -16,7 +16,6 @@ const Positions = (props) => {
   const [trigger_price, setTrigger_price] = useState();
   const [tslRatio, setTslRatio] = useState();
   function exitHandler(symbol) {
-    console.log(symbol);
     try {
       fetch(`${API_URL}/exit`, {
         method: 'POST',
@@ -28,7 +27,6 @@ const Positions = (props) => {
           symbol,
         }),
       }).then((data) => {
-        console.log(data);
         if (data.status) {
           toast.success('Position squared off', {
             position: 'top-right',
@@ -81,14 +79,15 @@ const Positions = (props) => {
           value: tslRatio,
         },
       });
-      console.log(props.trailingStopLoss,"value")
     // }
   }, [tslRatio]);
+  useEffect(()=>{
+    console.log(props.trailingStopLoss)
+  },[props.trailingStopLoss])
 
   useEffect(() => {
     // Toggle the tsl value and update trailingStopLoss when the Toggle TSL button is clicked
     // if (selectedInstrumentToken !== null && props.trailingStopLoss[selectedInstrumentToken]) {
-      console.log(selectedInstrumentToken,"token")
       props.setTrailingStopLoss({
         ...props.trailingStopLoss,
         [selectedInstrumentTokenRef.current]: {
@@ -96,7 +95,6 @@ const Positions = (props) => {
           status:tsl,
         },
       });
-      console.log(props.trailingStopLoss,"tsl")
     // }
   }, [tsl]);
 
@@ -139,12 +137,10 @@ const Positions = (props) => {
       .then((res) => res.json())
       .then((data) => {
         if(data.status == true){
-          console.log("id",data.data)
           props.setStopLossValue({
             ...props.stopLossValue,
             [selectedInstrumentToken]: {id:data.data.order_id},
           })
-          console.log("stop loss order placed")
           toast.success("stop loss order Placed", {
             position: "top-right",
             autoClose: 3000,
@@ -180,8 +176,6 @@ const Positions = (props) => {
       ...props.stopLossValue,
       [selectedInstrumentToken]: {price:price,trigger_price:trigger_price},//set price and trigger_price
     })
-    console.log(props.stopLossValue,"value")
-    console.log(price,trigger_price)
     stopLossOrder(selectedInstrumentToken,price,trigger_price)
      setval(true);
 
@@ -213,17 +207,21 @@ const Positions = (props) => {
       });
     }
   };
+
+
+
   const handleTslModalConfirm = (instrumentToken) => {
     props.setTrailingStopLoss({
       ...props.trailingStopLoss,
       [selectedInstrumentToken]: {
-        ...props.trailingStopLoss[selectedInstrumentToken],
-        value: tslRatio, 
+        value: tslRatio, status:"true", closed: false
       },
     });
+    props.setStopLossTSL(prev=>{
+      return {...prev, [selectedInstrumentToken]:"0"}
+    })
     
     if (tslRatio) {
-      console.log(props.trailingStopLoss)
       setIsModalOpen(false);
 
       // Display a success message
@@ -254,7 +252,6 @@ const Positions = (props) => {
   const handletoggle = (instrumentToken) => {
     selectedInstrumentTokenRef.current = instrumentToken;
     setTsl(!tsl);
-    console.log("clicked tsl");
   };
   return (
     <div className='w-full bg-transparent text-[#BABABA] text-lg h-full'>
@@ -289,7 +286,6 @@ const Positions = (props) => {
                     return (
                       
                       <tr key={index}>
-                        {/* {console.log(props.Positions,"pos")} */}
                         <td className='text-center'>{item.tradingsymbol}</td>
                         <td className='text-center'>{item.product}</td>
                         <td className='text-center'>{item.quantity}</td>
@@ -308,7 +304,7 @@ const Positions = (props) => {
                           </button>
                         </td>
                         <td className='text-center'>
-  {tsl ? 'TSL Active' : 'TSL Inactive'}
+  {/* {tsl ? 'TSL Active' : 'TSL Inactive'} */}
 </td>
 
                         <td className='text-center'>
@@ -353,7 +349,6 @@ const Positions = (props) => {
         
         <div className='fixed inset-0 flex items-center justify-center z-50'>
           <div className='bg-white p-6 rounded-lg shadow-lg'>
-            {/* {console.log(selectedInstrumentToken,"selected instrument token")} */}
             {stoploss&&<div>
               <h2 className='text-lg font-semibold mb-4'>Set Stop Loss</h2>
             <label htmlFor='stopLossInput' className='block mb-2'>
@@ -409,7 +404,6 @@ const Positions = (props) => {
               onChange={(e) => setTslRatio(e.target.value)}
               className='w-full px-2 py-1 border rounded mb-4'
             />
-            {/* {console.log(props.trailingStopLoss,"tsl")} */}
             <div className='flex justify-end'>
               <button
                 onClick={() => {
