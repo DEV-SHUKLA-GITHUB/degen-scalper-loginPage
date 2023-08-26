@@ -314,7 +314,9 @@ const instrumentTokenRef = useRef(instrumentToken);
             console.log("failed");
           }
         }    
+
         console.log(data.margins,"data 133");
+        console.log(data)
         setMargin(data.margins)
         setOrderbook(data.orderbook)
         setTradebook(data.tradebook)
