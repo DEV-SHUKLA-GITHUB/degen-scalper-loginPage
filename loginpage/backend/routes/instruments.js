@@ -114,6 +114,7 @@ router.post("/getInstruments", async (req, res) => {
       const orderbook = await kite.getOrders();
       const tradebook= await kite.getTrades()
       const positions= await kite.getPositions()
+      const ohlc=await kite.getOHLC()
       // console.log(tradebook, "tradebook");
       // console.log(positions, "positions");
 
@@ -152,7 +153,7 @@ const formattedDate = `${year}-${month}-${day}`;
 
 
       // Send the response to the client
-      res.send({margins, uniqueExpiryDates, instruments, uniqueStrikes, orderbook,tradebook, positions, accountName: jsonData.BrokerList[0].accountName });
+      res.send({ohlc,margins, uniqueExpiryDates, instruments, uniqueStrikes, orderbook,tradebook, positions, accountName: jsonData.BrokerList[0].accountName });
     };
 
     a();
