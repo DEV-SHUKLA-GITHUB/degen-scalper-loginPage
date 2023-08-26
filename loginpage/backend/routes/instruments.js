@@ -115,6 +115,14 @@ router.post("/getInstruments", async (req, res) => {
       const tradebook= await kite.getTrades()
       const positions= await kite.getPositions()
       const ohlc=await kite.getOHLC()
+      let atm=[]
+      for (const key in ohlc){
+        if(key==="NSE:NIFTY 50"||key==="NSE:NIFTY FIN SERVICE"){
+          atm[key]=Math.round(ohlc[key].last_price/50)*50
+        }else{
+          atm[key]=Math.round(ohlc[key].last_price/100)*100
+        }
+      }
       // console.log(tradebook, "tradebook");
       // console.log(positions, "positions");
 
@@ -153,7 +161,7 @@ const formattedDate = `${year}-${month}-${day}`;
 
 
       // Send the response to the client
-      res.send({ohlc,margins, uniqueExpiryDates, instruments, uniqueStrikes, orderbook,tradebook, positions, accountName: jsonData.BrokerList[0].accountName });
+      res.send({atm,ohlc,margins, uniqueExpiryDates, instruments, uniqueStrikes, orderbook,tradebook, positions, accountName: jsonData.BrokerList[0].accountName });
     };
 
     a();

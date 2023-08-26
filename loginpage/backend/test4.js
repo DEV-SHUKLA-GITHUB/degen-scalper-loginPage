@@ -8,7 +8,7 @@ const api_key = "elrfps73mpn9aou4";
 const a = async () => {
   const kc = new KiteConnect({ api_key });
   kc.setAccessToken(access_token);
-  const positions=await kc.getOHLC(["NSE:NIFTY 50", "NSE:BANKNIFTY","NSE:FINNIFTY"])
+  const ohlc=await kc.getOHLC(["NSE:NIFTY 50", "NSE:NIFTY BANK","NSE:NIFTY FIN SERVICE"])
 //   kc.placeOrder('regular', {
 //     "exchange": "NSE",
 //     "tradingsymbol": 'ITC',
@@ -35,10 +35,26 @@ const a = async () => {
 //     console.log(err)
 //     // res.send({status:false,data:err})
 // })
+// const atm=ohlc.map((key,value)=>{
+//   console.log(key, value)
+// })
+let atm=[]
+for (const key in ohlc){
+  if(key==="NSE:NIFTY 50"||key==="NSE:NIFTY FIN SERVICE"){
+    atm[key]=Math.round(ohlc[key].last_price/50)*50
+  }else{
+    atm[key]=Math.round(ohlc[key].last_price/100)*100
+  }
+}
 
 
+// for (const key in ohlc){
+//   console.log(key,ohlc[key].)
+// }
 
-  console.log(positions)
+
+  console.log(atm)
+  console.log(Math.round(44231.45/100)*100)
   // const tradeBook=kc.getTrades()
   // let buy=0, sell=0
   // tradeBook.map(trade=>{
