@@ -115,7 +115,7 @@ router.post("/getInstruments", async (req, res) => {
       const tradebook= await kite.getTrades()
       const positions= await kite.getPositions()
       const ohlc=await kite.getOHLC(["NSE:NIFTY 50", "NSE:NIFTY BANK","NSE:NIFTY FIN SERVICE"])
-      let atm=[]
+      let atm={}
       for (const key in ohlc){
         if(key==="NSE:NIFTY 50"||key==="NSE:NIFTY FIN SERVICE"){
           atm[key]=Math.round(ohlc[key].last_price/50)*50
