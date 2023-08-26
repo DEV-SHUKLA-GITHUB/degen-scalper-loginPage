@@ -114,7 +114,7 @@ router.post("/getInstruments", async (req, res) => {
       const orderbook = await kite.getOrders();
       const tradebook= await kite.getTrades()
       const positions= await kite.getPositions()
-      const ohlc=await kite.getOHLC()
+      const ohlc=await kite.getOHLC(["NSE:NIFTY 50", "NSE:NIFTY BANK","NSE:NIFTY FIN SERVICE"])
       let atm=[]
       for (const key in ohlc){
         if(key==="NSE:NIFTY 50"||key==="NSE:NIFTY FIN SERVICE"){
@@ -158,6 +158,8 @@ const formattedDate = `${year}-${month}-${day}`;
           filteredInstruments.map((instrument) => instrument.instrument_token)
         )
       );
+
+      console.log(atm)
 
 
       // Send the response to the client
