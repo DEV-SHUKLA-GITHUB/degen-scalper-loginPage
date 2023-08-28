@@ -37,6 +37,7 @@ const instrumentTokenRef = useRef(instrumentToken);
   const productList = product.map((value) => ({ value, text: value }));
   const [selectedOption1, setSelectedOption1] = useState();
   const [selectedOption2, setSelectedOption2] = useState();
+  const [atm, setAtm] = useState();
   const [sellltp, setSellltp] = useState();
   const [expiryList ,setExpiryList] = useState();
   const [strikeList ,setStrikeList] = useState();
@@ -338,6 +339,7 @@ const instrumentTokenRef = useRef(instrumentToken);
         setOrderbook(data.orderbook)
         setTradebook(data.tradebook)
         setFetchedPositions(data.positions)
+        setAtm(data.atm)
         console.log(fetchedPositions)
         console.log(orderbook)
         console.log(data.positions)
@@ -819,7 +821,7 @@ console.log(TotalStopLoss)
         <div className='h-screen w-full'>
       
       <div className="flex p-8 border-b-2 border-gray-900 justify-between">
-        <CustomCombobox options={options} onChange={handleClick} /> 
+        <CustomCombobox options={options} atm={atm} onChange={handleClick} /> 
         <Dropdown
           
           heading="select expiry"

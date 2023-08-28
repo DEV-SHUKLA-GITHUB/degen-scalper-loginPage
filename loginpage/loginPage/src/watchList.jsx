@@ -54,7 +54,7 @@ const WatchList = (props) => {
   return (
     <div className='w-full h-screen '>
       <div className='mb-4 '>
-        <CustomCombobox options={tradingsymbols} onChange={handleClick} />
+        <CustomCombobox options={tradingsymbols} atm={props.atm} onChange={handleClick} />
         {/* <button className='ml-4 bg-blue-500 text-white py-2 px-4 rounded' onClick={resetData}>
           Reset
         </button> */}

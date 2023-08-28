@@ -2,7 +2,7 @@ import React, { Fragment, useState, useMemo } from "react";
 import { Combobox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/outline";
 
-const CustomCombobox = ({ options, onChange }) => {
+const CustomCombobox = ({ options, onChange, atm }) => {
   const [selected, setSelected] = useState(options[0]);
   const [query, setQuery] = useState("");
 
@@ -27,7 +27,7 @@ const CustomCombobox = ({ options, onChange }) => {
     onChange(selectedOption);
   };
 
-  const visibleOptions = filteredOptions.slice(0, 100); // Display only 10 visible options initially
+  const visibleOptions = filteredOptions.slice(0, 100); 
 
   return (
     <Combobox value={selected} onChange={handleSelect}>
@@ -38,9 +38,9 @@ const CustomCombobox = ({ options, onChange }) => {
             displayValue={(option) => option.name}
             onChange={(event) => setQuery(event.target.value)}
           />
-          <Combobox.Button className="absolute right-0 flex items-center pr-2">
+          {/* <Combobox.Button className="absolute right-0 flex items-center pr-2">
             <ChevronDownIcon className="h-5 w-5 text-white" aria-hidden="true" />
-          </Combobox.Button>
+          </Combobox.Button> */}
         </div>
         <Transition
           as={Fragment}
