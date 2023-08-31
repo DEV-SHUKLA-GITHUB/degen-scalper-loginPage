@@ -11,7 +11,7 @@ function checkAuth(token) {
 
       User.findOne({ email: userEmail })
         .then((userData) => {
-          resolve({ status: true, data: userData });
+          resolve({ status: true, data: userData, email: user.email });
         })
         .catch((error) => {
           reject({ status: false, data: error });

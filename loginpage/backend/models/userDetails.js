@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
     password: String,
     Username: { type: String, unique: true },
     BrokerList: Object, // Array field to store form data
+    Cache:Object
   },
   {
     collection: "userInfo",

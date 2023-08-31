@@ -110,7 +110,8 @@ const zerodhaLoginValidator = (BrokerList,brokerDetails,email) => {
                   
                       const updatedUserData = await User.findOneAndUpdate(
                         { email },
-                        { $push: { BrokerList: { ...BrokerList, accessToken: credentials.access_token } } },
+                        { $push: { BrokerList: { ...BrokerList, accessToken: credentials.access_token } } ,
+                    $set: {Cache:{temp:"temp"}}},
                         { new: true }
                       );
                       console.log("Updated");

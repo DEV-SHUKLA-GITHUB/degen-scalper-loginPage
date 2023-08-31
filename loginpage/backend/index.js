@@ -19,6 +19,8 @@ const stopLossOrder=require("./routes/stopLossOrder")
 const exitRouter=require("./routes/exit")
 const exitAllRouter=require("./routes/exitAll")
 const updatePositionsRouter=require("./routes/updatePositions")
+const updateCacheRouter=require("./routes/updateCache")
+const getCacheRouter=require("./routes/getCache")
 
 
 const User = require("./models/userDetails"); // Import the user schema from userDetails.js
@@ -61,6 +63,8 @@ mongoose
   app.use("/exit", exitRouter)
   app.use("/exitAll", exitAllRouter)
   app.use("/updatePositions", updatePositionsRouter)
+  app.use("/updateCache", updateCacheRouter)
+  app.use("/getCache", getCacheRouter)
 
   app.get("/test",(req,res)=>{
     console.log("closed/refreshed");

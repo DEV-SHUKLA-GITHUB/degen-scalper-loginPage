@@ -2,13 +2,13 @@ const KiteConnect = require("kiteconnect").KiteConnect;
 const fs = require('fs');
 const path = require('path');
 
-const access_token = "WFMFWsdrhQQVu28QVePhSYz5zuY0o2o5";
+const access_token = "ZUGbFDczt8SezjUFOQXmaCqedzmHIvTW";
 const api_key = "elrfps73mpn9aou4";
 
 const a = async () => {
   const kc = new KiteConnect({ api_key });
   kc.setAccessToken(access_token);
-  const ohlc=await kc.getOHLC(["NSE:NIFTY 50", "NSE:NIFTY BANK","NSE:NIFTY FIN SERVICE"])
+  const positions=await kc.getOHLC(["NSE:NIFTY 50"])
 //   kc.placeOrder('regular', {
 //     "exchange": "NSE",
 //     "tradingsymbol": 'ITC',
