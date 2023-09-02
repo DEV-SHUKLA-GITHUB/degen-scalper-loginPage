@@ -49,7 +49,8 @@ const downloadInstrumentsData = async () => {
 
     const tradingSymbolData = filteredData.map((item, index) => ({
       id: index + 1,
-      name: item.tradingsymbol.replace(/Y/g, "Y ").replace(/(FUT|CE|PE)/g, " $1"),
+      name: item.tradingsymbol.replace(/Y|(?=\d{5}(?=CE|PE|FUT))|(?=CE|PE|FUT)/g, "$& ")
+      ,
     }));
 
     // Store the filtered instruments data in instrument.json
